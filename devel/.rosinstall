@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/mike/rosjava/catkin_ws_android/devel/setup.sh

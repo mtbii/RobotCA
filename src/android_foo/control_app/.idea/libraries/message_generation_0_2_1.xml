@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="message_generation-0.2.1">
+    <CLASSES>
+      <root url="jar:///opt/ros/indigo/share/maven/org/ros/rosjava_bootstrap/message_generation/0.2.1/message_generation-0.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gradle_plugins-0.2.1">
+    <CLASSES>
+      <root url="jar:///opt/ros/indigo/share/maven/org/ros/rosjava_bootstrap/gradle_plugins/0.2.1/gradle_plugins-0.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
