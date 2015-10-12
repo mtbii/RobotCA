@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="std_msgs-0.5.9">
+    <CLASSES>
+      <root url="jar:///opt/ros/indigo/share/maven/org/ros/rosjava_messages/std_msgs/0.5.9/std_msgs-0.5.9.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

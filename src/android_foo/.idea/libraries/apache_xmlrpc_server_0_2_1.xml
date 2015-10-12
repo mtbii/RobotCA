@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="apache_xmlrpc_server-0.2.1">
+    <CLASSES>
+      <root url="jar:///opt/ros/indigo/share/maven/org/ros/rosjava_core/apache_xmlrpc_server/0.2.1/apache_xmlrpc_server-0.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
