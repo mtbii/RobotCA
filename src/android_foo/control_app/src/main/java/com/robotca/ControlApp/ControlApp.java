@@ -19,6 +19,8 @@ public class ControlApp extends RosActivity
 
     public ControlApp() {
         super("Test App","Test App");
+
+        Settings.setJoystickTopic(getString(R.string.joy_topic));
     }
 
     /** Called when the activity is first created. */
@@ -42,7 +44,7 @@ public class ControlApp extends RosActivity
             NodeConfiguration nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-            virtualJoystick.setTopicName(getString(R.string.joy_topic));
+            virtualJoystick.setTopicName(Settings.getJoystickTopic());
 
             nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
         } catch (Exception e) {
