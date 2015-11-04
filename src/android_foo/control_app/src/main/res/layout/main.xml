@@ -3,10 +3,28 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <org.ros.android.view.VirtualJoystickView
-        android:id="@+id/virtual_joystick"
-        android:layout_width="300dip"
+
+    <org.ros.android.view.RosImageView
+        android:id="@+id/camera_view"
+        android:layout_width="fill_parent"
         android:layout_height="300dip"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
+        ></org.ros.android.view.RosImageView>
+
+    <org.ros.android.view.visualization.VisualizationView
+        android:id="@+id/viz_view"
+        android:layout_width="fill_parent"
+        android:layout_height="300dip" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal">
+
+        <org.ros.android.view.VirtualJoystickView
+            android:id="@+id/virtual_joystick"
+            android:layout_width="300dip"
+            android:layout_height="300dip"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
 </LinearLayout>
