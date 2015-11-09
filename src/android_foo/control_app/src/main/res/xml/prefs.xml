@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="edittext_joystick_topic"
+        android:defaultValue="@string/joy_topic"
+        android:title="@string/joy_pref_title"
+        android:summary="@string/joy_pref_summary"
+        />
+
+    <EditTextPreference
+        android:key="edittext_laser_scan_topic"
+        android:defaultValue="@string/laser_scan_topic"
+        android:title="@string/laser_pref_title"
+        android:summary="@string/laser_pref_summary"
+        />
+
+    <EditTextPreference
+        android:key="edittext_camera_topic"
+        android:defaultValue="@string/camera_topic"
+        android:title="@string/camera_pref_title"
+        android:summary="@string/camera_pref_summary"
+        />
+</PreferenceScreen>
