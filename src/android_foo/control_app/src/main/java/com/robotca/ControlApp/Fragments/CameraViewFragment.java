@@ -32,7 +32,7 @@ public class CameraViewFragment extends Fragment implements IRosInitializer {
         if(savedInstanceState != null)
             return cameraView;
 
-        View view = inflater.inflate(R.layout.camera_view, container);
+        View view = inflater.inflate(R.layout.fragment_camera_view, container);
         cameraView = (RosImageView<sensor_msgs.CompressedImage>) view.findViewById(R.id.camera_view);
         return cameraView;
     }
@@ -44,6 +44,6 @@ public class CameraViewFragment extends Fragment implements IRosInitializer {
         cameraView.setMessageType(CompressedImage._TYPE);
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
 
-        nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/camera_view"));
+        nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
     }
 }

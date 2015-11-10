@@ -3,25 +3,35 @@ package com.robotca.ControlApp;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
+import com.robotca.ControlApp.Views.JoystickView;
 
+import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.RosActivity;
+import org.ros.android.view.RosImageView;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+
+import sensor_msgs.CompressedImage;
 
 public class ControlApp extends RosActivity {
     //private NodeMainExecutor nodeMainExecutor;
     private ControlAppActionTabListener tabListener;
     private FrameLayout frameLayout;
     private Fragment lastFrag;
+
+    private JoystickView joystick_view;
+    private RosImageView<sensor_msgs.CompressedImage> camera_view;
 
     private LaserScanFragment laserScanFragment;
     private CameraViewFragment cameraViewFragment;
@@ -41,17 +51,29 @@ public class ControlApp extends RosActivity {
         if(savedInstanceState != null)
             return;
 
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
         setContentView(R.layout.main);
 
+        joystickFragment = new JoystickFragment();
+        cameraViewFragment = new CameraViewFragment();
         laserScanFragment = new LaserScanFragment();
         preferencesFragment = new PreferencesFragment();
 
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //getFragmentManager().beginTransaction().add(R.id.joystick_holder, joystickFragment).commit();
 
-        joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
-        cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
+        //joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
+        //cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
+        camera_view = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.camera_view);
+        camera_view.setTopicName(getString(R.string.camera_topic));
+        camera_view.setMessageType(CompressedImage._TYPE);
+        camera_view.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+
+        joystick_view = (JoystickView) findViewById(R.id.joystick_view);
+        joystick_view.setTopicName(getString(R.string.joy_topic));
+
         tabListener = new ControlAppActionTabListener();
 
         //frameLayout = (FrameLayout)findViewById(R.id.frame_layout_tab_content);
@@ -80,10 +102,14 @@ public class ControlApp extends RosActivity {
             java.net.Socket socket = new java.net.Socket(getMasterUri().getHost(), getMasterUri().getPort());
             java.net.InetAddress local_network_address = socket.getLocalAddress();
             socket.close();
+
             NodeConfiguration nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-            initRos(nodeMainExecutor, nodeConfiguration);
+            nodeMainExecutor.execute(camera_view, nodeConfiguration.setNodeName("android/camera_view"));
+            nodeMainExecutor.execute(joystick_view, nodeConfiguration.setNodeName("android/joystick_view"));
+
+            //initRos(nodeMainExecutor, nodeConfiguration);
         } catch (Exception e) {
             // Socket problem
             Log.e("RobotCA", "socket error trying to get networking information from the master uri");
@@ -125,9 +151,9 @@ public class ControlApp extends RosActivity {
     }
 
     public void initRos(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration){
-        joystickFragment.initialize(nodeMainExecutor, nodeConfiguration);
-        laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
-        cameraViewFragment.initialize(nodeMainExecutor, nodeConfiguration);
+        //joystickFragment.initialize(nodeMainExecutor, nodeConfiguration);
+        //laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
+        //cameraViewFragment.initialize(nodeMainExecutor, nodeConfiguration);
     }
 
 

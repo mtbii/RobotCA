@@ -17,6 +17,7 @@
 package com.robotca.ControlApp.Views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -547,6 +548,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         magnitudeText = (TextView) findViewById(R.id.magnitude);
         intensity = (ImageView) findViewById(R.id.intensity);
         thumbDivet = (ImageView) findViewById(R.id.thumb_divet);
+        thumbDivet.setColorFilter(Color.RED);
         orientationWidget = new ImageView[24];
         orientationWidget[0] = (ImageView) findViewById(R.id.widget_0_degrees);
         orientationWidget[1] = (ImageView) findViewById(R.id.widget_15_degrees);
@@ -574,8 +576,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         orientationWidget[23] = (ImageView) findViewById(R.id.widget_345_degrees);
         // Initially hide all the widgets.
         for (ImageView tack : orientationWidget) {
-            tack.setAlpha(0.0f);
-            tack.setVisibility(INVISIBLE);
+            tack.setAlpha(1.0f);
+            tack.setVisibility(VISIBLE);
         }
         // The value (radius) 40 is arbitrary, but small enough to work for the
         // smallest sized virtual joystick. Once the layout is set a value is
@@ -596,7 +598,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         contactUpLocation = new Point(0, 0);
         holonomic = false;
         for (ImageView tack : orientationWidget) {
-            tack.setVisibility(INVISIBLE);
+            tack.setVisibility(VISIBLE);
         }
     }
 
