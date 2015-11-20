@@ -2,4 +2,25 @@
 <resources>
     <string name="app_name">ControlApp</string>
     <string name="joy_topic">/joy_teleop/cmd_vel</string>
+    <string name="camera_topic">/image_raw/compressed</string>
+    <string name="laser_scan_topic">/scan</string>
+
+    <string name="joy_pref_title">Joystick Topic</string>
+    <string name="laser_pref_title">Laser Scan Topic</string>
+    <string name="camera_pref_title">Image Topic</string>
+
+    <string name="joy_pref_summary">
+        Topic that the joystick widget publishes to.
+        Expected message type: std_msgs/Twist
+    </string>
+
+    <string name="laser_pref_summary">
+        Topic that the laser scan widget subscribes to.
+        Expected message type: sensor_msgs/LaserScan
+    </string>
+
+    <string name="camera_pref_summary">
+        Topic that the camera widget subscribes to.
+        Expected message type: sensor_msgs/CompressedImage
+    </string>
 </resources>
