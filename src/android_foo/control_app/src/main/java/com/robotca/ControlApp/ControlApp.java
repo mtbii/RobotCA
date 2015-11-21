@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
@@ -19,8 +18,14 @@ import com.robotca.ControlApp.Views.JoystickView;
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.RosActivity;
 import org.ros.android.view.RosImageView;
+import org.ros.android.view.visualization.VisualizationView;
+import org.ros.android.view.visualization.layer.LaserScanLayer;
+import org.ros.android.view.visualization.layer.Layer;
+import org.ros.android.view.visualization.layer.RobotLayer;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+
+import java.util.ArrayList;
 
 import sensor_msgs.CompressedImage;
 
@@ -32,6 +37,7 @@ public class ControlApp extends RosActivity {
 
     private JoystickView joystick_view;
     private RosImageView<sensor_msgs.CompressedImage> camera_view;
+    private VisualizationView laser_view;
 
     private LaserScanFragment laserScanFragment;
     private CameraViewFragment cameraViewFragment;
@@ -74,25 +80,33 @@ public class ControlApp extends RosActivity {
         joystick_view = (JoystickView) findViewById(R.id.joystick_view);
         joystick_view.setTopicName(getString(R.string.joy_topic));
 
-        tabListener = new ControlAppActionTabListener();
+        //tabListener = new ControlAppActionTabListener();
+
+        laser_view = (VisualizationView) findViewById(R.id.viz_view);
+
+        ArrayList<Layer> layers = new ArrayList<Layer>();
+        layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
+        //layers.add(new OccupancyGridLayer("/map"));
+        layers.add(new RobotLayer("base_link"));
+        laser_view.onCreate(layers);
 
         //frameLayout = (FrameLayout)findViewById(R.id.frame_layout_tab_content);
 
-        ActionBar.Tab laserScanTab = getActionBar().newTab();
-        laserScanTab.setText("Laser");
-        laserScanTab.setTabListener(tabListener);
+//        ActionBar.Tab laserScanTab = getActionBar().newTab();
+//        laserScanTab.setText("Laser");
+//        laserScanTab.setTabListener(tabListener);
+//
+//        ActionBar.Tab cameraTab = getActionBar().newTab();
+//        cameraTab.setText("Camera");
+//        cameraTab.setTabListener(tabListener);
+//
+//        ActionBar.Tab settingsTab = getActionBar().newTab();
+//        settingsTab.setText("Settings");
+//        settingsTab.setTabListener(tabListener);
 
-        ActionBar.Tab cameraTab = getActionBar().newTab();
-        cameraTab.setText("Camera");
-        cameraTab.setTabListener(tabListener);
-
-        ActionBar.Tab settingsTab = getActionBar().newTab();
-        settingsTab.setText("Settings");
-        settingsTab.setTabListener(tabListener);
-
-        getActionBar().addTab(laserScanTab);
-        getActionBar().addTab(cameraTab);
-        getActionBar().addTab(settingsTab);
+//        getActionBar().addTab(laserScanTab);
+//        getActionBar().addTab(cameraTab);
+//        getActionBar().addTab(settingsTab);
     }
 
     @Override
@@ -108,6 +122,12 @@ public class ControlApp extends RosActivity {
 
             nodeMainExecutor.execute(camera_view, nodeConfiguration.setNodeName("android/camera_view"));
             nodeMainExecutor.execute(joystick_view, nodeConfiguration.setNodeName("android/joystick_view"));
+
+            laser_view.init(nodeMainExecutor);
+            laser_view.getCamera().jumpToFrame("base_link");
+            laser_view.getCamera().zoom(laser_view.getCamera().getViewport().getWidth() / 2, laser_view.getCamera().getViewport().getHeight() / 2, .5);
+
+            nodeMainExecutor.execute(laser_view, nodeConfiguration.setNodeName("android/laser_view"));
 
             //initRos(nodeMainExecutor, nodeConfiguration);
         } catch (Exception e) {
