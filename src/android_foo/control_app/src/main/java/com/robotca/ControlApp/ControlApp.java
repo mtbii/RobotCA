@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.view.WindowManager;
+
 
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
@@ -59,6 +61,8 @@ public class ControlApp extends RosActivity {
 
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        //Keep the screen on while the app is in use
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
         setContentView(R.layout.main);
 
