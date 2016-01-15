@@ -1,5 +1,5 @@
-# RobotCA
----
+# RobotCA  
+
 University of South Carolina
 CSCE 490 & 492 Capstone Design
 
