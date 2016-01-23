@@ -15,8 +15,8 @@ gen/
 # Gradle files
 .gradle/
 build/
-.idea/libraries
-.idea/modules.xml
+**/.idea/libraries
+**/.idea/modules.xml
 *.iml
 
 # Local configuration file (sdk path, etc)
