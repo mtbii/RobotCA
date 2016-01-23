@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <org.ros.android.view.RosImageView
-        android:id="@+id/camera_view"
+        android:id="@+id/camera_fragment_camera_view"
         android:layout_width="fill_parent"
         android:layout_height="300dip"
         ></org.ros.android.view.RosImageView>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ControlApp</string>
+    <string name="app_name">ROS Control</string>
+    <string name="ok">OK</string>
     <string name="joy_topic">/joy_teleop/cmd_vel</string>
     <string name="camera_topic">/image_raw/compressed</string>
     <string name="laser_scan_topic">/scan</string>
@@ -23,4 +24,32 @@
         Topic that the camera widget subscribes to.
         Expected message type: sensor_msgs/CompressedImage
     </string>
+
+    <string name="add_robot">Add Robot</string>
+    <string name="edit_robot">Edit Robot</string>
+    <string name="master_uri_key">MASTER_URI</string>
+    <string name="add_edit_robot">Add/Edit Robot</string>
+    <string name="robot_name_hint">Robot Name</string>
+    <string name="chooser_uri_hint">Master URI</string>
+    <string name="delete">Delete</string>
+    <string name="no_robots">No Robots. Add a new one!</string>
+
+    <string-array name="feature_titles">
+        <item>Overview</item>
+        <item>Camera</item>
+        <item>Robot</item>
+        <item>Map</item>
+        <item>Preferences</item>
+    </string-array>
+
+    <!--<integer-array name="feature_icons">-->
+        <!--<item>@drawable/ic_view_quilt_black_24dp</item>-->
+        <!--<item>@drawable/ic_linked_camera_black_24dp</item>-->
+        <!--<item>@drawable/ic_navigation_black_24dp</item>-->
+        <!--<item>@drawable/ic_terrain_black_24dp</item>-->
+        <!--<item>@drawable/ic_settings_black_24dp</item>-->
+    <!--</integer-array>-->
+
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
 </resources>

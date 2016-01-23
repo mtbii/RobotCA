@@ -6,7 +6,7 @@
         android:gravity="center_horizontal">
 
         <com.robotca.ControlApp.Views.JoystickView
-            android:id="@+id/virtual_joystick"
+            android:id="@+id/joystick_fragment_virtual_joystick"
             android:layout_width="300dip"
             android:layout_height="300dip"
             android:layout_alignParentBottom="true"/>

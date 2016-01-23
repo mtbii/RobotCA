@@ -18,7 +18,7 @@ import org.ros.node.NodeMainExecutor;
 /**
  * Created by Michael Brunson on 11/7/15.
  */
-public class JoystickFragment extends Fragment implements IRosInitializer {
+public class JoystickFragment extends RosFragment {
     private JoystickView virtualJoystick;
 
     public JoystickFragment(){}
@@ -30,15 +30,17 @@ public class JoystickFragment extends Fragment implements IRosInitializer {
         if(savedInstanceState != null)
             return virtualJoystick;
 
-        View view = inflater.inflate(R.layout.fragment_joystick_view, container);
-        virtualJoystick = (JoystickView) view.findViewById(R.id.virtual_joystick);
-        return virtualJoystick;
+        View view = inflater.inflate(R.layout.fragment_joystick_view, null);
+
+        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_fragment_virtual_joystick);
+        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+
+        return view;
     }
 
     @Override
-    public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
-        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-
-        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+    void shutdown() {
+        nodeMainExecutor.shutdownNodeMain(virtualJoystick);
     }
 }

@@ -5,40 +5,61 @@
     android:weightSum="4"
     android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_weight="1"
-        android:weightSum="2"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- The main content view -->
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <!-- The navigation drawer -->
+        <ListView android:id="@+id/left_drawer"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:background="#eee"/>
+    </android.support.v4.widget.DrawerLayout>
 
-    <org.ros.android.view.RosImageView
-        android:id="@+id/camera_view"
-        android:layout_weight="1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        ></org.ros.android.view.RosImageView>
+    <!--<LinearLayout-->
+        <!--android:layout_weight="1"-->
+        <!--android:weightSum="2"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent">-->
 
-        <org.ros.android.view.visualization.VisualizationView
-            android:id="@+id/viz_view"
-            android:layout_weight="1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+    <!--<org.ros.android.view.RosImageView-->
+        <!--android:id="@+id/camera_view"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--></org.ros.android.view.RosImageView>-->
 
-    </LinearLayout>
+        <!--<org.ros.android.view.visualization.VisualizationView-->
+            <!--android:id="@+id/viz_view"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent" />-->
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="3"
-        android:gravity="center_horizontal">
+    <!--</LinearLayout>-->
 
-        <com.robotca.ControlApp.Views.JoystickView
-            android:id="@+id/joystick_view"
-            android:layout_width="200dip"
-            android:layout_height="200dip"
-            android:layout_alignParentBottom="true"/>
-    </RelativeLayout>
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:layout_weight="3"-->
+        <!--android:gravity="center_horizontal">-->
+
+        <!--<com.robotca.ControlApp.Views.JoystickView-->
+            <!--android:id="@+id/joystick_view"-->
+            <!--android:layout_width="200dip"-->
+            <!--android:layout_height="200dip"-->
+            <!--android:layout_alignParentBottom="true"/>-->
+    <!--</RelativeLayout>-->
 
     <!--<fragment-->
     <!--android:id="@+id/joystick_fragment"-->
