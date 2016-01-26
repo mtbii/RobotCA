@@ -46,6 +46,8 @@ public class ControlApp extends RosActivity {
     private JoystickFragment joystickFragment;
     private PreferencesFragment preferencesFragment;
 
+    private static final String TAG = "ControlApp";
+
     public ControlApp() {
         super("Test App","Test App");
     }
@@ -71,11 +73,18 @@ public class ControlApp extends RosActivity {
         laserScanFragment = new LaserScanFragment();
         preferencesFragment = new PreferencesFragment();
 
-        getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        if (getActionBar() != null) {
+            getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        }
+        else {
+            Log.e(TAG, "Action Bar is null!");
+            return;
+        }
         //getFragmentManager().beginTransaction().add(R.id.joystick_holder, joystickFragment).commit();
 
         //joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
         //cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
+        //noinspection unchecked
         camera_view = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.camera_view);
         camera_view.setTopicName(getString(R.string.camera_topic));
         camera_view.setMessageType(CompressedImage._TYPE);
@@ -136,7 +145,7 @@ public class ControlApp extends RosActivity {
             //initRos(nodeMainExecutor, nodeConfiguration);
         } catch (Exception e) {
             // Socket problem
-            Log.e("RobotCA", "socket error trying to get networking information from the master uri");
+            Log.e(TAG, "socket error trying to get networking information from the master uri", e);
         }
     }
 
