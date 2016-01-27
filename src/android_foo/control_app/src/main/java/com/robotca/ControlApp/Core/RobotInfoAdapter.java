@@ -18,7 +18,10 @@ import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.R;
 
+import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.List;
 
 /**
@@ -38,8 +41,8 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                 .from(parent.getContext())
                 .inflate(R.layout.robot_info_view, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(v);
-        return viewHolder;
+        return new ViewHolder(v);
+        //return viewHolder;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            Bundle bundle = null;
+            Bundle bundle;
             final RobotInfo info = mDataset.get(position);
 
             switch (v.getId()) {
@@ -112,15 +115,19 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                         public void run() {
                             try {
 
-                                if (!InetAddress.getByName(info.getUri().getHost()).isReachable(10000)) {
+//                                if (!InetAddress.getByName(info.getUri().getHost()).isReachable(10000)) {
+//                                    throw new Exception("Cannot connect to ROS. Please make sure ROS is running and that the Master URI is correct.");
+//                                }
+
+                                if(!isPortOpen(info.getUri().getHost(), info.getUri().getPort(), 10000)){
                                     throw new Exception("Cannot connect to ROS. Please make sure ROS is running and that the Master URI is correct.");
                                 }
 
                                 final Intent intent = new Intent(activity, ControlApp.class);
 
-                                // EVIL HACK with STATIC VARIABLE!!
+                                // !!!---- EVIL HACK with STATIC VARIABLE ----!! //
                                 // Should not be doing this but there is no other way that I can see -Michael
-                                ControlApp.DEFAULT_URI = info.getUri();
+                                ControlApp.ROBOT_INFO = info;
 
                                 mProgressDialog.dismiss();
 
@@ -156,6 +163,25 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
 
                     break;
             }
+        }
+    }
+
+    public static boolean isPortOpen(final String ip, final int port, final int timeout) {
+        try {
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(ip, port), timeout);
+            socket.close();
+            return true;
+        }
+
+        catch(ConnectException ce){
+            ce.printStackTrace();
+            return false;
+        }
+
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
         }
     }
 }

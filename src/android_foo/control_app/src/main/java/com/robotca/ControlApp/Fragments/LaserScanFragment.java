@@ -17,6 +17,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Michael Brunson on 11/7/15.
@@ -35,7 +36,7 @@ public class LaserScanFragment extends RosFragment {
         View view = inflater.inflate(R.layout.laser_scan_view, null);
         laserView = (VisualizationView) view.findViewById(R.id.laser_scan_fragment_viz_view);
 
-        ArrayList<Layer> layers = new ArrayList<Layer>();
+        List<Layer> layers = new ArrayList<>();
         layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
         layers.add(new RobotLayer("base_link"));
         laserView.onCreate(layers);

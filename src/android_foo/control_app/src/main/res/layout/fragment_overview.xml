@@ -35,8 +35,8 @@
 
         <com.robotca.ControlApp.Views.JoystickView
             android:id="@+id/joystick_view"
-            android:layout_width="200dip"
-            android:layout_height="200dip"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 </LinearLayout>

@@ -4,6 +4,7 @@
     <shared>
       <config>
         <devices>
+          <device id="Nexus 7 2013" />
           <device id="Nexus 5X" />
           <device id="Nexus 10" />
           <device id="Nexus 5" />
@@ -22,9 +23,14 @@
           <theme>@android:style/Theme.Material.Light</theme>
         </config>
       </layout>
-      <layout url="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
+      <layout url="file://$PROJECT_DIR$/control_app/src/main/res/layout-w600dp/fragment_overview.xml">
         <config>
           <state>Landscape</state>
+          <theme>@android:style/Theme.Material.Light</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
+        <config>
           <theme>@android:style/Theme.Material.Light</theme>
         </config>
       </layout>
@@ -51,149 +57,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="164bcfa8-59fd-4ee2-a0e3-e93312ca4fed" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/drawer_shadow.9.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_about.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_about.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_about.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_about.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_camera.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_camera.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_camera.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_camera.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_cloud.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_cloud.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_cloud.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_cloud.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_email.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_email.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_email.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_email.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_gamepad.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_gamepad.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_gamepad.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_gamepad.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_good.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_good.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_good.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_good.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_group.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_group.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_group.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_group.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_help.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_help.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_help.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_help.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_import_export.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_import_export.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_import_export.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_import_export.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_labels.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_labels.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_labels.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_labels.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_search.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_search.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_search.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_search.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_settings.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_settings.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_settings.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_settings.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_action_video.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_action_video.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_action_video.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_action_video.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_add_circle_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_add_circle_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_add_circle_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_add_circle_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_add_circle_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_delete_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_delete_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_delete_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_delete_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_delete_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_drawer.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_edit_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_edit_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_edit_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_edit_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_edit_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_linked_camera_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_linked_camera_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_linked_camera_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_linked_camera_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_linked_camera_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_navigation_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_navigation_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_navigation_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_navigation_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_navigation_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_settings_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_settings_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_settings_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_settings_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_settings_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_terrain_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_terrain_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_terrain_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_terrain_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_terrain_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_view_quilt_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_view_quilt_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_view_quilt_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_view_quilt_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_view_quilt_black_24dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_view_quilt_black_48dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_view_quilt_black_48dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_view_quilt_black_48dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_view_quilt_black_48dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_view_quilt_black_48dp.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/user1.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/user1.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/user1.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/user1.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/user2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/user2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/user2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/user2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Dialogs/AddEditRobotDialogFragment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Dialogs/ConfirmDeleteDialogFragment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/DrawerItem.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfo.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/RosFragment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/menu/menu_robot_chooser.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/robot_chooser.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/robot_info_view.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/values/styles.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/values-v21/styles.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/IRosInitializer.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/main.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout-land/main.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/JoystickFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/JoystickFragment.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/build.gradle" afterPath="$PROJECT_DIR$/control_app/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_joystick_view.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_joystick_view.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/main.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/main.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout-land/main.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout-land/main.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="android_foo.iws" />
@@ -222,112 +98,99 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="CameraViewFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java">
+      <file leaf-file-name="ControlApp.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.36227044">
+              <caret line="162" column="0" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2178#2179#0" expanded="true" />
+                <element signature="e#2261#2262#0" expanded="true" />
+                <element signature="e#5841#6271#0" expanded="true" />
+                <element signature="e#6270#6271#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fragment_overview.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.61290324">
-              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
+      <file leaf-file-name="main.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/main.xml">
           <provider editor-type-id="android-designer">
             <state />
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="laser_scan_view.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.419355">
-              <caret line="5" column="45" selection-start-line="5" selection-start-column="45" selection-end-line="5" selection-end-column="45" />
+            <state vertical-scroll-proportion="-5.806452">
+              <caret line="24" column="60" selection-start-line="24" selection-start-column="60" selection-end-line="24" selection-end-column="60" />
               <folding />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NavDrawerAdapter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="59" column="16" selection-start-line="59" selection-start-column="16" selection-end-line="59" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="nav_drawer_menu_item.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml">
           <provider editor-type-id="android-designer">
             <state />
           </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.774194">
+              <caret line="14" column="52" selection-start-line="14" selection-start-column="52" selection-end-line="14" selection-end-column="52" />
+              <folding />
+            </state>
+          </provider>
         </entry>
       </file>
-      <file leaf-file-name="JoystickFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/JoystickFragment.java">
+      <file leaf-file-name="styles.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/styles.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-1.5">
+              <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AndroidManifest.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="38" column="19" selection-start-line="38" selection-start-column="19" selection-end-line="38" selection-end-column="19" />
+              <caret line="28" column="11" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OverviewFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java">
+      <file leaf-file-name="RobotChooser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="40" column="69" selection-start-line="40" selection-start-column="69" selection-end-line="40" selection-end-column="69" />
-              <folding />
+              <caret line="56" column="23" selection-start-line="56" selection-start-column="23" selection-end-line="56" selection-end-column="23" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="class#2498:3826" expanded="false" />
+                <element signature="method#onStart#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#checkRobotList#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onCreateOptionsMenu#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onOptionsItemSelected#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onAddEditDialogPositiveClick#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onAddEditDialogNegativeClick#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onConfirmDeleteDialogPositiveClick#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#onConfirmDeleteDialogNegativeClick#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#addRobot#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#updateRobot#0;class#RobotChooser#0" expanded="false" />
+                <element signature="method#removeRobot#0;class#RobotChooser#0" expanded="false" />
+              </folding>
             </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PreferencesFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RosFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/RosFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LaserScanFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="43" column="8" selection-start-line="43" selection-start-column="8" selection-end-line="43" selection-end-column="8" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MapFragment.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4678899">
-              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fragment_overview.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.709678">
-              <caret line="40" column="21" selection-start-line="40" selection-start-column="21" selection-end-line="40" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
           </provider>
         </entry>
       </file>
@@ -337,14 +200,19 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="valueResourceFile" />
-        <option value="resourceFile" />
         <option value="Class" />
         <option value="layoutResourceFile_vertical" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../.." value="master" />
+      </map>
+    </option>
   </component>
   <component name="GradleLocalSettings">
     <option name="availableProjects">
@@ -2460,9 +2328,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotFragment.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/RobotFragment.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Robot.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoView.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotAdapter.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooserActivity.java" />
@@ -2475,7 +2340,6 @@
         <option value="$PROJECT_DIR$/control_app/build/intermediates/manifest/androidTest/debug/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/control_app_lib/build/intermediates/manifest/androidTest/debug/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout-land/robot_chooser.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/values/styles.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Dialogs/AddRobotDialog.java" />
         <option value="$PROJECT_DIR$/control_app/build/intermediates/exploded-aar/org.ros.android_core/android_10/0.2.0/res/values/values.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/menu/robot_chooser_menu.xml" />
@@ -2485,32 +2349,36 @@
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfo.java" />
         <option value="$PROJECT_DIR$/control_app/build.gradle" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/robot_info_view.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/robot_chooser.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerItem.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/DrawerItem.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout-land/main.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Dialogs/AddEditRobotDialogFragment.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/RosFragment.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_joystick_view.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/JoystickFragment.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Utils.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout-w600dp/fragment_overview.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/color/transparent.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/values/styles.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/main.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
       </list>
     </option>
   </component>
@@ -2526,9 +2394,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="24" />
+    <option name="y" value="52" />
     <option name="width" value="927" />
-    <option name="height" value="1056" />
+    <option name="height" value="1028" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -2553,6 +2421,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane" />
@@ -2564,9 +2433,72 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android_foo" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="control_app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android_foo" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="control_app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layout" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android_foo" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="control_app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ControlApp" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android_foo" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="control_app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="manifests" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidManifestsGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2577,7 +2509,7 @@
     <property name="OverrideImplement.combined" value="true" />
     <property name="OverrideImplement.overriding.sorted" value="false" />
     <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager2.WIDTH" value="281" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="192.168.1.6:5555" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="19d01310" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_23" />
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///home/mike/android/RobotCA/src/android_foo/control_app/src/main/res/values/strings.xml" />
     <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager2.SHOW" value="false" />
@@ -2796,18 +2728,18 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="24" width="927" height="1056" extended-state="4" />
-    <editor active="false" />
+    <frame x="65" y="52" width="927" height="1028" extended-state="4" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3281768" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3279743" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3465909" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3869239" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28522727" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3291714" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39545456" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31939977" sideWeight="0.50193477" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2819,8 +2751,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35754824" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3279743" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42565265" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33636364" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -2870,17 +2802,12 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java</url>
-          <line>31</line>
-          <properties />
-          <option name="timeStamp" value="36" />
-        </line-breakpoint>
-      </breakpoints>
-      <option name="time" value="37" />
+      <option name="time" value="50" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Remote">
@@ -2889,44 +2816,10 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/control_app/build/intermediates/exploded-aar/org.ros.android_core/android_10/0.2.0/jars/classes.jar!/org/ros/android/RosActivity.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16423358">
-          <caret line="26" column="46" selection-start-line="26" selection-start-column="46" selection-end-line="26" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36585367">
-          <caret line="29" column="53" selection-start-line="29" selection-start-column="53" selection-end-line="29" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/../../../sdk/extras/android/m2repository/com/android/support/recyclerview-v7/23.1.1/recyclerview-v7-23.1.1-sources.jar!/android/support/v7/widget/RecyclerView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3902439">
-          <caret line="4250" column="0" selection-start-line="4250" selection-start-column="0" selection-end-line="4250" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/robot_chooser.xml">
-      <provider editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="31" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Views/JoystickView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="549" column="55" selection-start-line="549" selection-start-column="55" selection-end-line="549" selection-end-column="55" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2937,41 +2830,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.903226">
-          <caret line="6" column="51" selection-start-line="6" selection-start-column="51" selection-end-line="6" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="32" column="13" selection-start-line="32" selection-start-column="13" selection-end-line="32" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/DrawerItem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
-          <folding>
-            <element signature="e#328#329#0" expanded="false" />
-            <element signature="e#359#360#0" expanded="false" />
-            <element signature="e#406#407#0" expanded="false" />
-            <element signature="e#441#442#0" expanded="false" />
-            <element signature="e#472#473#0" expanded="false" />
-            <element signature="e#503#504#0" expanded="false" />
-            <element signature="e#547#548#0" expanded="false" />
-            <element signature="e#587#588#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2986,14 +2848,14 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/robot_info_view.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding />
         </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../../sdk/extras/android/m2repository/com/android/support/appcompat-v7/23.1.1/appcompat-v7-23.1.1-sources.jar!/android/support/v7/app/ActionBarDrawerToggle.java">
@@ -3007,7 +2869,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334">
           <caret line="225" column="11" selection-start-line="225" selection-start-column="11" selection-end-line="225" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3015,14 +2876,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.5">
           <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/styles.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.0">
-          <caret line="2" column="75" selection-start-line="2" selection-start-column="64" selection-end-line="2" selection-end-column="75" />
           <folding />
         </state>
       </provider>
@@ -3069,42 +2922,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="58" selection-start-line="24" selection-start-column="58" selection-end-line="24" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="44" column="0" selection-start-line="44" selection-start-column="0" selection-end-line="50" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
-          <folding>
-            <element signature="method#RobotInfoAdapter#0;class#RobotInfoAdapter#0" expanded="false" />
-            <element signature="method#onCreateViewHolder#0;class#RobotInfoAdapter#0" expanded="false" />
-            <element signature="e#1714#1715#0" expanded="false" />
-            <element signature="e#1752#1753#0" expanded="false" />
-            <element signature="e#5369#5370#0" expanded="false" />
-            <element signature="e#5479#5480#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../sdk/sources/android-23/android/view/LayoutInflater.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.46289754">
           <caret line="372" column="23" selection-start-line="372" selection-start-column="16" selection-end-line="372" selection-end-column="23" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3112,7 +2933,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5880282">
           <caret line="78" column="0" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3120,7 +2940,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33277592">
           <caret line="127" column="0" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3128,7 +2947,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33277592">
           <caret line="118" column="0" selection-start-line="118" selection-start-column="0" selection-end-line="118" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3136,7 +2954,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="2052" column="0" selection-start-line="2052" selection-start-column="0" selection-end-line="2052" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3144,7 +2961,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-12.344828">
           <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3152,37 +2968,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="306" column="0" selection-start-line="306" selection-start-column="0" selection-end-line="306" selection-end-column="0" />
-          <folding />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="13" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="class#2583:3911" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout-land/main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="5" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../sdk/sources/android-23/android/view/ViewGroup.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="3936" column="0" selection-start-line="3936" selection-start-column="0" selection-end-line="3936" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3190,112 +2982,49 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="3936" column="0" selection-start-line="3936" selection-start-column="0" selection-end-line="3936" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-22.741936">
-          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="98" column="8" selection-start-line="98" selection-start-column="8" selection-end-line="100" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-7.2580647">
           <caret line="15" column="34" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
           <folding />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml">
       <provider editor-type-id="android-designer">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.419355">
           <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
           <folding />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_joystick_view.xml">
       <provider editor-type-id="android-designer">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_joystick_view.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.8709676">
           <caret line="8" column="47" selection-start-line="8" selection-start-column="47" selection-end-line="8" selection-end-column="47" />
           <folding />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml">
       <provider editor-type-id="android-designer">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.709678">
-          <caret line="40" column="21" selection-start-line="40" selection-start-column="21" selection-end-line="40" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.61290324">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.419355">
-          <caret line="5" column="45" selection-start-line="5" selection-start-column="45" selection-end-line="5" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -3304,47 +3033,239 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="38" column="19" selection-start-line="38" selection-start-column="19" selection-end-line="38" selection-end-column="19" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1351#1352#0" expanded="false" />
+            <element signature="e#1417#1418#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../../sdk/extras/android/m2repository/com/android/support/recyclerview-v7/23.1.1/recyclerview-v7-23.1.1-sources.jar!/android/support/v7/widget/RecyclerView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.62171626">
+          <caret line="4252" column="13" selection-start-line="4252" selection-start-column="13" selection-end-line="4252" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java">
+    <entry file="jar://$PROJECT_DIR$/../../../sdk/extras/android/m2repository/com/android/support/recyclerview-v7/23.1.1/recyclerview-v7-23.1.1-sources.jar!/android/support/v7/widget/LinearLayoutManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="43" column="8" selection-start-line="43" selection-start-column="8" selection-end-line="43" selection-end-column="8" />
-          <folding />
+        <state vertical-scroll-proportion="0.17513135">
+          <caret line="143" column="11" selection-start-line="143" selection-start-column="11" selection-end-line="143" selection-end-column="11" />
+          <folding>
+            <element signature="e#5056#5057#0" expanded="false" />
+            <element signature="e#5102#5103#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java">
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="69" selection-start-line="40" selection-start-column="69" selection-end-line="40" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.45373666">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/RosFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="0.21352313">
           <caret line="12" column="22" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java">
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4678899">
-          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.50711745">
+          <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/CameraViewFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.42704627">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/LaserScanFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.40592784">
+          <caret line="38" column="43" selection-start-line="38" selection-start-column="43" selection-end-line="38" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.8352941">
+          <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/build/intermediates/exploded-aar/com.github.rosjava.android_foo/control_app_lib/unspecified/res/layout/main.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2988048">
+          <caret line="10" column="95" selection-start-line="10" selection-start-column="95" selection-end-line="10" selection-end-column="95" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout-land/fragment_overview.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.806452">
+          <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/laser_scan_view.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.419355">
+          <caret line="5" column="45" selection-start-line="5" selection-start-column="45" selection-end-line="5" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout-w550dp/fragment_overview.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="38" column="39" selection-start-line="38" selection-start-column="39" selection-end-line="38" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/styles.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.5">
+          <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="11" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/nav_drawer_menu_item.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.774194">
+          <caret line="14" column="52" selection-start-line="14" selection-start-column="52" selection-end-line="14" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/NavDrawerAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="59" column="16" selection-start-line="59" selection-start-column="16" selection-end-line="59" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="56" column="23" selection-start-line="56" selection-start-column="23" selection-end-line="56" selection-end-column="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="class#2498:3826" expanded="false" />
+            <element signature="method#onStart#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#checkRobotList#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onCreateOptionsMenu#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onOptionsItemSelected#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onAddEditDialogPositiveClick#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onAddEditDialogNegativeClick#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onConfirmDeleteDialogPositiveClick#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#onConfirmDeleteDialogNegativeClick#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#addRobot#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#updateRobot#0;class#RobotChooser#0" expanded="false" />
+            <element signature="method#removeRobot#0;class#RobotChooser#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/OverviewFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33222038">
+          <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.42003515">
+          <caret line="37" column="26" selection-start-line="37" selection-start-column="26" selection-end-line="37" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/main.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.806452">
+          <caret line="24" column="60" selection-start-line="24" selection-start-column="60" selection-end-line="24" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../sdk/sources/android-23/android/widget/AbsListView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25709516">
+          <caret line="1092" column="19" selection-start-line="1092" selection-start-column="19" selection-end-line="1092" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36227044">
+          <caret line="162" column="0" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2178#2179#0" expanded="true" />
+            <element signature="e#2261#2262#0" expanded="true" />
+            <element signature="e#5841#6271#0" expanded="true" />
+            <element signature="e#6270#6271#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

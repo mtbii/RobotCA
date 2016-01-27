@@ -35,6 +35,7 @@
     <string name="no_robots">No Robots. Add a new one!</string>
 
     <string-array name="feature_titles">
+        <item>Select Robot</item>
         <item>Overview</item>
         <item>Camera</item>
         <item>Robot</item>

@@ -2,6 +2,8 @@ package com.robotca.ControlApp.Core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,6 @@ public class NavDrawerAdapter extends ArrayAdapter<DrawerItem>{
         this.context = context;
         this.drawerItemList = listItems;
         this.layoutResID = layoutResourceID;
-
     }
 
     @Override
@@ -57,6 +58,7 @@ public class NavDrawerAdapter extends ArrayAdapter<DrawerItem>{
 
         drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(
                 dItem.getImgResID()));
+
         drawerHolder.ItemName.setText(dItem.getItemName());
 
         return view;

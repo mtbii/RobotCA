@@ -21,6 +21,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sensor_msgs.CompressedImage;
 
@@ -41,7 +42,7 @@ public class OverviewFragment extends RosFragment {
         View view = inflater.inflate(R.layout.fragment_overview, null);
         vizView = (VisualizationView) view.findViewById(R.id.viz_view);
 
-        ArrayList<Layer> layers = new ArrayList<Layer>();
+        List<Layer> layers = new ArrayList<>();
         layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
         //layers.add(new OccupancyGridLayer("/map"));
         layers.add(new RobotLayer("base_link"));

@@ -1,17 +1,23 @@
 package com.robotca.ControlApp;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.annotation.DimenRes;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.view.WindowManager;
@@ -20,6 +26,7 @@ import android.widget.ListView;
 
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
+import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
@@ -33,11 +40,13 @@ import org.ros.node.NodeMainExecutor;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener {
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
-    public static URI DEFAULT_URI = URI.create("localhost");
+    public static RobotInfo ROBOT_INFO;
+    //public static URI DEFAULT_URI = URI.create("localhost");
 
     private String[] mFeatureTitles;
     private DrawerLayout mDrawerLayout;
@@ -47,12 +56,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private int drawerIndex;
+    private int drawerIndex = 1;
     private String mTitle;
     private String mDrawerTitle;
 
     public ControlApp() {
-        super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, DEFAULT_URI);
+        super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
     }
 
     /**
@@ -62,7 +71,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        if (dpWidth >= 550) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         //Keep the screen on while the app is in use
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -73,21 +90,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        mTitle = mDrawerTitle = getTitle().toString();
+        mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open,
+               /* R.drawable.ic_drawer,*/ R.string.drawer_open,
                 R.string.drawer_close) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
+                //getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to
                 // onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
+                //getActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to
                 // onPrepareOptionsMenu()
             }
@@ -103,6 +120,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
 
         int[] imgRes = new int[]{
+                R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
                 R.drawable.ic_linked_camera_black_24dp,
                 R.drawable.ic_navigation_black_24dp,
@@ -110,7 +128,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 R.drawable.ic_settings_black_24dp
         };
 
-        ArrayList<DrawerItem> drawerItems = new ArrayList<>();
+        List<DrawerItem> drawerItems = new ArrayList<>();
 
         for (int i = 0; i < mFeatureTitles.length; i++) {
             drawerItems.add(new DrawerItem(mFeatureTitles[i], imgRes[i]));
@@ -136,7 +154,17 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             this.nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-            selectItem(drawerIndex);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    View temp = mDrawerList.getChildAt(drawerIndex);
+                    mDrawerList.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, temp.getX(), temp.getY(), 0));
+
+
+                    selectItem(drawerIndex);
+                }
+            });
         } catch (Exception e) {
             // Socket problem
             Log.e("RobotCA", "socket error trying to get networking information from the master uri");
@@ -155,24 +183,29 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Create a new fragment and specify the planet to show based on position
         Fragment fragment = null;
         Bundle args = new Bundle();
+
         switch (position) {
             case 0:
+                finish();
+                return;
+
+            case 1:
                 fragment = new OverviewFragment();
                 break;
 
-            case 1:
+            case 2:
                 fragment = new CameraViewFragment();
                 break;
 
-            case 2:
+            case 3:
                 fragment = new LaserScanFragment();
                 break;
 
-            case 3:
+            case 4:
                 fragment = new MapFragment();
                 break;
 
-            case 4:
+            case 5:
                 fragment = new PreferencesFragment();
                 break;
 
@@ -182,28 +215,30 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         try {
             ((RosFragment) fragment).initialize(nodeMainExecutor, nodeConfiguration);
+        } catch (ClassCastException e) {
         }
-        catch(Exception e){}
 
-        fragment.setArguments(args);
+        if (fragment != null) {
+            fragment.setArguments(args);
 
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        }
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
-        setTitle(mFeatureTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+        setTitle(mFeatureTitles[position]);
     }
 
     @Override
     public void setTitle(CharSequence title) {
         try {
             getActionBar().setTitle(title);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
 
         }
     }
@@ -219,11 +254,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return false;
+        return mDrawerToggle.onOptionsItemSelected(item);
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Michael Brunson on 1/23/16.
@@ -34,7 +36,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     private RecyclerView.LayoutManager mLayoutManager;
 
     private Gson gson = new Gson();
-    private ArrayList<RobotInfo> mRobotInfos;
+    private List<RobotInfo> mRobotInfos;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,23 +45,16 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mRecyclerView = (RecyclerView) findViewById(R.id.robot_recycler_view);
 
         mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         SharedPreferences pref = getPreferences(MODE_PRIVATE);
         String defaultJson = gson.toJson(new ArrayList<RobotInfo>());
 
-        String robotInfoJson = null;
+        String robotInfoJson = pref.getString(ROBOT_INFOS_KEY, defaultJson);
+        Type listOfRobotInfoType = new TypeToken<List<RobotInfo>>() {}.getType();
 
-        if(savedInstanceState != null) {
-            robotInfoJson = savedInstanceState.getString(ROBOT_INFOS_KEY, null);
-        }
-
-        if(robotInfoJson == null) {
-            robotInfoJson = pref.getString(ROBOT_INFOS_KEY, defaultJson);
-        }
-
-        Type listOfRobotInfoType = new TypeToken<ArrayList<RobotInfo>>(){}.getType();
-        mRobotInfos = (ArrayList<RobotInfo>) gson.fromJson(robotInfoJson, listOfRobotInfoType);
+        mRobotInfos = (List<RobotInfo>) gson.fromJson(robotInfoJson, listOfRobotInfoType);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.robot_chooser_toolbar);
         setSupportActionBar(toolbar);
@@ -114,11 +109,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     }
 
     private void checkRobotList() {
-        if(mRobotInfos.isEmpty()){
+        if (mRobotInfos.isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             mRecyclerView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
         }
@@ -133,7 +127,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_add_robot:
 
                 AddEditRobotDialogFragment addRobotDialogFragment = new AddEditRobotDialogFragment();
@@ -150,35 +144,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        String robotInfosJson = gson.toJson(mRobotInfos);
-        outState.putString(ROBOT_INFOS_KEY, robotInfosJson);
-        super.onSaveInstanceState(outState, outPersistentState);
-
-        SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
-        editor.putString(ROBOT_INFOS_KEY, robotInfosJson);
-        editor.commit();
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        String robotInfosJson = savedInstanceState.getString(ROBOT_INFOS_KEY, "[]");
-
-        Type listOfRobotInfoType = new TypeToken<ArrayList<RobotInfo>>(){}.getType();
-        mRobotInfos = gson.fromJson(robotInfosJson, listOfRobotInfoType);
-
-        if(mRobotInfos == null) {
-            mRobotInfos = new ArrayList<>();
-        }
-    }
-
-    @Override
     public void onAddEditDialogPositiveClick(RobotInfo newRobotInfo, int position) {
-        if(position >= 0 && position < mRobotInfos.size()){
+        if (position >= 0 && position < mRobotInfos.size()) {
             updateRobot(position, newRobotInfo);
-        }
-        else {
+        } else {
             addRobot(newRobotInfo);
         }
     }
@@ -190,7 +159,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     @Override
     public void onConfirmDeleteDialogPositiveClick(int position, String name) {
-        if(position >= 0 && position < mRobotInfos.size()) {
+        if (position >= 0 && position < mRobotInfos.size()) {
             removeRobot(position);
         }
     }
@@ -200,7 +169,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     }
 
-    private boolean addRobot(RobotInfo info) {
+    public boolean addRobot(RobotInfo info) {
 
         mRobotInfos.add(info);
 
@@ -213,7 +182,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         return true;
     }
 
-    private void updateRobot(int position, RobotInfo newRobotInfo) {
+    public void updateRobot(int position, RobotInfo newRobotInfo) {
         RobotInfo info = mRobotInfos.get(position);
         info.setName(newRobotInfo.getName());
         info.setMasterUri(newRobotInfo.getMasterUri());
@@ -226,10 +195,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mAdapter.notifyItemChanged(position);
     }
 
-    private RobotInfo removeRobot(int position) {
+    public RobotInfo removeRobot(int position) {
         RobotInfo removed = mRobotInfos.remove(position);
 
-        if(removed != null){
+        if (removed != null) {
             String robotInfosJson = gson.toJson(mRobotInfos);
             SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
             editor.putString(ROBOT_INFOS_KEY, robotInfosJson);
@@ -239,5 +208,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         }
 
         return removed;
+    }
+
+    public List<RobotInfo> getRobots(){
+        return mRobotInfos;
     }
 }
