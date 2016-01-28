@@ -23,4 +23,6 @@
         Topic that the camera widget subscribes to.
         Expected message type: sensor_msgs/CompressedImage
     </string>
+
+    <string name="percent_string">%1$d%%</string>
 </resources>
