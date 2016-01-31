@@ -25,32 +25,31 @@
 */
 
 dependencies {
-  compile project(':control_app_lib')
-  compile 'org.ros.android_core:android_10:[0.2,0.3)'
-  compile 'org.ros.android_core:android_15:[0.2,0.3)'
-  compile 'com.github.rosjava.android_extras:gingerbread:[0.2,0.3)'
-  compile 'org.ros.rosjava_messages:tf2_msgs:[0.5,0.6)'
-  compile 'com.android.support:support-v13:23.0.1'
-//  androidTestCompile 'com.android.support.test:runner:0.4'
-  // Set this dependency to use JUnit 4 rules
-  //androidTestCompile 'com.android.support.test:rules:0.4'
-  // Set this dependency to build and run Espresso tests
-  //androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
-  // Set this dependency to build and run UI Automator tests
-  //androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile project(':control_app_lib')
+    compile 'org.ros.android_core:android_10:[0.2,0.3)'
+    compile 'org.ros.android_core:android_15:[0.2,0.3)'
+    compile 'com.github.rosjava.android_extras:gingerbread:[0.2,0.3)'
+    compile 'org.ros.rosjava_messages:tf2_msgs:[0.5,0.6)'
+    compile 'com.android.support:support-v13:23.0.1'
+    compile 'com.android.support.test:runner:0.4'
+    // Set this dependency to use JUnit 4 rules
+    compile 'com.android.support.test:rules:0.4'
+    // Set this dependency to build and run Espresso tests
+    compile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    // Set this dependency to build and run UI Automator tests
+    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }
 
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 15
-  defaultConfig {
-    minSdkVersion 15
-    targetSdkVersion 15
-    versionCode 1
-    versionName "1.0"
+    compileSdkVersion 15
     defaultConfig {
-      testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 15
+        targetSdkVersion 15
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-  }
+    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/2'] } }
 }
