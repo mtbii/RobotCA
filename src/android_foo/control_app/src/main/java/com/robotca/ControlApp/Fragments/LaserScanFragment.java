@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Created by Michael Brunson on 11/7/15.
  */
 public class LaserScanFragment extends Fragment implements IRosInitializer {
-    private VisualizationView laserView;
+    private View laserView;
 
     public LaserScanFragment(){}
 
@@ -32,14 +32,15 @@ public class LaserScanFragment extends Fragment implements IRosInitializer {
         if(savedInstanceState != null)
             return laserView;
 
-        View view = inflater.inflate(R.layout.laser_scan_view, container);
-        laserView = (VisualizationView) view.findViewById(R.id.viz_view);
+//        View view =
+        laserView = inflater.inflate(R.layout.laser_scan_view, container, false);
+//        laserView = (VisualizationView) view.findViewById(R.id.viz_view);
 
-        ArrayList<Layer> layers = new ArrayList<Layer>();
-        layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
-        //layers.add(new OccupancyGridLayer("/map"));
-        layers.add(new RobotLayer("base_link"));
-        laserView.onCreate(layers);
+//        ArrayList<Layer> layers = new ArrayList<Layer>();
+//        layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
+//        //layers.add(new OccupancyGridLayer("/map"));
+//        layers.add(new RobotLayer("base_link"));
+//        laserView.onCreate(layers);
 
         return laserView;
     }
@@ -49,11 +50,22 @@ public class LaserScanFragment extends Fragment implements IRosInitializer {
     @Override
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
 
-        laserView.init(nodeMainExecutor);
-        laserView.getCamera().jumpToFrame("base_link");
-        laserView.getCamera().zoom(laserView.getCamera().getViewport().getWidth() / 2, laserView.getCamera().getViewport().getHeight() / 2, .5);
+        VisualizationView vview = getVisualizationView();
 
-        nodeMainExecutor.execute(laserView, nodeConfiguration.setNodeName("android/laser_view"));
+        vview.init(nodeMainExecutor);
+        vview.getCamera().jumpToFrame("base_link");
+        vview.getCamera().zoom(vview.getCamera().getViewport().getWidth() / 2,
+                               vview.getCamera().getViewport().getHeight() / 2, .5);
 
+        nodeMainExecutor.execute(vview, nodeConfiguration.setNodeName("android/laser_view"));
+
+    }
+
+    /*
+     * Returns the VisualizationView in the laserView
+     */
+    private VisualizationView getVisualizationView()
+    {
+        return (VisualizationView) laserView.findViewById(R.id.viz_view);
     }
 }

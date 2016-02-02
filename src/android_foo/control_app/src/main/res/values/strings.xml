@@ -25,4 +25,6 @@
     </string>
 
     <string name="percent_string">%1$d%%</string>
+
+    <string name="use_tilt_sensor_string">Use Tilt</string>
 </resources>

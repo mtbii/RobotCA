@@ -61,16 +61,16 @@ public class ControlApp extends RosActivity {
         if(savedInstanceState != null)
             return;
 
+        setContentView(R.layout.main);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         //Keep the screen on while the app is in use
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
-        setContentView(R.layout.main);
 
-        joystickFragment = new JoystickFragment();
-        cameraViewFragment = new CameraViewFragment();
-        laserScanFragment = new LaserScanFragment();
+//        joystickFragment = new JoystickFragment();
+//        cameraViewFragment = new CameraViewFragment();
+//        laserScanFragment = new LaserScanFragment();
         preferencesFragment = new PreferencesFragment();
 
         if (getActionBar() != null) {
@@ -82,8 +82,12 @@ public class ControlApp extends RosActivity {
         }
         //getFragmentManager().beginTransaction().add(R.id.joystick_holder, joystickFragment).commit();
 
-        //joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
-        //cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_fragment);
+        joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
+        cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_view_fragment);
+
+        Log.d(TAG, "Joystick fragment: " + joystickFragment);
+        Log.d(TAG, "CameraView Fragment: " + cameraViewFragment);
+
         //noinspection unchecked
         camera_view = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.camera_view);
         camera_view.setTopicName(getString(R.string.camera_topic));

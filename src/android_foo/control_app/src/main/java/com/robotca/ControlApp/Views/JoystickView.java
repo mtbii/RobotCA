@@ -19,6 +19,8 @@ package com.robotca.ControlApp.Views;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -254,6 +256,10 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private geometry_msgs.Twist currentVelocityCommand;
     private String topicName;
 
+    // Used for tilt sensor control
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
     public JoystickView(Context context) {
         super(context);
         initVirtualJoystick(context);
@@ -268,7 +274,12 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
     public JoystickView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        initVirtualJoystick(context);
         topicName = "~cmd_vel";
+    }
+
+    private void init() {
+
     }
 
     /**

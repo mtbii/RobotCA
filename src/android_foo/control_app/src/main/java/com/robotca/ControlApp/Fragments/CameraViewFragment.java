@@ -21,7 +21,7 @@ import sensor_msgs.CompressedImage;
  * Created by Michael Brunson on 11/7/15.
  */
 public class CameraViewFragment extends Fragment implements IRosInitializer {
-    private RosImageView<sensor_msgs.CompressedImage> cameraView;
+    private View cameraView;
 
     public CameraViewFragment(){}
 
@@ -32,18 +32,31 @@ public class CameraViewFragment extends Fragment implements IRosInitializer {
         if(savedInstanceState != null)
             return cameraView;
 
-        View view = inflater.inflate(R.layout.fragment_camera_view, container);
-        cameraView = (RosImageView<sensor_msgs.CompressedImage>) view.findViewById(R.id.camera_view);
+        cameraView = inflater.inflate(R.layout.fragment_camera_view, container, false);
+//        cameraView = (RosImageView<sensor_msgs.CompressedImage>) view.findViewById(R.id.camera_view);
+
         return cameraView;
     }
 
     @Override
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
 
-        cameraView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_camera_topic", getString(R.string.camera_topic)));
-        cameraView.setMessageType(CompressedImage._TYPE);
-        cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+        RosImageView<sensor_msgs.CompressedImage> imgView = getImageView();
 
-        nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
+        imgView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("edittext_camera_topic", getString(R.string.camera_topic)));
+        imgView.setMessageType(CompressedImage._TYPE);
+        imgView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+
+        nodeMainExecutor.execute(imgView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
+    }
+
+    /*
+     * Returns the RosImageView<> on this View.
+     */
+    private RosImageView<sensor_msgs.CompressedImage> getImageView()
+    {
+        //noinspection unchecked
+        return (RosImageView<sensor_msgs.CompressedImage>) cameraView.findViewById(R.id.camera_view);
     }
 }
