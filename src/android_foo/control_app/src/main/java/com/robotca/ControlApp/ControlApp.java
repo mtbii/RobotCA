@@ -3,6 +3,7 @@ package com.robotca.ControlApp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.RobotInfo;
+import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
@@ -70,6 +72,17 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(ROBOT_INFO != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putString("edittext_joystick_topic", ROBOT_INFO.getJoystickTopic());
+            editor.putString("edittext_laser_scan_topic", ROBOT_INFO.getLaserTopic());
+            editor.putString("edittext_camera_topic", ROBOT_INFO.getCameraTopic());
+
+            editor.commit();
+        }
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
@@ -140,6 +153,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        RobotStorage.update(this, ROBOT_INFO);
+        super.onStop();
     }
 
     @Override

@@ -53,4 +53,5 @@
 
     <string name="drawer_open">Open Menu</string>
     <string name="drawer_close">Close Menu</string>
+    <string name="show_advanced_options">Show Advanced Options</string>
 </resources>
