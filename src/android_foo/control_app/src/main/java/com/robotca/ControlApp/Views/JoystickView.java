@@ -16,23 +16,33 @@
 
 package com.robotca.ControlApp.Views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import org.ros.android.android_15.R;
+
+import com.robotca.ControlApp.R;
+
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
@@ -44,6 +54,8 @@ import org.ros.node.topic.Subscriber;
 import java.util.Timer;
 import java.util.TimerTask;
 
+//import org.ros.android.android_15.R;
+
 /**
  * VirtualJoystickView creates a virtual joystick view that publishes velocity
  * as (geometry_msgs.Twist) messages. The current version contains the following
@@ -53,6 +65,11 @@ import java.util.TimerTask;
  */
 public class JoystickView extends RelativeLayout implements AnimationListener,
         MessageListener<nav_msgs.Odometry>, NodeMain {
+
+    /**
+     * TAG Debug Log tag.
+     */
+    private static final String TAG = "JoystickView";
 
     /**
      * BOX_TO_CIRCLE_RATIO The dimensions of the square box that contains the
@@ -131,7 +148,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * container.
      */
     private TextView magnitudeText;
-    /** contactTheta The current orientation of the virtual joystick in degrees. */
+    /**
+     * contactTheta The current orientation of the virtual joystick in degrees.
+     */
     private float contactTheta;
     /**
      * normalizedMagnitude This is the distance between the center divet and the
@@ -143,16 +162,16 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * contactRadius This is the distance between the center of the widget and the
      * point of contact normalized between 0 and 1. This is mostly used for
      * animation/display calculations.
-     *
+     * <p/>
      * TODO(munjaldesai): Omnigraffle this for better documentation.
      */
     private float contactRadius;
     /**
      * deadZoneRatio ...
-     *
+     * <p/>
      * TODO(munjaldesai): Write a simple explanation for this. Currently not easy
      * to immediately comprehend it's meaning.
-     *
+     * <p/>
      * TODO(munjaldesai): Omnigraffle this for better documentation.
      */
     private float deadZoneRatio = Float.NaN;
@@ -242,28 +261,151 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private geometry_msgs.Twist currentVelocityCommand;
     private String topicName;
 
+    /**
+     * Used for tilt sensor control.
+     */
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private float[] tiltOffset = null;
+    private boolean accelContactUp;
+
+    /**
+     * Angles larger than this are capped.
+     */
+    private static final float MAX_TILT_ANGLE = 45.0f;
+
+    /**
+     * Tilt amounts below this percentage of the joystick radius are treated as 0.
+     */
+    private static final float MIN_TILT_AMOUNT = 0.15f;
+
+    /**
+     * Converts radians to degrees through multiplication.
+     */
+    private static final float TO_DEGREES = 57.29578f;
+
+    /**
+     * Accelerometer listener used for controlling the joystick by tilting the device.
+     */
+    private final SensorEventListener ACCEL_LISTENER = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event)
+        {
+            float[] vals = event.values;
+
+            // Normalize the values
+            for (int i = 0; i < vals.length; ++i)
+                vals[i] /= SensorManager.GRAVITY_EARTH;
+
+            float mag = (float) Math.sqrt((vals[0] * vals[0]) + (vals[1] * vals[1]) + (vals[2] * vals[2]));
+
+            // Calculate the tilt amount
+            float tiltX = (float) Math.round(Math.asin(vals[0] / mag) * TO_DEGREES);
+            float tiltY = (float) Math.round(Math.asin(vals[1] / mag) * TO_DEGREES);
+
+            if (tiltOffset == null)
+            {
+                tiltOffset = new float[] {tiltX, tiltY};
+            }
+            else
+            {
+                tiltX -= tiltOffset[0];
+                tiltY -= tiltOffset[1];
+
+                if (tiltX < -MAX_TILT_ANGLE) tiltX = -MAX_TILT_ANGLE;
+                if (tiltX > MAX_TILT_ANGLE) tiltX = MAX_TILT_ANGLE;
+                if (tiltY < -MAX_TILT_ANGLE) tiltY = -MAX_TILT_ANGLE;
+                if (tiltY > MAX_TILT_ANGLE) tiltY = MAX_TILT_ANGLE;
+
+                tiltX *= joystickRadius / MAX_TILT_ANGLE;
+                tiltY *= joystickRadius / MAX_TILT_ANGLE;
+
+//                Log.d(TAG, "Tilt (" + tiltX + ", " + tiltY + ")");
+
+                if (Math.abs(tiltX) < MIN_TILT_AMOUNT * joystickRadius) tiltX = 0.0f;
+                if (Math.abs(tiltY) < MIN_TILT_AMOUNT * joystickRadius) tiltY = 0.0f;
+
+                // Move the joystick
+                if (tiltX != 0f || tiltY != 0f) {
+                    onContactMove(joystickRadius + tiltY, joystickRadius + tiltX);
+
+                    if (accelContactUp) {
+                        accelContactUp = false;
+                        onContactDown();
+                    }
+                }
+                else
+                {
+                    if (!accelContactUp)
+                    {
+                        onContactMove(joystickRadius, joystickRadius);
+                    }
+
+                    accelContactUp = true;
+                    onContactUp();
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
     public JoystickView(Context context) {
         super(context);
-        initVirtualJoystick(context);
-        topicName = "~cmd_vel";
+
+        init(context);
     }
 
     public JoystickView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initVirtualJoystick(context);
-        topicName = "~cmd_vel";
+
+        init(context);
     }
 
     public JoystickView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        init(context);
+    }
+
+    /*
+     * Prevents redundancies in the three constructors
+     */
+    private void init(Context context) {
+        initVirtualJoystick(context);
         topicName = "~cmd_vel";
+
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     /**
-     * @param enabled
-     *          {@code true} if this joystick should publish linear velocities
-     *          along the Y axis instead of angular velocities along the Z axis,
-     *          {@code false} otherwise
+     * Called to notify that the control scheme has been switched from touch-pad to
+     * tilt sensor.
+     */
+    public void controlSchemeChanged()
+    {
+        // Register/unregister the accelerometer listener as needed
+        if (accelerometer != null) {
+            if (isUsingTiltSensor()) {
+                tiltOffset = null;
+                sensorManager.registerListener(ACCEL_LISTENER, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+                onContactDown();
+            }
+            else {
+                sensorManager.unregisterListener(ACCEL_LISTENER);
+                onContactUp();
+            }
+        }
+    }
+
+    /**
+     * @param enabled {@code true} if this joystick should publish linear velocities
+     *                along the Y axis instead of angular velocities along the Z axis,
+     *                {@code false} otherwise
      */
     public void setHolonomic(boolean enabled) {
         holonomic = enabled;
@@ -312,7 +454,13 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        // Ignore touch events if using the tilt sensor
+        if (isUsingTiltSensor())
+            return true;
+
         final int action = event.getAction();
+
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_MOVE: {
                 // If the primary contact point is no longer on the screen then ignore
@@ -421,6 +569,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // Determine the font size for the text view showing linear velocity. 8.3%
         // of the overall size seems to work well.
         magnitudeText.setTextSize(parentSize / 12);
+
+        // Enable the tilt checkbox if an accelerometer is present
+        enableTiltCheckBox(accelerometer != null);
     }
 
     /**
@@ -429,9 +580,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * that this method does not attach an animation listener and the animation is
      * instantaneous.
      *
-     * @param endScale
-     *          The scale factor that must be attained at the end of the
-     *          animation.
+     * @param endScale The scale factor that must be attained at the end of the
+     *                 animation.
      */
     private void animateIntensityCircle(float endScale) {
         AnimationSet intensityCircleAnimation = new AnimationSet(true);
@@ -459,11 +609,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * {@link #animateIntensityCircle(float)} this method registers an animation
      * listener.
      *
-     * @param endScale
-     *          The scale factor that must be attained at the end of the
-     *          animation.
-     * @param duration
-     *          The duration in milliseconds the animation should take.
+     * @param endScale The scale factor that must be attained at the end of the
+     *                 animation.
+     * @param duration The duration in milliseconds the animation should take.
      */
     private void animateIntensityCircle(float endScale, long duration) {
         AnimationSet intensityCircleAnimation = new AnimationSet(true);
@@ -513,12 +661,10 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * angles. The result is always the minimum difference between 2 angles (0<
      * result <= 360).
      *
-     * @param angle0
-     *          One of 2 angles used to calculate difference. The order of
-     *          arguments does not matter. Must be in degrees.
-     * @param angle1
-     *          One of 2 angles used to calculate difference. The order of
-     *          arguments does not matter. Must be in degrees.
+     * @param angle0 One of 2 angles used to calculate difference. The order of
+     *               arguments does not matter. Must be in degrees.
+     * @param angle1 One of 2 angles used to calculate difference. The order of
+     *               arguments does not matter. Must be in degrees.
      * @return The difference between the 2 arguments in degrees.
      */
     private float differenceBetweenAngles(float angle0, float angle1) {
@@ -574,6 +720,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         orientationWidget[21] = (ImageView) findViewById(R.id.widget_315_degrees);
         orientationWidget[22] = (ImageView) findViewById(R.id.widget_330_degrees);
         orientationWidget[23] = (ImageView) findViewById(R.id.widget_345_degrees);
+
         // Initially hide all the widgets.
         for (ImageView tack : orientationWidget) {
             tack.setAlpha(1.0f);
@@ -584,19 +731,23 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // calculated based on the size of the virtual joystick.
         magnitudeText.setTranslationX((float) (40 * Math.cos((90 + contactTheta) * Math.PI / 180.0)));
         magnitudeText.setTranslationY((float) (40 * Math.sin((90 + contactTheta) * Math.PI / 180.0)));
+
         // Hide the intensity circle.
         animateIntensityCircle(0);
+
         // Initially the orientationWidgets should point to 0 degrees.
         contactTheta = 0;
         animateOrientationWidgets();
         currentRotationRange = (ImageView) findViewById(R.id.top_angle_slice);
         previousRotationRange = (ImageView) findViewById(R.id.mid_angle_slice);
+
         // Hide the slices/arcs used during the turn-in-place mode.
         currentRotationRange.setAlpha(0.0f);
         previousRotationRange.setAlpha(0.0f);
         lastVelocityDivet = (ImageView) findViewById(R.id.previous_velocity_divet);
         contactUpLocation = new Point(0, 0);
         holonomic = false;
+
         for (ImageView tack : orientationWidget) {
             tack.setVisibility(VISIBLE);
         }
@@ -623,10 +774,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * Updates the virtual joystick layout based on the location of the contact.
      * Generates the velocity messages. Switches in and out of turn-in-place.
      *
-     * @param x
-     *          The x coordinates of the contact relative to the parent container.
-     * @param y
-     *          The y coordinates of the contact relative to the parent container.
+     * @param x The x coordinates of the contact relative to the parent container.
+     * @param y The y coordinates of the contact relative to the parent container.
      */
     private void onContactMove(float x, float y) {
         // Get the coordinates of the contact relative to the center of the main
@@ -784,7 +933,11 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // screen.
         publishVelocity = false;
         // Publish one last message to make sure the robot stops.
-        publisher.publish(currentVelocityCommand);
+        if (publisher != null) {
+            publisher.publish(currentVelocityCommand);
+        } else {
+            Log.w(TAG, "publisher is null");
+        }
         // Turn-in-place should not be active anymore.
         endTurnInPlaceRotation();
         // Hide the orientation tacks.
@@ -796,19 +949,21 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Publish the velocity as a ROS Twist message.
      *
-     * @param linearVelocityX
-     *          The normalized linear velocity (-1 to 1).
-     * @param angularVelocityZ
-     *          The normalized angular velocity (-1 to 1).
+     * @param linearVelocityX  The normalized linear velocity (-1 to 1).
+     * @param angularVelocityZ The normalized angular velocity (-1 to 1).
      */
     private void publishVelocity(double linearVelocityX, double linearVelocityY,
                                  double angularVelocityZ) {
-        currentVelocityCommand.getLinear().setX(linearVelocityX);
-        currentVelocityCommand.getLinear().setY(-linearVelocityY);
-        currentVelocityCommand.getLinear().setZ(0);
-        currentVelocityCommand.getAngular().setX(0);
-        currentVelocityCommand.getAngular().setY(0);
-        currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
+        if (currentVelocityCommand != null) {
+            currentVelocityCommand.getLinear().setX(linearVelocityX);
+            currentVelocityCommand.getLinear().setY(-linearVelocityY);
+            currentVelocityCommand.getLinear().setZ(0);
+            currentVelocityCommand.getAngular().setX(0);
+            currentVelocityCommand.getAngular().setY(0);
+            currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
+        } else {
+            Log.w(TAG, "currentVelocityCommand is null");
+        }
     }
 
     /**
@@ -837,7 +992,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private void updateMagnitudeText() {
         // Don't update when the user is turning in place.
         if (!turnInPlaceMode) {
-            magnitudeText.setText(String.valueOf((int) (normalizedMagnitude * 100)) + "%");
+            magnitudeText.setText(String.format(
+                    getResources().getString(R.string.percent_string),
+                    (int) (normalizedMagnitude * 100)));
             magnitudeText.setTranslationX((float) (parentSize / 4 * Math.cos((90 + contactTheta)
                     * Math.PI / 180.0)));
             magnitudeText.setTranslationY((float) (parentSize / 4 * Math.sin((90 + contactTheta)
@@ -881,10 +1038,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * contact) and also orients it so that is facing the direction opposite to
      * the center of the {@link #mainLayout}.
      *
-     * @param x
-     *          The x coordinate relative to the center of the {@link #mainLayout}
-     * @param y
-     *          The Y coordinate relative to the center of the {@link #mainLayout}
+     * @param x The x coordinate relative to the center of the {@link #mainLayout}
+     * @param y The Y coordinate relative to the center of the {@link #mainLayout}
      */
     private void updateThumbDivet(float x, float y) {
         // Offset the specified coordinates to ensure that the center of the thumb
@@ -897,29 +1052,54 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         thumbDivet.setTranslationY(y);
     }
 
+    /*
+     * Queries the tilt-sensor CheckBox to see if tilt sensor controlled is enabled.
+     */
+    private boolean isUsingTiltSensor()
+    {
+        CheckBox checkBox = getTiltCheckBox();
+
+        return checkBox != null && checkBox.isChecked();
+
+    }
+
+    private void enableTiltCheckBox(boolean enable)
+    {
+        CheckBox checkBox = getTiltCheckBox();
+
+        if (checkBox != null)
+            checkBox.setEnabled(enable);
+    }
+
+    /*
+     * Convenience method to get the tilt checkbox
+     */
+    private CheckBox getTiltCheckBox()
+    {
+        RelativeLayout rl = (RelativeLayout) getParent();
+
+        if (rl == null)
+            return null;
+        else
+            return (CheckBox) rl.findViewById(R.id.tilt_checkbox);
+    }
+
     /**
      * Comparing 2 float values.
      *
      * @param v1
      * @param v2
      * @return True if v1 and v2 and within {@value #FLOAT_EPSILON} of each other.
-     *         False otherwise.
+     * False otherwise.
      */
     private boolean floatCompare(float v1, float v2) {
-        if (Math.abs(v1 - v2) < FLOAT_EPSILON) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(v1 - v2) < FLOAT_EPSILON;
     }
 
     private boolean inLastContactRange(float x, float y) {
-        if (Math.sqrt((x - contactUpLocation.x - joystickRadius)
+        return Math.sqrt((x - contactUpLocation.x - joystickRadius)
                 * (x - contactUpLocation.x - joystickRadius) + (y - contactUpLocation.y - joystickRadius)
-                * (y - contactUpLocation.y - joystickRadius)) < THUMB_DIVET_RADIUS) {
-            return true;
-        }
-        return false;
+                * (y - contactUpLocation.y - joystickRadius)) < THUMB_DIVET_RADIUS;
     }
 
     public void setTopicName(String topicName) {
@@ -932,12 +1112,15 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     }
 
     @Override
-    public void onStart(ConnectedNode connectedNode) {
+    public void onStart(ConnectedNode connectedNode)
+    {
         publisher = connectedNode.newPublisher(topicName, geometry_msgs.Twist._TYPE);
         currentVelocityCommand = publisher.newMessage();
+
         Subscriber<nav_msgs.Odometry> subscriber =
                 connectedNode.newSubscriber("odom", nav_msgs.Odometry._TYPE);
         subscriber.addMessageListener(this);
+
         publisherTimer = new Timer();
         publisherTimer.schedule(new TimerTask() {
             @Override

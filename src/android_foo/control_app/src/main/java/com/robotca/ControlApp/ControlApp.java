@@ -16,6 +16,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -62,6 +63,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private String mTitle;
     private String mDrawerTitle;
 
+    private static final String TAG = "ControlApp";
+
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
     }
@@ -93,10 +96,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-
-        //Keep the screen on while the app is in use
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
         setContentView(R.layout.main);
 
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
@@ -186,7 +185,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             });
         } catch (Exception e) {
             // Socket problem
-            Log.e("RobotCA", "socket error trying to get networking information from the master uri");
+            Log.e(TAG, "socket error trying to get networking information from the master uri", e);
         }
     }
 

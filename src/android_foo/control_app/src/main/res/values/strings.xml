@@ -42,16 +42,10 @@
         <item>Map</item>
         <item>Preferences</item>
     </string-array>
-
-    <!--<integer-array name="feature_icons">-->
-        <!--<item>@drawable/ic_view_quilt_black_24dp</item>-->
-        <!--<item>@drawable/ic_linked_camera_black_24dp</item>-->
-        <!--<item>@drawable/ic_navigation_black_24dp</item>-->
-        <!--<item>@drawable/ic_terrain_black_24dp</item>-->
-        <!--<item>@drawable/ic_settings_black_24dp</item>-->
-    <!--</integer-array>-->
-
     <string name="drawer_open">Open Menu</string>
     <string name="drawer_close">Close Menu</string>
     <string name="show_advanced_options">Show Advanced Options</string>
+    <string name="percent_string">%1$d%%</string>
+
+    <string name="use_tilt_sensor_string">Use Tilt</string>
 </resources>

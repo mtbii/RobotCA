@@ -1,10 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +30,11 @@ public class JoystickFragment extends RosFragment {
         if(savedInstanceState != null)
             return virtualJoystick;
 
+
         View view = inflater.inflate(R.layout.fragment_joystick_view, null);
 
         virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_fragment_virtual_joystick);
+
         virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
         nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
 
