@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.view.WindowManager;
 
@@ -191,6 +192,22 @@ public class ControlApp extends RosActivity {
         //joystickFragment.initialize(nodeMainExecutor, nodeConfiguration);
         //laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
         //cameraViewFragment.initialize(nodeMainExecutor, nodeConfiguration);
+    }
+
+    /**
+     * Called when a UI Button is pressed.
+     * @param view The pressed View
+     */
+    public void buttonPressed(View view)
+    {
+        switch (view.getId())
+        {
+            // User has toggled control scheme
+            case R.id.tilt_checkbox:
+                if (joystick_view != null)
+                    joystick_view.controlSchemeChanged();
+                break;
+        }
     }
 
 
