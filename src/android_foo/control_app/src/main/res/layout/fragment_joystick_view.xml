@@ -6,7 +6,7 @@
             android:gravity="center_horizontal">
 
         <com.robotca.ControlApp.Views.JoystickView
-            android:id="@+id/joystick_view"
+            android:id="@+id/joystick_fragment_virtual_joystick"
             android:layout_width="300dip"
             android:layout_height="300dip"
             android:layout_alignParentBottom="true"/>
@@ -14,7 +14,7 @@
         <CheckBox
             android:id="@+id/tilt_checkbox"
             android:text="@string/use_tilt_sensor_string"
-            android:layout_alignBottom="@id/joystick_view"
+            android:layout_alignBottom="@id/joystick_fragment_virtual_joystick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="buttonPressed"

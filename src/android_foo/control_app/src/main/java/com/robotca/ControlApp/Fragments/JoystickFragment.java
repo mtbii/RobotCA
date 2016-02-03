@@ -18,8 +18,8 @@ import org.ros.node.NodeMainExecutor;
 /**
  * Created by Michael Brunson on 11/7/15.
  */
-public class JoystickFragment extends Fragment implements IRosInitializer {
-    private View joystickView;
+public class JoystickFragment extends RosFragment {
+    private JoystickView virtualJoystick;
 
     public JoystickFragment(){}
 
@@ -28,24 +28,21 @@ public class JoystickFragment extends Fragment implements IRosInitializer {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if(savedInstanceState != null)
-            return joystickView;
+            return virtualJoystick;
 
-        joystickView = inflater.inflate(R.layout.fragment_joystick_view, container, false);
-//        virtualJoystick = (JoystickView) view.findViewById(R.id.virtual_joystick);
-        return joystickView;
+
+        View view = inflater.inflate(R.layout.fragment_joystick_view, null);
+
+        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_fragment_virtual_joystick);
+
+        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+
+        return view;
     }
 
     @Override
-    public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
-
-        JoystickView virtualJoystick = getJoystick();
-        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-
-        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
-    }
-
-    private JoystickView getJoystick()
-    {
-        return (JoystickView) joystickView.findViewById(R.id.joystick_view);
+    void shutdown() {
+        nodeMainExecutor.shutdownNodeMain(virtualJoystick);
     }
 }

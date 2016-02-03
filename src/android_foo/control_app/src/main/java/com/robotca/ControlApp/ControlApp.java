@@ -1,130 +1,163 @@
 package com.robotca.ControlApp;
 
-import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.annotation.DimenRes;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
+
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.AdapterView;
 import android.view.WindowManager;
+import android.widget.ListView;
 
 
+import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.NavDrawerAdapter;
+import com.robotca.ControlApp.Core.RobotInfo;
+import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
-import com.robotca.ControlApp.Fragments.JoystickFragment;
+import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
+import com.robotca.ControlApp.Fragments.MapFragment;
+import com.robotca.ControlApp.Fragments.OverviewFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
-import com.robotca.ControlApp.Views.JoystickView;
 
-import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.RosActivity;
-import org.ros.android.view.RosImageView;
-import org.ros.android.view.visualization.VisualizationView;
-import org.ros.android.view.visualization.layer.LaserScanLayer;
-import org.ros.android.view.visualization.layer.Layer;
-import org.ros.android.view.visualization.layer.RobotLayer;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
-import sensor_msgs.CompressedImage;
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener {
+    public static String NOTIFICATION_TICKER = "ROS Control";
+    public static String NOTIFICATION_TITLE = "ROS Control";
+    public static RobotInfo ROBOT_INFO;
+    //public static URI DEFAULT_URI = URI.create("localhost");
 
-public class ControlApp extends RosActivity {
-    //private NodeMainExecutor nodeMainExecutor;
-    private ControlAppActionTabListener tabListener;
-    private FrameLayout frameLayout;
-    private Fragment lastFrag;
+    private String[] mFeatureTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
-    private JoystickView joystick_view;
-    private RosImageView<sensor_msgs.CompressedImage> camera_view;
-    private VisualizationView laser_view;
+    private NodeMainExecutor nodeMainExecutor;
+    private NodeConfiguration nodeConfiguration;
+    private ActionBarDrawerToggle mDrawerToggle;
 
-    private LaserScanFragment laserScanFragment;
-    private CameraViewFragment cameraViewFragment;
-    private JoystickFragment joystickFragment;
-    private PreferencesFragment preferencesFragment;
+    private int drawerIndex = 1;
+    private String mTitle;
+    private String mDrawerTitle;
 
     private static final String TAG = "ControlApp";
 
     public ControlApp() {
-        super("Test App","Test App");
+        super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
     }
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState != null)
-            return;
+        if(ROBOT_INFO != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
 
+            editor.putString("edittext_joystick_topic", ROBOT_INFO.getJoystickTopic());
+            editor.putString("edittext_laser_scan_topic", ROBOT_INFO.getLaserTopic());
+            editor.putString("edittext_camera_topic", ROBOT_INFO.getCameraTopic());
+
+            editor.commit();
+        }
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
+        if (dpWidth >= 550) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         setContentView(R.layout.main);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //Keep the screen on while the app is in use
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
+        mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-//        joystickFragment = new JoystickFragment();
-//        cameraViewFragment = new CameraViewFragment();
-//        laserScanFragment = new LaserScanFragment();
-        preferencesFragment = new PreferencesFragment();
+        mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
-        if (getActionBar() != null) {
-            getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+               /* R.drawable.ic_drawer,*/ R.string.drawer_open,
+                R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                //getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                //getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+//        if (savedInstanceState == null) {
+//            drawerIndex = 1;
+//        }
+
+        //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
+
+        int[] imgRes = new int[]{
+                R.drawable.ic_android_black_24dp,
+                R.drawable.ic_view_quilt_black_24dp,
+                R.drawable.ic_linked_camera_black_24dp,
+                R.drawable.ic_navigation_black_24dp,
+                R.drawable.ic_terrain_black_24dp,
+                R.drawable.ic_settings_black_24dp
+        };
+
+        List<DrawerItem> drawerItems = new ArrayList<>();
+
+        for (int i = 0; i < mFeatureTitles.length; i++) {
+            drawerItems.add(new DrawerItem(mFeatureTitles[i], imgRes[i]));
         }
-        else {
-            Log.e(TAG, "Action Bar is null!");
-            return;
-        }
-        //getFragmentManager().beginTransaction().add(R.id.joystick_holder, joystickFragment).commit();
 
-        joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
-        cameraViewFragment = (CameraViewFragment) getFragmentManager().findFragmentById(R.id.camera_view_fragment);
+        NavDrawerAdapter drawerAdapter = new NavDrawerAdapter(this,
+                R.layout.nav_drawer_menu_item,
+                drawerItems);
 
-        Log.d(TAG, "Joystick fragment: " + joystickFragment);
-        Log.d(TAG, "CameraView Fragment: " + cameraViewFragment);
+        mDrawerList.setAdapter(drawerAdapter);
+        mDrawerList.setOnItemClickListener(this);
+    }
 
-        //noinspection unchecked
-        camera_view = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.camera_view);
-        camera_view.setTopicName(getString(R.string.camera_topic));
-        camera_view.setMessageType(CompressedImage._TYPE);
-        camera_view.setMessageToBitmapCallable(new BitmapFromCompressedImage());
-
-        joystick_view = (JoystickView) findViewById(R.id.joystick_view);
-        joystick_view.setTopicName(getString(R.string.joy_topic));
-
-        //tabListener = new ControlAppActionTabListener();
-
-        laser_view = (VisualizationView) findViewById(R.id.viz_view);
-
-        ArrayList<Layer> layers = new ArrayList<Layer>();
-        layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
-        //layers.add(new OccupancyGridLayer("/map"));
-        layers.add(new RobotLayer("base_link"));
-        laser_view.onCreate(layers);
-
-        //frameLayout = (FrameLayout)findViewById(R.id.frame_layout_tab_content);
-
-//        ActionBar.Tab laserScanTab = getActionBar().newTab();
-//        laserScanTab.setText("Laser");
-//        laserScanTab.setTabListener(tabListener);
-//
-//        ActionBar.Tab cameraTab = getActionBar().newTab();
-//        cameraTab.setText("Camera");
-//        cameraTab.setTabListener(tabListener);
-//
-//        ActionBar.Tab settingsTab = getActionBar().newTab();
-//        settingsTab.setText("Settings");
-//        settingsTab.setTabListener(tabListener);
-
-//        getActionBar().addTab(laserScanTab);
-//        getActionBar().addTab(cameraTab);
-//        getActionBar().addTab(settingsTab);
+    @Override
+    protected void onStop() {
+        RobotStorage.update(this, ROBOT_INFO);
+        super.onStop();
     }
 
     @Override
@@ -135,97 +168,117 @@ public class ControlApp extends RosActivity {
             java.net.InetAddress local_network_address = socket.getLocalAddress();
             socket.close();
 
-            NodeConfiguration nodeConfiguration =
+            this.nodeMainExecutor = nodeMainExecutor;
+            this.nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-            nodeMainExecutor.execute(camera_view, nodeConfiguration.setNodeName("android/camera_view"));
-            nodeMainExecutor.execute(joystick_view, nodeConfiguration.setNodeName("android/joystick_view"));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    View temp = mDrawerList.getChildAt(drawerIndex);
+                    mDrawerList.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, temp.getX(), temp.getY(), 0));
 
-            laser_view.init(nodeMainExecutor);
-            laser_view.getCamera().jumpToFrame("base_link");
-            laser_view.getCamera().zoom(laser_view.getCamera().getViewport().getWidth() / 2, laser_view.getCamera().getViewport().getHeight() / 2, .5);
 
-            nodeMainExecutor.execute(laser_view, nodeConfiguration.setNodeName("android/laser_view"));
-
-            //initRos(nodeMainExecutor, nodeConfiguration);
+                    selectItem(drawerIndex);
+                }
+            });
         } catch (Exception e) {
             // Socket problem
             Log.e(TAG, "socket error trying to get networking information from the master uri", e);
         }
     }
 
-    public void setCurrentItem(int position){
-        switch(position){
-            case 0:
-                setTabFragment(laserScanFragment);
-                break;
-
-            case 1:
-                setTabFragment(cameraViewFragment);
-                break;
-
-            case 2:
-                setTabFragment(preferencesFragment);
-                break;
-
-            default:
-                setTabFragment(joystickFragment);
-                break;
-        }
-    }
-
-    public void setTabFragment(Fragment frag){
-//        try {
-//
-//            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//            transaction.replace(R.id.frame_layout_tab_content ,frag);
-//            transaction.commit();
-//
-//            lastFrag = frag;
-//        }
-//        catch(Exception e) {
-//
-//        }
-    }
-
-    public void initRos(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration){
-        //joystickFragment.initialize(nodeMainExecutor, nodeConfiguration);
-        //laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
-        //cameraViewFragment.initialize(nodeMainExecutor, nodeConfiguration);
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectItem(position);
     }
 
     /**
-     * Called when a UI Button is pressed.
-     * @param view The pressed View
+     * Swaps fragments in the main content view
      */
-    public void buttonPressed(View view)
-    {
-        switch (view.getId())
-        {
-            // User has toggled control scheme
-            case R.id.tilt_checkbox:
-                if (joystick_view != null)
-                    joystick_view.controlSchemeChanged();
+    private void selectItem(int position) {
+        // Create a new fragment and specify the planet to show based on position
+        Fragment fragment = null;
+        Bundle args = new Bundle();
+
+        switch (position) {
+            case 0:
+                finish();
+                return;
+
+            case 1:
+                fragment = new OverviewFragment();
                 break;
+
+            case 2:
+                fragment = new CameraViewFragment();
+                break;
+
+            case 3:
+                fragment = new LaserScanFragment();
+                break;
+
+            case 4:
+                fragment = new MapFragment();
+                break;
+
+            case 5:
+                fragment = new PreferencesFragment();
+                break;
+
+            default:
+                break;
+        }
+
+        try {
+            ((RosFragment) fragment).initialize(nodeMainExecutor, nodeConfiguration);
+        } catch (ClassCastException e) {
+        }
+
+        if (fragment != null) {
+            fragment.setArguments(args);
+
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        }
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        setTitle(mFeatureTitles[position]);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        try {
+            getActionBar().setTitle(title);
+        } catch (NullPointerException e) {
+
         }
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
 
-    private class ControlAppActionTabListener implements ActionBar.TabListener{
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        return mDrawerToggle.onOptionsItemSelected(item);
+    }
 
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            setCurrentItem(tab.getPosition());
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 }
