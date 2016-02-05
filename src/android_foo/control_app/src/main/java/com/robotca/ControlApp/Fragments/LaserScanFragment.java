@@ -43,7 +43,8 @@ public class LaserScanFragment extends RosFragment {
 
         laserView.init(nodeMainExecutor);
 
-        nodeMainExecutor.execute(laserView, nodeConfiguration.setNodeName("android/laser_view"));
+        if (nodeConfiguration != null)
+            nodeMainExecutor.execute(laserView, nodeConfiguration.setNodeName("android/laser_view"));
 
         return view;
     }

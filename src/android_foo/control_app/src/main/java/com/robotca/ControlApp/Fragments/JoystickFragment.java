@@ -36,7 +36,9 @@ public class JoystickFragment extends RosFragment {
         virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_fragment_virtual_joystick);
 
         virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+
+        if (nodeConfiguration != null)
+            nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
 
         return view;
     }

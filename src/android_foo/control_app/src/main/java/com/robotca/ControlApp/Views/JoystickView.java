@@ -378,8 +378,13 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         initVirtualJoystick(context);
         topicName = "~cmd_vel";
 
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        try {
+            sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
+        catch (UnsupportedOperationException e) {
+            // No accelerometer, too bad
+        }
     }
 
     /**

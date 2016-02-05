@@ -103,8 +103,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                /* R.drawable.ic_drawer,*/ R.string.drawer_open,
@@ -195,6 +198,18 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * Called when the tilt-control check box is pressed.
+     * @param view The pressed View
+     */
+    public void buttonPressed(View view) {
+        switch (view.getId()) {
+            case R.id.tilt_checkbox:
+                // TODO invoke controlSchemeChanged() on the JoystickView
+                break;
+        }
+    }
+
+    /**
      * Swaps fragments in the main content view
      */
     private void selectItem(int position) {
@@ -232,8 +247,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         try {
+            //noinspection ConstantConditions
             ((RosFragment) fragment).initialize(nodeMainExecutor, nodeConfiguration);
         } catch (ClassCastException e) {
+            // Ignore
         }
 
         if (fragment != null) {
@@ -255,9 +272,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     @Override
     public void setTitle(CharSequence title) {
         try {
+            //noinspection ConstantConditions
             getActionBar().setTitle(title);
         } catch (NullPointerException e) {
-
+            // Ignore
         }
     }
 

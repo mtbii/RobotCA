@@ -36,7 +36,8 @@ public class CameraViewFragment extends RosFragment {
         cameraView.setMessageType(CompressedImage._TYPE);
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
 
-        nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
+        if (nodeConfiguration != null)
+            nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
 
         return view;
     }
