@@ -180,6 +180,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
             mAdapter.notifyItemRemoved(position);
         }
 
+        if(RobotStorage.getRobots().size() == 0){
+            mAdapter.notifyDataSetChanged();
+        }
+
         return removed;
     }
 }
