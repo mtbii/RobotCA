@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import com.robotca.ControlApp.Core.RobotGPSSub;
 import com.robotca.ControlApp.R;
 
 import org.osmdroid.api.IMapController;
@@ -51,7 +52,7 @@ public class MapFragment extends RosFragment {
             e.printStackTrace();
         }*/
 
-        MyLocationNewOverlay myLocationOverlay = new MyLocationNewOverlay(getActivity(), mapView);
+        MyLocationNewOverlay myLocationOverlay = new MyLocationNewOverlay(getActivity(), new RobotGPSSub(), mapView);
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
 
