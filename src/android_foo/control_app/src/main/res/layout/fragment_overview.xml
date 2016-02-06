@@ -17,7 +17,7 @@
             android:id="@+id/camera_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"></org.ros.android.view.RosImageView>
+            android:layout_weight="1"/>
 
         <org.ros.android.view.visualization.VisualizationView
             android:id="@+id/viz_view"
@@ -29,14 +29,15 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="3">
+        android:layout_height="fill_parent">
 
-        <com.robotca.ControlApp.Views.JoystickView
-            android:id="@+id/joystick_view"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true" />
+        <fragment android:name="com.robotca.ControlApp.Fragments.JoystickFragment"
+            android:id="@+id/joystick_fragment"
+            android:layout_width="150dip"
+            android:layout_height="150dip"
+            android:layout_alignParentBottom="true"
+            tools:layout="@layout/fragment_joystick_view">
+        </fragment>
+
     </RelativeLayout>
 </RelativeLayout>

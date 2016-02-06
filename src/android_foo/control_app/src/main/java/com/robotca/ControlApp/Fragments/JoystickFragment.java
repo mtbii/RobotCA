@@ -33,7 +33,7 @@ public class JoystickFragment extends RosFragment {
 
         View view = inflater.inflate(R.layout.fragment_joystick_view, null);
 
-        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_fragment_virtual_joystick);
+        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
 
         virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
@@ -45,6 +45,7 @@ public class JoystickFragment extends RosFragment {
 
     @Override
     void shutdown() {
-        nodeMainExecutor.shutdownNodeMain(virtualJoystick);
+        if (nodeMainExecutor != null)
+            nodeMainExecutor.shutdownNodeMain(virtualJoystick);
     }
 }

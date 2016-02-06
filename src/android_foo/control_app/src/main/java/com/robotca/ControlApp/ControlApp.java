@@ -36,6 +36,7 @@ import com.robotca.ControlApp.Fragments.LaserScanFragment;
 import com.robotca.ControlApp.Fragments.MapFragment;
 import com.robotca.ControlApp.Fragments.OverviewFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
+import com.robotca.ControlApp.Views.JoystickView;
 
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
@@ -205,7 +206,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public void buttonPressed(View view) {
         switch (view.getId()) {
             case R.id.tilt_checkbox:
-                // TODO invoke controlSchemeChanged() on the JoystickView
+                JoystickView joystickView = (JoystickView) mDrawerLayout.findViewById(R.id.joystick_view);
+
+                if (joystickView != null)
+                    joystickView.controlSchemeChanged();
+                else
+                    Log.w(TAG, "JoystickView is null");
+
+
                 break;
         }
     }

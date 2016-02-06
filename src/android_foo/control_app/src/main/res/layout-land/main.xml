@@ -64,7 +64,7 @@
         <!--android:layout_below="@id/laser_scan_fragment"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
-        tools:layout="@layout/fragment_camera_view" />
+        <!--tools:layout="@layout/fragment_camera_view" />-->
 
 
     <!--<RelativeLayout-->
