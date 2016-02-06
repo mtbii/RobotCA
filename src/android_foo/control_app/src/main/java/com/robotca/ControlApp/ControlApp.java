@@ -59,6 +59,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeMainExecutor nodeMainExecutor;
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
+    //creating emergency stop button
+    private Button emergencyStop;
 
     private int drawerIndex = 1;
     private String mTitle;
@@ -135,7 +137,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //        }
 
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
-
+        
+        //declare button
+        emergencyButton = (Button) findViewById(R.id.button);
+        emergencyButton.setOnClickListener(this);
+        
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
