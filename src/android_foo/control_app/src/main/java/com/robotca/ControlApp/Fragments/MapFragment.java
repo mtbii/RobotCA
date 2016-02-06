@@ -14,12 +14,15 @@ import com.robotca.ControlApp.R;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 
 public class MapFragment extends RosFragment {
+
+    private RobotGPSSub robotGPSNode;
 
     public MapFragment(){}
 
@@ -33,7 +36,7 @@ public class MapFragment extends RosFragment {
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
         mapView.setUseDataConnection(true);
-        mapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
 
 
         /*try{
@@ -52,14 +55,15 @@ public class MapFragment extends RosFragment {
             e.printStackTrace();
         }*/
 
-        MyLocationNewOverlay myLocationOverlay = new MyLocationNewOverlay(getActivity(), new RobotGPSSub(), mapView);
+        robotGPSNode = new RobotGPSSub();
+
+        MyLocationNewOverlay myLocationOverlay = new MyLocationNewOverlay(getActivity(), robotGPSNode, mapView);
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
 
         mapView.getOverlays().add(myLocationOverlay);
         IMapController mapViewController = mapView.getController();
         mapViewController.setZoom(18);
-
 
         //location.getLatitude();
         //location.getLongitude();
@@ -101,9 +105,11 @@ public class MapFragment extends RosFragment {
          }
      }*/
 
+        nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
         return view;
     }
 
     public void shutdown(){
+        nodeMainExecutor.shutdownNodeMain(robotGPSNode);
     }
 }

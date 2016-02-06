@@ -18,8 +18,12 @@ import sensor_msgs.NavSatFix;
  */
 public class RobotGPSSub implements NodeMain, IMyLocationProvider {
 
-    double rosLat, rosLong;
+    private Location mLocation = new Location("ros");
     private IMyLocationConsumer mMyLocatationComsumer;
+    private Subscriber<NavSatFix> mSubscriber;
+
+    public RobotGPSSub() {
+    }
 
     @Override
     public GraphName getDefaultNodeName() {
@@ -28,12 +32,21 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        Subscriber<NavSatFix> subscriber = connectedNode.newSubscriber("/navsat/fix", NavSatFix._TYPE);
-        subscriber.addMessageListener(new MessageListener<NavSatFix>() {
+        mSubscriber = connectedNode.newSubscriber("/navsat/fix", NavSatFix._TYPE);
+        mSubscriber.addMessageListener(new MessageListener<NavSatFix>() {
             @Override
             public void onNewMessage(NavSatFix navSatFix) {
-                rosLat = navSatFix.getLatitude();
-                rosLong = navSatFix.getLongitude();
+                mLocation.setLatitude(navSatFix.getLatitude());
+                mLocation.setLongitude(navSatFix.getLongitude());
+
+                try {
+                    Thread.sleep(1000, 0);
+                    if (mMyLocatationComsumer != null) {
+                        mMyLocatationComsumer.onLocationChanged(mLocation, RobotGPSSub.this);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
@@ -42,7 +55,7 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
 
     @Override
     public void onShutdown(Node node) {
-
+        mSubscriber.shutdown();
     }
 
     @Override
@@ -64,15 +77,10 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
     @Override
     public void stopLocationProvider() {
         mMyLocatationComsumer = null;
-
-
     }
 
     @Override
     public Location getLastKnownLocation() {
-        Location location = new Location("ros");
-        location.setLatitude(rosLat);
-        location.setLongitude(rosLong);
-        return location;
+        return mLocation;
     }
 }

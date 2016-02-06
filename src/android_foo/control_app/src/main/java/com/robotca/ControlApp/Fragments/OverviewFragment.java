@@ -54,7 +54,7 @@ public class OverviewFragment extends RosFragment {
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
 
         joystickView = (JoystickView) view.findViewById(R.id.joystick_view);
-        joystickView.setTopicName(getString(R.string.joy_topic));
+        joystickView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
         vizView.init(nodeMainExecutor);
 
