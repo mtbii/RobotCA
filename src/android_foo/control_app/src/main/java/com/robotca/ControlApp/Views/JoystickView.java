@@ -16,20 +16,27 @@
 
 package com.robotca.ControlApp.Views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -254,21 +261,150 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private geometry_msgs.Twist currentVelocityCommand;
     private String topicName;
 
+    /**
+     * Used for tilt sensor control.
+     */
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private float[] tiltOffset = null;
+    private boolean accelContactUp;
+
+    /**
+     * Angles larger than this are capped.
+     */
+    private static final float MAX_TILT_ANGLE = 45.0f;
+
+    /**
+     * Tilt amounts below this percentage of the joystick radius are treated as 0.
+     */
+    private static final float MIN_TILT_AMOUNT = 0.15f;
+
+    /**
+     * Converts radians to degrees through multiplication.
+     */
+    private static final float TO_DEGREES = 57.29578f;
+
+    /**
+     * Accelerometer listener used for controlling the joystick by tilting the device.
+     */
+    private final SensorEventListener ACCEL_LISTENER = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event)
+        {
+            float[] vals = event.values;
+
+            // Normalize the values
+            for (int i = 0; i < vals.length; ++i)
+                vals[i] /= SensorManager.GRAVITY_EARTH;
+
+            float mag = (float) Math.sqrt((vals[0] * vals[0]) + (vals[1] * vals[1]) + (vals[2] * vals[2]));
+
+            // Calculate the tilt amount
+            float tiltX = (float) Math.round(Math.asin(vals[0] / mag) * TO_DEGREES);
+            float tiltY = (float) Math.round(Math.asin(vals[1] / mag) * TO_DEGREES);
+
+            if (tiltOffset == null)
+            {
+                tiltOffset = new float[] {tiltX, tiltY};
+            }
+            else
+            {
+                tiltX -= tiltOffset[0];
+                tiltY -= tiltOffset[1];
+
+                if (tiltX < -MAX_TILT_ANGLE) tiltX = -MAX_TILT_ANGLE;
+                if (tiltX > MAX_TILT_ANGLE) tiltX = MAX_TILT_ANGLE;
+                if (tiltY < -MAX_TILT_ANGLE) tiltY = -MAX_TILT_ANGLE;
+                if (tiltY > MAX_TILT_ANGLE) tiltY = MAX_TILT_ANGLE;
+
+                tiltX *= joystickRadius / MAX_TILT_ANGLE;
+                tiltY *= joystickRadius / MAX_TILT_ANGLE;
+
+//                Log.d(TAG, "Tilt (" + tiltX + ", " + tiltY + ")");
+
+                if (Math.abs(tiltX) < MIN_TILT_AMOUNT * joystickRadius) tiltX = 0.0f;
+                if (Math.abs(tiltY) < MIN_TILT_AMOUNT * joystickRadius) tiltY = 0.0f;
+
+                // Move the joystick
+                if (tiltX != 0f || tiltY != 0f) {
+                    onContactMove(joystickRadius + tiltY, joystickRadius + tiltX);
+
+                    if (accelContactUp) {
+                        accelContactUp = false;
+                        onContactDown();
+                    }
+                }
+                else
+                {
+                    if (!accelContactUp)
+                    {
+                        onContactMove(joystickRadius, joystickRadius);
+                    }
+
+                    accelContactUp = true;
+                    onContactUp();
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
     public JoystickView(Context context) {
         super(context);
-        initVirtualJoystick(context);
-        topicName = "~cmd_vel";
+
+        init(context);
     }
 
     public JoystickView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initVirtualJoystick(context);
-        topicName = "~cmd_vel";
+
+        init(context);
     }
 
     public JoystickView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        init(context);
+    }
+
+    /*
+     * Prevents redundancies in the three constructors
+     */
+    private void init(Context context) {
+        initVirtualJoystick(context);
         topicName = "~cmd_vel";
+
+        try {
+            sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
+        catch (UnsupportedOperationException e) {
+            // No accelerometer, too bad
+        }
+    }
+
+    /**
+     * Called to notify that the control scheme has been switched from touch-pad to
+     * tilt sensor.
+     */
+    public void controlSchemeChanged()
+    {
+        // Register/unregister the accelerometer listener as needed
+        if (accelerometer != null) {
+            if (isUsingTiltSensor()) {
+                tiltOffset = null;
+                sensorManager.registerListener(ACCEL_LISTENER, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+                onContactDown();
+            }
+            else {
+                sensorManager.unregisterListener(ACCEL_LISTENER);
+                onContactUp();
+            }
+        }
     }
 
     /**
@@ -323,6 +459,10 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        // Ignore touch events if using the tilt sensor
+        if (isUsingTiltSensor())
+            return true;
 
         final int action = event.getAction();
 
@@ -434,6 +574,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // Determine the font size for the text view showing linear velocity. 8.3%
         // of the overall size seems to work well.
         magnitudeText.setTextSize(parentSize / 12);
+
+        // Enable the tilt checkbox if an accelerometer is present
+        enableTiltCheckBox(accelerometer != null);
     }
 
     /**
@@ -582,6 +725,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         orientationWidget[21] = (ImageView) findViewById(R.id.widget_315_degrees);
         orientationWidget[22] = (ImageView) findViewById(R.id.widget_330_degrees);
         orientationWidget[23] = (ImageView) findViewById(R.id.widget_345_degrees);
+
         // Initially hide all the widgets.
         for (ImageView tack : orientationWidget) {
             tack.setAlpha(1.0f);
@@ -592,19 +736,23 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // calculated based on the size of the virtual joystick.
         magnitudeText.setTranslationX((float) (40 * Math.cos((90 + contactTheta) * Math.PI / 180.0)));
         magnitudeText.setTranslationY((float) (40 * Math.sin((90 + contactTheta) * Math.PI / 180.0)));
+
         // Hide the intensity circle.
         animateIntensityCircle(0);
+
         // Initially the orientationWidgets should point to 0 degrees.
         contactTheta = 0;
         animateOrientationWidgets();
         currentRotationRange = (ImageView) findViewById(R.id.top_angle_slice);
         previousRotationRange = (ImageView) findViewById(R.id.mid_angle_slice);
+
         // Hide the slices/arcs used during the turn-in-place mode.
         currentRotationRange.setAlpha(0.0f);
         previousRotationRange.setAlpha(0.0f);
         lastVelocityDivet = (ImageView) findViewById(R.id.previous_velocity_divet);
         contactUpLocation = new Point(0, 0);
         holonomic = false;
+
         for (ImageView tack : orientationWidget) {
             tack.setVisibility(VISIBLE);
         }
@@ -909,6 +1057,38 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         thumbDivet.setTranslationY(y);
     }
 
+    /*
+     * Queries the tilt-sensor CheckBox to see if tilt sensor controlled is enabled.
+     */
+    private boolean isUsingTiltSensor()
+    {
+        CheckBox checkBox = getTiltCheckBox();
+
+        return checkBox != null && checkBox.isChecked();
+
+    }
+
+    private void enableTiltCheckBox(boolean enable)
+    {
+        CheckBox checkBox = getTiltCheckBox();
+
+        if (checkBox != null)
+            checkBox.setEnabled(enable);
+    }
+
+    /*
+     * Convenience method to get the tilt checkbox
+     */
+    private CheckBox getTiltCheckBox()
+    {
+        RelativeLayout rl = (RelativeLayout) getParent();
+
+        if (rl == null)
+            return null;
+        else
+            return (CheckBox) rl.findViewById(R.id.tilt_checkbox);
+    }
+
     /**
      * Comparing 2 float values.
      *
@@ -937,12 +1117,15 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     }
 
     @Override
-    public void onStart(ConnectedNode connectedNode) {
+    public void onStart(ConnectedNode connectedNode)
+    {
         publisher = connectedNode.newPublisher(topicName, geometry_msgs.Twist._TYPE);
         currentVelocityCommand = publisher.newMessage();
+
         Subscriber<nav_msgs.Odometry> subscriber =
                 connectedNode.newSubscriber("odom", nav_msgs.Odometry._TYPE);
         subscriber.addMessageListener(this);
+
         publisherTimer = new Timer();
         publisherTimer.schedule(new TimerTask() {
             @Override

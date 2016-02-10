@@ -20,7 +20,7 @@ import sensor_msgs.CompressedImage;
 /**
  * Created by Michael Brunson on 11/7/15.
  */
-public class CameraViewFragment extends Fragment implements IRosInitializer {
+public class CameraViewFragment extends RosFragment {
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
 
     public CameraViewFragment(){}
@@ -29,21 +29,21 @@ public class CameraViewFragment extends Fragment implements IRosInitializer {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if(savedInstanceState != null)
-            return cameraView;
-
-        View view = inflater.inflate(R.layout.fragment_camera_view, container);
-        cameraView = (RosImageView<sensor_msgs.CompressedImage>) view.findViewById(R.id.camera_view);
-        return cameraView;
-    }
-
-    @Override
-    public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
+        View view = inflater.inflate(R.layout.fragment_camera_view, null);
+        cameraView = (RosImageView<sensor_msgs.CompressedImage>) view.findViewById(R.id.camera_fragment_camera_view);
 
         cameraView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_camera_topic", getString(R.string.camera_topic)));
         cameraView.setMessageType(CompressedImage._TYPE);
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
 
-        nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
+        if (nodeConfiguration != null)
+            nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/fragment_camera_view"));
+
+        return view;
+    }
+
+    @Override
+    void shutdown() {
+        nodeMainExecutor.shutdownNodeMain(cameraView);
     }
 }

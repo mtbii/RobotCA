@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ControlApp</string>
+    <string name="app_name">ROS Control</string>
+    <string name="ok">OK</string>
     <string name="joy_topic">/joy_teleop/cmd_vel</string>
     <string name="camera_topic">/image_raw/compressed</string>
     <string name="laser_scan_topic">/scan</string>
@@ -24,5 +25,27 @@
         Expected message type: sensor_msgs/CompressedImage
     </string>
 
+    <string name="add_robot">Add Robot</string>
+    <string name="edit_robot">Edit Robot</string>
+    <string name="master_uri_key">MASTER_URI</string>
+    <string name="add_edit_robot">Add/Edit Robot</string>
+    <string name="robot_name_hint">Robot Name</string>
+    <string name="chooser_uri_hint">Master URI</string>
+    <string name="delete">Delete</string>
+    <string name="no_robots">No Robots. Add a new one!</string>
+
+    <string-array name="feature_titles">
+        <item>Select Robot</item>
+        <item>Overview</item>
+        <item>Camera</item>
+        <item>Robot</item>
+        <item>Map</item>
+        <item>Preferences</item>
+    </string-array>
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
+    <string name="show_advanced_options">Show Advanced Options</string>
     <string name="percent_string">%1$d%%</string>
+
+    <string name="use_tilt_sensor_string">Use Tilt</string>
 </resources>

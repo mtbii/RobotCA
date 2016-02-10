@@ -1,10 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,7 @@ import org.ros.node.NodeMainExecutor;
 /**
  * Created by Michael Brunson on 11/7/15.
  */
-public class JoystickFragment extends Fragment implements IRosInitializer {
+public class JoystickFragment extends RosFragment {
     private JoystickView virtualJoystick;
 
     public JoystickFragment(){}
@@ -30,15 +30,22 @@ public class JoystickFragment extends Fragment implements IRosInitializer {
         if(savedInstanceState != null)
             return virtualJoystick;
 
-        View view = inflater.inflate(R.layout.fragment_joystick_view, container);
-        virtualJoystick = (JoystickView) view.findViewById(R.id.virtual_joystick);
-        return virtualJoystick;
+
+        View view = inflater.inflate(R.layout.fragment_joystick_view, null);
+
+        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
+
+        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+
+        if (nodeConfiguration != null)
+            nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+
+        return view;
     }
 
     @Override
-    public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
-        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-
-        nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+    void shutdown() {
+        if (nodeMainExecutor != null)
+            nodeMainExecutor.shutdownNodeMain(virtualJoystick);
     }
 }
