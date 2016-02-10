@@ -27,14 +27,20 @@ import org.ros.node.NodeMainExecutor;
 import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.ResourceProxy;
 
+import java.util.ArrayList;
+import java.lang.Math.*;
 
 
 public class MapFragment extends RosFragment implements MapEventsReceiver {
 
     private RobotGPSSub robotGPSNode;
+
     MyLocationNewOverlay myLocationOverlay;
     MapView mapView;
     MapEventsOverlay mapEventsOverlay;
+
+    double distanceToTravel;
+    ArrayList<GeoPoint> waypoints = new ArrayList<>();
 
     public MapFragment(){}
 
@@ -74,6 +80,7 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
+        //myLocationOverlay.getMyLocation();
 
         mapView.getOverlays().add(myLocationOverlay);
         mapView.getOverlays().add(0, mapEventsOverlay);
@@ -103,11 +110,17 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
         //The (ResourceProxy) this line causes the long press error and I'm not sure why
         //Working on that though
-        GroundOverlay myGroundOverlay = new GroundOverlay((ResourceProxy) this);
+        GroundOverlay myGroundOverlay = new GroundOverlay(getActivity());
         myGroundOverlay.setPosition(geoPoint);
         myGroundOverlay.setImage(getResources().getDrawable(R.drawable.marker).mutate());
-        myGroundOverlay.setDimensions(75.0f);
+        myGroundOverlay.setDimensions(25.0f);
         mapView.getOverlays().add(myGroundOverlay);
+
+        //keep storage of markers
+        //add current location to the array of Geopoints to be used in distance method
+        waypoints.add(myLocationOverlay.getMyLocation());
+        waypoints.add(geoPoint);
+
         Toast.makeText(mapView.getContext(), "Marked on (" + geoPoint.getLatitude() + "," + geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
 
         //Doesn't seem to be working for the long press
@@ -115,5 +128,21 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
         myLocationOverlay.enableFollowLocation();
 
         return true;
+    }
+
+    public double distanceBetweenCoordinates(GeoPoint start, GeoPoint dest) {
+        distanceToTravel = 0;
+        int earthRadius = 6371; // km
+        double dLat = Math.toRadians(dest.getLatitude()-start.getLatitude());
+        double dLon = Math.toRadians(dest.getLongitude()-dest.getLongitude());
+        double lat1 = Math.toRadians(start.getLatitude());
+        double lat2 = Math.toRadians(dest.getLatitude());
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        distanceToTravel = earthRadius * c;
+
+        return distanceToTravel;
     }
 }
