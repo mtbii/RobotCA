@@ -24,6 +24,15 @@
    which usually occur on minor and major version numbers.
 */
 
+repositories {
+  mavenCentral()
+  flatDir {
+    dirs 'libs'
+  }
+    maven { url "https://jitpack.io" }
+}
+
+
 dependencies {
   compile project(':control_app_lib')
   compile 'org.ros.android_core:android_10:[0.2,0.3)'
@@ -35,8 +44,11 @@ dependencies {
   compile 'com.android.support:appcompat-v7:23.1.1'
   compile 'com.android.support:cardview-v7:23.1.1'
   compile 'com.android.support:recyclerview-v7:23.1.1'
-  compile 'org.osmdroid:osmdroid-android:4.3'
+  compile 'org.osmdroid:osmdroid-android:5.0+'
   compile 'org.slf4j:slf4j-android:1.6.1-RC1'
+    ///////////////
+    compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7'
+
 }
 
 apply plugin: 'com.android.application'
