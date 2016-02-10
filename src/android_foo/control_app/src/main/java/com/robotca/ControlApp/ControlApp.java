@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ListView;
 
 
@@ -46,7 +47,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlApp extends RosActivity implements ListView.OnItemClickListener {
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener, View.OnClickListener {
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
@@ -59,6 +60,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeMainExecutor nodeMainExecutor;
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
+    //creating emergency stop button
+    private Button emergencyStop;
 
     private int drawerIndex = 1;
     private String mTitle;
@@ -135,7 +138,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //        }
 
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
-
+        
+        //declare button
+        emergencyStop = (Button) findViewById(R.id.emergencyStop);
+        emergencyStop.setOnClickListener(this);
+        
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -307,5 +314,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
