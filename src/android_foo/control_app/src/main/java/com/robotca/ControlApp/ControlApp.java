@@ -3,6 +3,7 @@ package com.robotca.ControlApp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -17,9 +18,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.widget.AdapterView;
 import android.view.WindowManager;
@@ -89,7 +92,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             editor.putString("edittext_laser_scan_topic", ROBOT_INFO.getLaserTopic());
             editor.putString("edittext_camera_topic", ROBOT_INFO.getCameraTopic());
 
-            editor.commit();
+            editor.apply();
         }
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -215,13 +218,52 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             case R.id.tilt_checkbox:
                 JoystickView joystickView = (JoystickView) mDrawerLayout.findViewById(R.id.joystick_view);
 
-                if (joystickView != null)
+                if (joystickView != null) {
                     joystickView.controlSchemeChanged();
-                else
+
+                    lockOrientation(joystickView.isUsingTiltSensor());
+
+                } else
                     Log.w(TAG, "JoystickView is null");
 
 
                 break;
+        }
+    }
+
+    /**
+     * Locks/unlocks the screen orientation.
+     * Adapted from an answer on StackOverflow by jp36
+     * @param lock Whether to lock the orientation
+     */
+    public void lockOrientation(boolean lock) {
+
+        if (lock) {
+            Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+            int rotation = display.getRotation();
+            int tempOrientation = getResources().getConfiguration().orientation;
+            int orientation = 0;
+
+            switch (tempOrientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
+                        orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    else
+                        orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
+                        orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    else
+                        orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+            }
+
+            //noinspection ResourceType
+            setRequestedOrientation(orientation);
+        }
+        else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
     }
 

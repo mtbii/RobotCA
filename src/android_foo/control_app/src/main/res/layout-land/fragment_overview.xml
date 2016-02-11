@@ -20,6 +20,11 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"/>
 
+        <!--<fragment android:name="com.robotca.ControlApp.Fragments.LaserScanFragment"-->
+            <!--android:id="@+id/laser_scan_fragment"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight="1" />-->
         <org.ros.android.view.visualization.VisualizationView
             android:id="@+id/viz_view"
             android:layout_width="fill_parent"

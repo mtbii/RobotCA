@@ -9,7 +9,6 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
         android:orientation="vertical"
         android:weightSum="2">
 
@@ -24,6 +23,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1" />
+
+        <!--<fragment android:name="com.robotca.ControlApp.Fragments.LaserScanFragment"-->
+            <!--android:id="@+id/laser_scan_fragment"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight="1" />-->
 
     </LinearLayout>
 
