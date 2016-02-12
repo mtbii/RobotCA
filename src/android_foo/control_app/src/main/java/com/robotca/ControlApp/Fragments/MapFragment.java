@@ -107,8 +107,6 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
         Toast.makeText(mapView.getContext(), "Tapped on (" + geoPoint.getLatitude() + "," + geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.enableFollowLocation();
 
         return true;
     }
@@ -127,8 +125,6 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
         waypoints.add(geoPoint);
 
         Toast.makeText(mapView.getContext(), "Marked on (" + geoPoint.getLatitude() + "," + geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.enableFollowLocation();
 
         return true;
     }
