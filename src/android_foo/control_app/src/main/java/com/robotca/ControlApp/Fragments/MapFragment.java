@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.robotca.ControlApp.Core.RobotGPSSub;
@@ -34,7 +36,7 @@ import java.lang.Math.*;
 public class MapFragment extends RosFragment implements MapEventsReceiver {
 
     private RobotGPSSub robotGPSNode;
-
+    Button recenterButton;
     MyLocationNewOverlay myLocationOverlay;
     MapView mapView;
     MapEventsOverlay mapEventsOverlay;
@@ -50,6 +52,8 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
         View view = inflater.inflate(R.layout.fragment_map, null);
         mapView = (MapView) view.findViewById(R.id.mapview);
+        recenterButton = (Button) view.findViewById(R.id.recenter);
+        recenterButton.setOnClickListener(recenterListener);
         mapView.setClickable(true);
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
@@ -80,7 +84,6 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
-        //myLocationOverlay.getMyLocation();
 
         mapView.getOverlays().add(myLocationOverlay);
         mapView.getOverlays().add(0, mapEventsOverlay);
@@ -91,6 +94,11 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
         nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
         return view;
     }
+    private OnClickListener recenterListener = new OnClickListener() {
+        public void onClick(View v) {
+            myLocationOverlay.enableFollowLocation();
+        }
+    };
 
     public void shutdown(){
         nodeMainExecutor.shutdownNodeMain(robotGPSNode);
@@ -108,22 +116,17 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
     @Override
     public boolean longPressHelper(GeoPoint geoPoint) {
 
-        //The (ResourceProxy) this line causes the long press error and I'm not sure why
-        //Working on that though
         GroundOverlay myGroundOverlay = new GroundOverlay(getActivity());
         myGroundOverlay.setPosition(geoPoint);
         myGroundOverlay.setImage(getResources().getDrawable(R.drawable.marker).mutate());
         myGroundOverlay.setDimensions(25.0f);
         mapView.getOverlays().add(myGroundOverlay);
 
-        //keep storage of markers
-        //add current location to the array of Geopoints to be used in distance method
+        //keep storage of markers and current location
         waypoints.add(myLocationOverlay.getMyLocation());
         waypoints.add(geoPoint);
 
         Toast.makeText(mapView.getContext(), "Marked on (" + geoPoint.getLatitude() + "," + geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
-
-        //Doesn't seem to be working for the long press
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.enableFollowLocation();
 
@@ -132,16 +135,18 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
     public double distanceBetweenCoordinates(GeoPoint start, GeoPoint dest) {
         distanceToTravel = 0;
-        int earthRadius = 6371; // km
+        int earthRadius = 6371000; // m
         double dLat = Math.toRadians(dest.getLatitude()-start.getLatitude());
         double dLon = Math.toRadians(dest.getLongitude()-dest.getLongitude());
         double lat1 = Math.toRadians(start.getLatitude());
         double lat2 = Math.toRadians(dest.getLatitude());
 
         double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+                      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        distanceToTravel = earthRadius * c;
+        distanceToTravel = earthRadius * c;  // in meters
+
+        Toast.makeText(mapView.getContext(), "Waypoint is " + distanceToTravel + " meters away", Toast.LENGTH_LONG).show();
 
         return distanceToTravel;
     }
