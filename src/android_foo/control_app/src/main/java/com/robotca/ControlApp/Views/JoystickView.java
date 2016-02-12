@@ -18,6 +18,7 @@ package com.robotca.ControlApp.Views;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.hardware.Sensor;
@@ -26,10 +27,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
@@ -292,6 +296,43 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         public void onSensorChanged(SensorEvent event)
         {
             float[] vals = event.values;
+
+            // Adjust for different orientations
+            Display display = ((WindowManager) JoystickView.this.getContext().getSystemService(
+                    Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+            int rotation = display.getRotation();
+
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            {
+                float tmp = vals[0];
+                vals[0] = vals[1];
+                vals[1] = -tmp;
+
+                if (rotation == Surface.ROTATION_180)
+                {
+                    vals[0] = -vals[0];
+                    vals[1] = -vals[1];
+                }
+            }
+            else if (rotation == Surface.ROTATION_270)
+            {
+                vals[0] = -vals[0];
+                vals[1] = -vals[1];
+            }
+
+//            switch (rotation)
+//            {
+//                case Surface.ROTATION_90:
+//                    Log.d(TAG, "ROT_90");
+//                    break;
+//                case Surface.ROTATION_180:
+//                    Log.d(TAG, "ROT_180");
+//                    break;
+//                case Surface.ROTATION_270:
+//                    Log.d(TAG, "ROT_270");
+//                    break;
+//            }
 
             // Normalize the values
             for (int i = 0; i < vals.length; ++i)
@@ -593,7 +634,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         intensityCircleAnimation.setInterpolator(new LinearInterpolator());
         intensityCircleAnimation.setFillAfter(true);
         RotateAnimation rotateAnim;
-        rotateAnim = new RotateAnimation(contactTheta, contactTheta, joystickRadius, joystickRadius);
+        rotateAnim = new RotateAnimation(contactTheta, contactTheta, joystickRadius, getHeight() / 2);
         rotateAnim.setInterpolator(new LinearInterpolator());
         rotateAnim.setDuration(0);
         rotateAnim.setFillAfter(true);
@@ -601,7 +642,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         ScaleAnimation scaleAnim;
         scaleAnim =
                 new ScaleAnimation(contactRadius, endScale, contactRadius, endScale, joystickRadius,
-                        joystickRadius);
+                        getHeight() / 2);
         scaleAnim.setDuration(0);
         scaleAnim.setFillAfter(true);
         intensityCircleAnimation.addAnimation(scaleAnim);
@@ -626,7 +667,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // animation is over.
         intensityCircleAnimation.setAnimationListener(this);
         RotateAnimation rotateAnim;
-        rotateAnim = new RotateAnimation(contactTheta, contactTheta, joystickRadius, joystickRadius);
+        rotateAnim = new RotateAnimation(contactTheta, contactTheta, joystickRadius, getHeight() / 2);
         rotateAnim.setInterpolator(new LinearInterpolator());
         rotateAnim.setDuration(duration);
         rotateAnim.setFillAfter(true);
@@ -634,7 +675,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         ScaleAnimation scaleAnim;
         scaleAnim =
                 new ScaleAnimation(contactRadius, endScale, contactRadius, endScale, joystickRadius,
-                        joystickRadius);
+                        getHeight() / 2);
         scaleAnim.setDuration(duration);
         scaleAnim.setFillAfter(true);
         intensityCircleAnimation.addAnimation(scaleAnim);
@@ -1060,7 +1101,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /*
      * Queries the tilt-sensor CheckBox to see if tilt sensor controlled is enabled.
      */
-    private boolean isUsingTiltSensor()
+    public boolean isUsingTiltSensor()
     {
         CheckBox checkBox = getTiltCheckBox();
 
