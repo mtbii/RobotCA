@@ -10,10 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ffab6797-4de1-464b-bfbc-bed3b19021bd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/marker.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/marker2.jpeg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-hdpi/ic_flag_black_24dp.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-mdpi/ic_flag_black_24dp.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xhdpi/ic_flag_black_24dp.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxhdpi/ic_flag_black_24dp.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/res/drawable-xxxhdpi/ic_flag_black_24dp.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="android_foo.iws" />
@@ -96,8 +98,8 @@
       <file leaf-file-name="MapFragment.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8192771">
-              <caret line="135" column="77" selection-start-line="135" selection-start-column="77" selection-end-line="135" selection-end-column="77" />
+            <state vertical-scroll-proportion="0.9741824">
+              <caret line="132" column="20" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
               <folding>
                 <element signature="e#3456#3587#0" expanded="true" />
                 <element signature="e#3586#3587#0" expanded="true" />
@@ -112,7 +114,7 @@
         <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="63" column="33" selection-start-line="63" selection-start-column="33" selection-end-line="63" selection-end-column="33" />
+              <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -629,11 +631,6 @@
                 <option name="name" value="prepareComAndroidSupportSupportV42311Library" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Prepare com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="prepareComGithubMKergallOsmbonuspackOSMBonusPackV57Library" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
                 <option name="description" value="Prepare com.github.rosjava.android_extras:gingerbread:0.2.0" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="prepareComGithubRosjavaAndroid_extrasGingerbread020Library" />
@@ -654,11 +651,6 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="prepareDebugUnitTestDependencies" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Prepare org.osmdroid:osmdroid-android:5.1" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="prepareOrgOsmdroidOsmdroidAndroid51Library" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Prepare org.ros.android_core:android_10:0.2.0" />
@@ -1293,11 +1285,6 @@
                 <option name="name" value="prepareComAndroidSupportSupportV42311Library" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Prepare com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/control_app" />
-                <option name="name" value="prepareComGithubMKergallOsmbonuspackOSMBonusPackV57Library" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
                 <option name="description" value="Prepare com.github.rosjava.android_extras:gingerbread:0.2.0" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/control_app" />
                 <option name="name" value="prepareComGithubRosjavaAndroid_extrasGingerbread020Library" />
@@ -1318,11 +1305,6 @@
               <ExternalTaskPojo>
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/control_app" />
                 <option name="name" value="prepareDebugUnitTestDependencies" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Prepare org.osmdroid:osmdroid-android:5.1" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/control_app" />
-                <option name="name" value="prepareOrgOsmdroidOsmdroidAndroid51Library" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Prepare org.ros.android_core:android_10:0.2.0" />
@@ -2078,7 +2060,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5819120059000" />
+        <entry key="$PROJECT_DIR$" value="5818753625000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2327,8 +2309,8 @@
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/appcompat-v7/23.1.1/appcompat-v7-23.1.1.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/cardview-v7/23.1.1/cardview-v7-23.1.1.aar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/recyclerview-v7/23.1.1/recyclerview-v7-23.1.1.aar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.osmdroid/osmdroid-android/4.3/2fcf7bc3cb27daa6e67c8990ea418d19f6b5b296/osmdroid-android-4.3.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.6.1-RC1/fe76e182946faad493a50968f3344e848b467b42/slf4j-android-1.6.1-RC1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.MKergall.osmbonuspack/OSMBonusPack/v5.7/e6e20c147dcfedeb88068e58826afc29e06c5385/OSMBonusPack-v5.7.aar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_messages/sensor_msgs/1.11.7/5f0b7ac0b5d341b9b37f408ab45c4a2e4c80068e/sensor_msgs-1.11.7.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_core/rosjava/0.2.1/68face01dcd34ac0dd82fc3745afd764d330b427/rosjava-0.2.1.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_messages/diagnostic_msgs/1.11.7/119c52755000fa22288dd666c4185f54ca737410/diagnostic_msgs-1.11.7.jar" />
@@ -2338,7 +2320,6 @@
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_messages/actionlib_msgs/1.11.7/9ec983bb2eaaa20552edeb3544e04a45308fe71b/actionlib_msgs-1.11.7.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_messages/geometry_msgs/1.11.7/bb9ca9051697047f8ebacae69956aa562d43b0e1/geometry_msgs-1.11.7.jar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.1.1/support-annotations-23.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp/okhttp/2.6.0/212387a39088ecd3daff8e3bfc3bdc4123e33c67/okhttp-2.6.0.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_messages/std_msgs/0.5.9/68490f8a983f5415bb95ebf93010c347c4fd20d8/std_msgs-0.5.9.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_core/apache_xmlrpc_common/0.2.1/a956178368232d0a9fccf501a8c91aacf2ac0256/apache_xmlrpc_common-0.2.1.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_core/apache_xmlrpc_server/0.2.1/f96701e8f578b6a4fc538e8a8a6b8f9256fd6718/apache_xmlrpc_server-0.2.1.jar" />
@@ -2355,12 +2336,10 @@
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/com.springsource.org.apache.commons.io/1.4.0/51097cd000ec88214ff181c9f059947de1cf4a35/com.springsource.org.apache.commons.io-1.4.0.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-pool/commons-pool/1.6/4572d589699f09d866a226a14b7f4323c6d8f040/commons-pool-1.6.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/com.springsource.org.apache.commons.lang/2.4.0/686e3713650c8e3a5d98723b4d3e239586bf9822/com.springsource.org.apache.commons.lang-2.4.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.okio/okio/1.6.0/98476622f10715998eacf9240d6b479f12c66143/okio-1.6.0.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/com.springsource.org.apache.commons.httpclient/3.1.0/c493a925a091ac3d8f449d9265fe12482dabb2a7/com.springsource.org.apache.commons.httpclient-3.1.0.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.ws.commons/ws-commons-util/1.0.1/126e80ff798fece634bc94e61f8be8a8da00be60/ws-commons-util-1.0.1.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/1.3.9/40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf/jsr305-1.3.9.jar" />
                             <option value="$USER_HOME$/Library/Android/sdk/extras/android/m2repository/com/android/support/support-v4/23.1.1/support-v4-23.1.1.aar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.osmdroid/osmdroid-android/5.1/de887da0c82317b23f755b527aabe642d175285f/osmdroid-android-5.1.aar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/control_app" />
@@ -2621,16 +2600,9 @@
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotGPSSub.java" />
         <option value="$PROJECT_DIR$/control_app/build.gradle" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java" />
       </list>
-    </option>
-  </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHome" value="Bundled (Maven 3)" />
-      </MavenGeneralSettings>
     </option>
   </component>
   <component name="NamedScopeManager">
@@ -2705,6 +2677,28 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="drawable" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android_foo" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="control_app" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="drawable" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ic_flag_black_24dp.png" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResGroupNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -2810,13 +2804,6 @@
     <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="310069d54af96200" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_23_x86" />
-    <property name="OverrideImplement.combined" value="true" />
-    <property name="OverrideImplement.overriding.sorted" value="false" />
-    <property name="DEBUGGABLE_DEVICE" value="oneplus-a0001-19d01310" />
-    <property name="DEBUGGABLE_PROCESS" value="com.robotca.ControlApp" />
-    <property name="SHOW_ALL_PROCESSES" value="false" />
   </component>
   <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
     <UpdatedFiles>
@@ -3077,7 +3064,7 @@
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
       <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="true" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
       <option name="PREFERRED_AVD" value="" />
       <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
@@ -3121,42 +3108,11 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ffab6797-4de1-464b-bfbc-bed3b19021bd" name="Default" comment="" />
-      <created>1454690660116</created>
+      <changelist id="acb3a66e-583b-4ba6-9c9b-4d70a7b9676f" name="Default" comment="" />
+      <created>1454713986622</created>
       <option name="number" value="Default" />
-      <updated>1454690660116</updated>
+      <updated>1454713986622</updated>
     </task>
-    <task id="LOCAL-00001" summary="Add the GPS view to map fragment">
-      <created>1454691894292</created>
-      <option name="number" value="00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1454691894292</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Add the GPS view to map fragment">
-      <created>1454694944573</created>
-      <option name="number" value="00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1454694944574</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Add the GPS view to map fragment">
-      <created>1454695030541</created>
-      <option name="number" value="00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1454695030541</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Added functionality of showing the latitude and longitude of a tapped point on the map">
-      <created>1455065907280</created>
-      <option name="number" value="00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1455065907280</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Fixed the long press to add an icon to be waypoint&#10;Added array of geopoints to be used for waypoint calculations&#10;Added function to compute the linear distance between 2 coordinates">
-      <created>1455125129438</created>
-      <option name="number" value="00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1455125129438</updated>
-    </task>
-    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView">
@@ -3170,7 +3126,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="725" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32840723" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32840723" sideWeight="0.49676898" order="7" side_tool="false" content_ui="tabs" />
@@ -3187,7 +3143,7 @@
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32840723" sideWeight="0.4951535" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32840723" sideWeight="0.503231" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22132471" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22132471" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -3215,15 +3171,12 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add the GPS view to map fragment" />
-    <MESSAGE value="Added functionality of showing the latitude and longitude of a tapped point on the map" />
-    <MESSAGE value="Fixed the long press to add an icon to be waypoint&#10;Added array of geopoints to be used for waypoint calculations&#10;Added function to compute the linear distance between 2 coordinates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed the long press to add an icon to be waypoint&#10;Added array of geopoints to be used for waypoint calculations&#10;Added function to compute the linear distance between 2 coordinates" />
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../.." />
+    </ignored-roots>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="12" />
-    </breakpoint-manager>
+    <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -3547,15 +3500,15 @@
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="63" column="33" selection-start-line="63" selection-start-column="33" selection-end-line="63" selection-end-column="33" />
+          <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/MapFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8192771">
-          <caret line="135" column="77" selection-start-line="135" selection-start-column="77" selection-end-line="135" selection-end-column="77" />
+        <state vertical-scroll-proportion="0.9741824">
+          <caret line="132" column="20" selection-start-line="132" selection-start-column="20" selection-end-line="132" selection-end-column="20" />
           <folding>
             <element signature="e#3456#3587#0" expanded="true" />
             <element signature="e#3586#3587#0" expanded="true" />

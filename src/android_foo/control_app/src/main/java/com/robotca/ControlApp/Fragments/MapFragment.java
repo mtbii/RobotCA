@@ -118,7 +118,7 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
 
         GroundOverlay myGroundOverlay = new GroundOverlay(getActivity());
         myGroundOverlay.setPosition(geoPoint);
-        myGroundOverlay.setImage(getResources().getDrawable(R.drawable.marker).mutate());
+        myGroundOverlay.setImage(getResources().getDrawable(R.drawable.ic_flag_black_24dp).mutate());
         myGroundOverlay.setDimensions(25.0f);
         mapView.getOverlays().add(myGroundOverlay);
 
