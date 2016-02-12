@@ -6,10 +6,7 @@
     </shared>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ed241539-3fdf-4ecc-91cd-c24ecccaedc4" name="Default" comment="creating a publisher for use of emergency button and others">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/estopPublish.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+    <list default="true" id="ed241539-3fdf-4ecc-91cd-c24ecccaedc4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="android_foo.iws" />
@@ -2617,6 +2614,13 @@
       <option name="number" value="Default" />
       <updated>1455299682217</updated>
     </task>
+    <task id="LOCAL-00001" summary="creating a publisher for use of emergency button and others">
+      <created>1455301339042</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1455301339043</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
