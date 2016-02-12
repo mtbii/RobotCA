@@ -8,13 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.robotca.ControlApp.Layers.LaserScanLayer;
 import com.robotca.ControlApp.R;
 import com.robotca.ControlApp.Views.JoystickView;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.view.RosImageView;
 import org.ros.android.view.visualization.VisualizationView;
-import org.ros.android.view.visualization.layer.LaserScanLayer;
 import org.ros.android.view.visualization.layer.Layer;
 import org.ros.android.view.visualization.layer.RobotLayer;
 import org.ros.node.NodeConfiguration;

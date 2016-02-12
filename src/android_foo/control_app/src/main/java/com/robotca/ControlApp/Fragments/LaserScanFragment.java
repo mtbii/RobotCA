@@ -7,10 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.robotca.ControlApp.Layers.LaserScanLayer;
 import com.robotca.ControlApp.R;
 
 import org.ros.android.view.visualization.VisualizationView;
-import org.ros.android.view.visualization.layer.LaserScanLayer;
 import org.ros.android.view.visualization.layer.Layer;
 import org.ros.android.view.visualization.layer.RobotLayer;
 import org.ros.node.NodeConfiguration;

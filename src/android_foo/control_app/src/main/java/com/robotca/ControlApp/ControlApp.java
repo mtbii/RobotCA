@@ -143,8 +143,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
         
         //declare button
-        emergencyStop = (Button) findViewById(R.id.emergencyStop);
-        emergencyStop.setOnClickListener(new View.onClickListener);
+//        emergencyStop = (Button) findViewById(R.id.emergencyStop);
+//        emergencyStop.setOnClickListener(new View.onClickListener);
         
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
