@@ -6,5 +6,6 @@ package com.robotca.ControlApp.Core;
 public enum ControlMode {
     Joystick,
     Motion,
-    Waypoint
+    Waypoint,
+    RandomWalk
 }

@@ -1196,7 +1196,10 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     }
 
     public void setControlMode(ControlMode controlMode) {
+
         this.controlMode = controlMode;
+
+        publishVelocity = controlMode.ordinal() < ControlMode.Waypoint.ordinal();
     }
 
     public ControlMode getControlMode(){

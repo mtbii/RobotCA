@@ -51,4 +51,5 @@
     <string name="joystick_control">Joystick Control</string>
     <string name="motion_control">Motion Control</string>
     <string name="waypoint_control">Waypoint Control</string>
+    <string name="random_walk">Random Walk</string>
 </resources>
