@@ -45,6 +45,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -268,6 +269,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Used for tilt sensor control.
      */
+
+    private ControlMode controlMode = ControlMode.Joystick;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private float[] tiltOffset = null;
@@ -436,7 +439,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     {
         // Register/unregister the accelerometer listener as needed
         if (accelerometer != null) {
-            if (isUsingTiltSensor()) {
+            if (controlMode == ControlMode.Motion) {
                 tiltOffset = null;
                 sensorManager.registerListener(ACCEL_LISTENER, accelerometer, SensorManager.SENSOR_DELAY_GAME);
                 onContactDown();
@@ -502,7 +505,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     public boolean onTouchEvent(MotionEvent event) {
 
         // Ignore touch events if using the tilt sensor
-        if (isUsingTiltSensor())
+        if (controlMode == ControlMode.Motion)
             return true;
 
         final int action = event.getAction();
@@ -572,14 +575,14 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Allows the user the option to turn on the auto-snap feature.
      */
-    public void EnableSnapping() {
+    public void enableSnapping() {
         magnetTheta = 10;
     }
 
     /**
      * Allows the user the option to turn off the auto-snap feature.
      */
-    public void DisableSnapping() {
+    public void disableSnapping() {
         magnetTheta = 1;
     }
 
@@ -617,7 +620,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         magnitudeText.setTextSize(parentSize / 12);
 
         // Enable the tilt checkbox if an accelerometer is present
-        enableTiltCheckBox(accelerometer != null);
+//        enableTiltCheckBox(accelerometer != null);
     }
 
     /**
@@ -1101,34 +1104,34 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /*
      * Queries the tilt-sensor CheckBox to see if tilt sensor controlled is enabled.
      */
-    public boolean isUsingTiltSensor()
-    {
-        CheckBox checkBox = getTiltCheckBox();
+//    public boolean isUsingTiltSensor()
+//    {
+//        CheckBox checkBox = getTiltCheckBox();
+//
+//        return checkBox != null && checkBox.isChecked();
+//
+//    }
 
-        return checkBox != null && checkBox.isChecked();
-
-    }
-
-    private void enableTiltCheckBox(boolean enable)
-    {
-        CheckBox checkBox = getTiltCheckBox();
-
-        if (checkBox != null)
-            checkBox.setEnabled(enable);
-    }
+//    private void enableTiltCheckBox(boolean enable)
+//    {
+//        CheckBox checkBox = getTiltCheckBox();
+//
+//        if (checkBox != null)
+//            checkBox.setEnabled(enable);
+//    }
 
     /*
      * Convenience method to get the tilt checkbox
      */
-    private CheckBox getTiltCheckBox()
-    {
-        RelativeLayout rl = (RelativeLayout) getParent();
-
-        if (rl == null)
-            return null;
-        else
-            return (CheckBox) rl.findViewById(R.id.tilt_checkbox);
-    }
+//    private CheckBox getTiltCheckBox()
+//    {
+//        RelativeLayout rl = (RelativeLayout) getParent();
+//
+//        if (rl == null)
+//            return null;
+//        else
+//            return (CheckBox) rl.findViewById(R.id.tilt_checkbox);
+//    }
 
     /**
      * Comparing 2 float values.
@@ -1190,5 +1193,17 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
     @Override
     public void onError(Node node, Throwable throwable) {
+    }
+
+    public void setControlMode(ControlMode controlMode) {
+        this.controlMode = controlMode;
+    }
+
+    public ControlMode getControlMode(){
+        return controlMode;
+    }
+
+    public boolean hasAccelerometer(){
+        return accelerometer != null;
     }
 }

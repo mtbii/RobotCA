@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
 import com.robotca.ControlApp.Views.JoystickView;
 
@@ -20,14 +21,17 @@ import org.ros.node.NodeMainExecutor;
  */
 public class JoystickFragment extends RosFragment {
     private JoystickView virtualJoystick;
+    private ControlMode controlMode = ControlMode.Joystick;
+    private boolean isSetup;
 
-    public JoystickFragment(){}
+    public JoystickFragment() {
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if(savedInstanceState != null)
+        if (savedInstanceState != null)
             return virtualJoystick;
 
 
@@ -37,15 +41,58 @@ public class JoystickFragment extends RosFragment {
 
         virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
-        if (nodeConfiguration != null)
+        if (!isSetup && isInitialized()) {
+            isSetup = true;
             nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+        }
 
         return view;
     }
 
     @Override
     void shutdown() {
-        if (nodeMainExecutor != null)
+        if (isSetup && isInitialized()) {
             nodeMainExecutor.shutdownNodeMain(virtualJoystick);
+        }
+
+        isSetup = false;
+        setInitialized(false);
+    }
+
+    public ControlMode getControlMode() {
+        return controlMode;
+    }
+
+    public void setControlMode(ControlMode controlMode) {
+        this.controlMode = controlMode;
+        this.invalidate();
+    }
+
+    public boolean hasAccelerometer() {
+        return virtualJoystick.hasAccelerometer();
+    }
+
+    public void invalidate() {
+        switch (controlMode) {
+            case Joystick:
+                show();
+                break;
+            case Motion:
+                show();
+                break;
+            case Waypoint:
+                hide();
+                break;
+        }
+
+        if (isInitialized()) {
+            if(!isSetup) {
+                isSetup = true;
+                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+            }else{
+                virtualJoystick.setControlMode(controlMode);
+                virtualJoystick.controlSchemeChanged();
+            }
+        }
     }
 }

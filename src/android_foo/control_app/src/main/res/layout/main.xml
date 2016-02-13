@@ -1,72 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:weightSum="4"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <Button
-        android:id="@+id/emergencyStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="STOP"/>
-
-    <android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="7dp">
-        <!-- The main content view -->
-        <FrameLayout
-            android:id="@+id/content_frame"
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <!-- The main content view -->
+            <FrameLayout
+                android:id="@+id/content_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <fragment
+                android:id="@+id/joystick_fragment"
+                android:name="com.robotca.ControlApp.Fragments.JoystickFragment"
+                android:layout_width="150dip"
+                android:layout_height="150dip"
+                android:layout_alignParentBottom="true"
+                tools:layout="@layout/fragment_joystick_view" />
+            <Button
+                android:id="@+id/emergencyStop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/holo_red_dark"
+                android:text="STOP" />
+        </RelativeLayout>
         <!-- The navigation drawer -->
-        <ListView android:id="@+id/left_drawer"
+        <ListView
+            android:id="@+id/left_drawer"
             android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
+            android:background="#eee"
             android:choiceMode="singleChoice"
-            android:listSelector="@android:color/darker_gray"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
-            android:background="#eee"/>
+            android:listSelector="@android:color/darker_gray" />
     </android.support.v4.widget.DrawerLayout>
 
     <!--<LinearLayout-->
-        <!--android:layout_weight="1"-->
-        <!--android:weightSum="2"-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent">-->
+    <!--android:layout_weight="1"-->
+    <!--android:weightSum="2"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent">-->
 
-        <!--<org.ros.android.view.RosImageView-->
-            <!--android:id="@+id/camera_view"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent"-->
-            <!--></org.ros.android.view.RosImageView>-->
+    <!--<org.ros.android.view.RosImageView-->
+    <!--android:id="@+id/camera_view"-->
+    <!--android:layout_weight="1"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--></org.ros.android.view.RosImageView>-->
 
-        <!--<org.ros.android.view.visualization.VisualizationView-->
-            <!--android:id="@+id/viz_view"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent" />-->
+    <!--<org.ros.android.view.visualization.VisualizationView-->
+    <!--android:id="@+id/viz_view"-->
+    <!--android:layout_weight="1"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent" />-->
 
     <!--</LinearLayout>-->
 
     <!--<RelativeLayout-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:layout_weight="3"-->
-        <!--android:gravity="center_horizontal">-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="fill_parent"-->
+    <!--android:layout_weight="3"-->
+    <!--android:gravity="center_horizontal">-->
 
-        <!--<com.robotca.ControlApp.Views.JoystickView-->
-            <!--android:id="@+id/joystick_view"-->
-            <!--android:layout_width="200dip"-->
-            <!--android:layout_height="200dip"-->
-            <!--android:layout_alignParentBottom="true"/>-->
+    <!--<com.robotca.ControlApp.Views.JoystickView-->
+    <!--android:id="@+id/joystick_view"-->
+    <!--android:layout_width="200dip"-->
+    <!--android:layout_height="200dip"-->
+    <!--android:layout_alignParentBottom="true"/>-->
     <!--</RelativeLayout>-->
 
     <!--<fragment-->
@@ -77,4 +89,4 @@
     <!--android:name="com.robotca.ControlApp.Fragments.JoystickFragment"-->
     <!--tools:layout="@layout/fragment_joystick_view"></fragment>-->
 
-</LinearLayout>
+</RelativeLayout>

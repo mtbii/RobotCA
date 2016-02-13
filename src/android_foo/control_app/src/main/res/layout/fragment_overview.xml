@@ -32,17 +32,17 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent">-->
 
-        <fragment android:name="com.robotca.ControlApp.Fragments.JoystickFragment"
-            android:id="@+id/joystick_fragment"
-            android:layout_width="150dip"
-            android:layout_height="150dip"
-            android:layout_alignParentBottom="true"
-            tools:layout="@layout/fragment_joystick_view">
-        </fragment>
+        <!--<fragment android:name="com.robotca.ControlApp.Fragments.JoystickFragment"-->
+            <!--android:id="@+id/joystick_fragment"-->
+            <!--android:layout_width="150dip"-->
+            <!--android:layout_height="150dip"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--tools:layout="@layout/fragment_joystick_view">-->
+        <!--</fragment>-->
 
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 </RelativeLayout>
