@@ -1,6 +1,5 @@
 package com.robotca.ControlApp;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -8,10 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.annotation.DimenRes;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,7 +16,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.Display;
-import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -30,11 +28,13 @@ import android.widget.Button;
 import android.widget.ListView;
 
 
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
+import com.robotca.ControlApp.Fragments.JoystickFragment;
 import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
 import com.robotca.ControlApp.Fragments.MapFragment;
@@ -46,7 +46,6 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +64,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private ActionBarDrawerToggle mDrawerToggle;
     //creating emergency stop button
     private Button emergencyStop;
+
+    private JoystickFragment joystickFragment;
 
     private int drawerIndex = 1;
     private String mTitle;
@@ -143,7 +144,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
         
         //declare button
-//        emergencyStop = (Button) findViewById(R.id.emergencyStop);
+        emergencyStop = (Button) findViewById(R.id.emergencyStop);
 //        emergencyStop.setOnClickListener(new View.onClickListener);
         
         int[] imgRes = new int[]{
@@ -167,12 +168,20 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
+
+        joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
     }
 
     @Override
     protected void onStop() {
         RobotStorage.update(this, ROBOT_INFO);
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.nodeMainExecutorService.forceShutdown();
     }
 
     @Override
@@ -186,6 +195,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             this.nodeMainExecutor = nodeMainExecutor;
             this.nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
+
+            joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
+            joystickFragment.invalidate();
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -209,27 +221,29 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         selectItem(position);
     }
 
-    /**
-     * Called when the tilt-control check box is pressed.
-     * @param view The pressed View
-     */
-    public void buttonPressed(View view) {
-        switch (view.getId()) {
-            case R.id.tilt_checkbox:
-                JoystickView joystickView = (JoystickView) mDrawerLayout.findViewById(R.id.joystick_view);
+//    /**
+//     * Called when the tilt-control check box is pressed.
+//     * @param view The pressed View
+//     */
+//    public void buttonPressed(View view) {
+//        switch (view.getId()) {
+//            case R.id.tilt_checkbox:
+//                JoystickView joystickView = (JoystickView) mDrawerLayout.findViewById(R.id.joystick_view);
+//
+//                if (joystickView != null) {
+//                    joystickView.controlSchemeChanged();
+//
+//                    lockOrientation(getControlMode() == ControlMode.Motion);
+//
+//                } else
+//                    Log.w(TAG, "JoystickView is null");
+//
+//
+//                break;
+//        }
+//    }
 
-                if (joystickView != null) {
-                    joystickView.controlSchemeChanged();
 
-                    lockOrientation(joystickView.isUsingTiltSensor());
-
-                } else
-                    Log.w(TAG, "JoystickView is null");
-
-
-                break;
-        }
-    }
 
     /**
      * Locks/unlocks the screen orientation.
@@ -275,6 +289,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         Fragment fragment = null;
         Bundle args = new Bundle();
 
+        if(getControlMode() != ControlMode.Waypoint){
+            joystickFragment.show();
+        }
+
+        emergencyStop.setVisibility(View.VISIBLE);
+
         switch (position) {
             case 0:
                 finish();
@@ -297,6 +317,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 break;
 
             case 5:
+                emergencyStop.setVisibility(View.GONE);
+                joystickFragment.hide();
                 fragment = new PreferencesFragment();
                 break;
 
@@ -307,7 +329,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         try {
             //noinspection ConstantConditions
             ((RosFragment) fragment).initialize(nodeMainExecutor, nodeConfiguration);
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
             // Ignore
         }
 
@@ -348,7 +370,41 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
-        return mDrawerToggle.onOptionsItemSelected(item);
+        switch(item.getItemId()){
+            case R.id.action_joystick_control:
+                setControlMode(ControlMode.Joystick);
+                return true;
+
+            case R.id.action_motion_control:
+                setControlMode(ControlMode.Motion);
+                return true;
+
+            case R.id.action_waypoint_control:
+                setControlMode(ControlMode.Waypoint);
+                return true;
+
+            default:
+                return mDrawerToggle.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        for(int i = 0; i < menu.size(); i++){
+            menu.getItem(i).setChecked(false);
+        }
+
+        menu.getItem(1).setEnabled(joystickFragment.hasAccelerometer());
+        menu.getItem(getControlMode().ordinal()).setChecked(true);
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_control_app, menu);
+        menu.getItem(0).setChecked(true);
+        return true;
     }
 
     @Override
@@ -356,6 +412,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public ControlMode getControlMode() {
+        return joystickFragment.getControlMode();
+    }
+
+    public void setControlMode(ControlMode controlMode) {
+        joystickFragment.setControlMode(controlMode);
+        invalidateOptionsMenu();
     }
 
     @Override

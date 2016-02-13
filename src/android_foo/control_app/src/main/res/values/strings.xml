@@ -48,4 +48,7 @@
     <string name="percent_string">%1$d%%</string>
 
     <string name="use_tilt_sensor_string">Use Tilt</string>
+    <string name="joystick_control">Joystick Control</string>
+    <string name="motion_control">Motion Control</string>
+    <string name="waypoint_control">Waypoint Control</string>
 </resources>

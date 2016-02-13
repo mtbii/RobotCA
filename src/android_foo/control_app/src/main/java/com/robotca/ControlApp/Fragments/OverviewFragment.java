@@ -32,7 +32,7 @@ public class OverviewFragment extends RosFragment {
 
     private VisualizationView vizView;
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
-    private JoystickView joystickView;
+//    private JoystickView joystickView;
 
     public OverviewFragment(){}
 
@@ -52,14 +52,14 @@ public class OverviewFragment extends RosFragment {
         cameraView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_camera_topic", getString(R.string.camera_topic)));
         cameraView.setMessageType(CompressedImage._TYPE);
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
-
-        joystickView = (JoystickView) view.findViewById(R.id.joystick_view);
-        joystickView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+//
+//        joystickView = (JoystickView) view.findViewById(R.id.joystick_view);
+//        joystickView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
         vizView.init(nodeMainExecutor);
 
         nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/camera_view"));
-        nodeMainExecutor.execute(joystickView, nodeConfiguration.setNodeName("android/joystick_view"));
+//        nodeMainExecutor.execute(joystickView, nodeConfiguration.setNodeName("android/joystick_view"));
         nodeMainExecutor.execute(vizView, nodeConfiguration.setNodeName("android/viz_view"));
 
         return view;
@@ -70,13 +70,13 @@ public class OverviewFragment extends RosFragment {
         super.onStart();
 
         vizView.getCamera().jumpToFrame("base_link");
-        //vizView.getCamera().zoom(vizView.getCamera().getViewport().getWidth() / 2, vizView.getCamera().getViewport().getHeight() / 2, .5);
+//        vizView.getCamera().zoom(vizView.getCamera().getViewport().getWidth() / 2, vizView.getCamera().getViewport().getHeight() / 2, .5);
     }
 
     @Override
     public void shutdown(){
         nodeMainExecutor.shutdownNodeMain(cameraView);
-        nodeMainExecutor.shutdownNodeMain(joystickView);
+//        nodeMainExecutor.shutdownNodeMain(joystickView);
         nodeMainExecutor.shutdownNodeMain(vizView);
     }
 }
