@@ -37,6 +37,7 @@ public class LaserScanFragment extends RosFragment {
         laserView = (VisualizationView) view.findViewById(R.id.laser_scan_fragment_viz_view);
 
         List<Layer> layers = new ArrayList<>();
+
         layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
         layers.add(new RobotLayer("base_link"));
         laserView.onCreate(layers);

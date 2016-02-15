@@ -5,6 +5,7 @@
     <string name="joy_topic">/joy_teleop/cmd_vel</string>
     <string name="camera_topic">/image_raw/compressed</string>
     <string name="laser_scan_topic">/scan</string>
+    <string name="odometry_topic">/odometry/filtered</string>
 
     <string name="joy_pref_title">Joystick Topic</string>
     <string name="laser_pref_title">Laser Scan Topic</string>
@@ -23,6 +24,11 @@
     <string name="camera_pref_summary">
         Topic that the camera widget subscribes to.
         Expected message type: sensor_msgs/CompressedImage
+    </string>
+
+    <string name="odometry_pref_summary">
+        Topic that the application gets odometry data from
+        Expected message type: nav_msgs/Odometry
     </string>
 
     <string name="add_robot">Add Robot</string>
@@ -52,4 +58,5 @@
     <string name="motion_control">Motion Control</string>
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
+    <string name="odometry_pref_title">Odometry Topic</string>
 </resources>

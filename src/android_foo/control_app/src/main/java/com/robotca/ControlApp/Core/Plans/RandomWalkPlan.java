@@ -10,7 +10,7 @@ import sensor_msgs.LaserScan;
 /**
  * Created by Michael Brunson on 2/13/16.
  */
-public class RandomWalkPlan implements IRobotPlan {
+public class RandomWalkPlan extends RobotPlan {
 
     private final Random random;
 
@@ -19,38 +19,40 @@ public class RandomWalkPlan implements IRobotPlan {
     }
 
     @Override
-    public void run(final RobotController controller) throws Exception {
-        LaserScan laserScan = controller.getLaserScan();
+    public void start(final RobotController controller) throws Exception {
+        while(!isInterrupted()) {
+            LaserScan laserScan = controller.getLaserScan();
 
-        float[] ranges = laserScan.getRanges();
-        float shortestDistance = ranges[ranges.length / 2];
-        float shortestDistanceAngle = 0;
-        float angle = laserScan.getAngleMin();
-        float angleDelta = (float) Math.toRadians(30);
-        float angleIncrement = laserScan.getAngleIncrement();
+            float[] ranges = laserScan.getRanges();
+            float shortestDistance = ranges[ranges.length / 2];
+            float shortestDistanceAngle = 0;
+            float angle = laserScan.getAngleMin();
+            float angleDelta = (float) Math.toRadians(30);
+            float angleIncrement = laserScan.getAngleIncrement();
 
-        for (int i = 0; i < laserScan.getRanges().length; i++) {
-            if (ranges[i] < shortestDistance && angle > -angleDelta && angle < angleDelta) {
-                shortestDistance = ranges[i];
-                shortestDistanceAngle = angle;
+            for (int i = 0; i < laserScan.getRanges().length; i++) {
+                if (ranges[i] < shortestDistance && angle > -angleDelta && angle < angleDelta) {
+                    shortestDistance = ranges[i];
+                    shortestDistanceAngle = angle;
+                }
+
+                angle += angleIncrement;
             }
 
-            angle += angleIncrement;
-        }
-
-        if (shortestDistance < 20 * laserScan.getRangeMin()) {
-            controller.publishVelocity(0, 0);
-            Thread.sleep(1000, 0);
-            Timer timer = new Timer();
-            long delay = (long) (3000 * (1 + random.nextFloat()));
-            long start = System.currentTimeMillis();
-            while(!Thread.interrupted() && System.currentTimeMillis() - start < delay){
-                controller.publishVelocity(0, .75);
+            if (shortestDistance < 20 * laserScan.getRangeMin()) {
+                controller.publishVelocity(0, 0);
+                Thread.sleep(1000, 0);
+                Timer timer = new Timer();
+                long delay = (long) (2000 * (1 + random.nextFloat()));
+                long start = System.currentTimeMillis();
+                while (!isInterrupted() && System.currentTimeMillis() - start < delay) {
+                    controller.publishVelocity(0, .75);
+                }
+                controller.publishVelocity(0, 0);
+                Thread.sleep(1000, 0);
+            } else {
+                controller.publishVelocity(.75, 0);
             }
-            controller.publishVelocity(0, 0);
-            Thread.sleep(1000, 0);
-        } else {
-            controller.publishVelocity(.75, 0);
         }
     }
 }

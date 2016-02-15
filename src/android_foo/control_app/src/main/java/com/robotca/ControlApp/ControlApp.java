@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -29,8 +30,10 @@ import android.widget.ListView;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
+import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
@@ -49,7 +52,7 @@ import org.ros.node.NodeMainExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlApp extends RosActivity implements ListView.OnItemClickListener, View.OnClickListener {
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener, View.OnClickListener, IWaypointProvider {
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
@@ -72,6 +75,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private String mDrawerTitle;
 
     private static final String TAG = "ControlApp";
+    private Location waypoint;
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
@@ -200,7 +204,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
             joystickFragment.invalidate();
 
-            controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+            //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
             controller.initialize(nodeMainExecutor, nodeConfiguration);
 
             runOnUiThread(new Runnable() {
@@ -298,6 +302,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         emergencyStop.setVisibility(View.VISIBLE);
+
+        if(controller != null) {
+            controller.update();
+        }
 
         switch (position) {
             case 0:
@@ -430,18 +438,30 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         lockOrientation(controlMode == ControlMode.Motion);
         joystickFragment.setControlMode(controlMode);
 
-        if(controlMode == ControlMode.RandomWalk){
+        if(getControlMode() == ControlMode.Waypoint){
+            controller.runPlan(new WaypointPlan(this));
+        }
+        else if(controlMode == ControlMode.RandomWalk) {
             controller.runPlan(new RandomWalkPlan());
         }
         else{
-            controller.stopPlan();
+            controller.stop();
         }
 
         invalidateOptionsMenu();
     }
 
+    public void setWaypoint(Location location){
+        waypoint = location;
+    }
+
     @Override
     public void onClick(View v) {
 
+    }
+
+    @Override
+    public Location getDestination() {
+        return waypoint;
     }
 }

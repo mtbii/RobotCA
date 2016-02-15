@@ -23,4 +23,12 @@
         android:singleLine="true"
         android:summary="@string/camera_pref_summary"
         />
+
+    <EditTextPreference
+        android:key="edittext_odometry_topic"
+        android:defaultValue="@string/odometry_topic"
+        android:title="@string/odometry_pref_title"
+        android:singleLine="true"
+        android:summary="@string/odometry_pref_summary"
+        />
 </PreferenceScreen>

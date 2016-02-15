@@ -1,8 +1,10 @@
 package com.robotca.ControlApp.Core;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 
-import com.robotca.ControlApp.Core.Plans.IRobotPlan;
+import com.robotca.ControlApp.Core.Plans.RobotPlan;
+import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
@@ -15,6 +17,7 @@ import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
 import geometry_msgs.Twist;
+import nav_msgs.Odometry;
 import sensor_msgs.LaserScan;
 import sensor_msgs.NavSatFix;
 
@@ -36,10 +39,14 @@ public class RobotController implements NodeMain {
     private LaserScan laserScan;
     private Object laserScanMutex;
 
-    private NodeMainExecutor nodeMainExecutor;
-    private NodeConfiguration nodeConfiguration;
-    private String topicName;
-    private Thread currentPlanThread;
+    private Subscriber<Odometry> odometrySubscriber;
+    private Odometry odometry;
+    private Object odometryMutex;
+
+    //    private NodeMainExecutor nodeMainExecutor;
+//    private NodeConfiguration nodeConfiguration;
+    private RobotPlan motionPlan;
+    private ConnectedNode connectedNode;
 
     public RobotController(Context context) {
         this.context = context;
@@ -48,35 +55,19 @@ public class RobotController implements NodeMain {
     }
 
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
-        this.nodeMainExecutor = nodeMainExecutor;
-        this.nodeConfiguration = nodeConfiguration;
-
         nodeMainExecutor.execute(this, nodeConfiguration.setNodeName("android/robot_controller"));
     }
 
-    public void runPlan(final IRobotPlan plan) {
-        stopPlan();
-
-        currentPlanThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(!Thread.interrupted()){
-                    try {
-                        plan.run(RobotController.this);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        currentPlanThread.start();
+    public void runPlan(RobotPlan plan) {
+        stop();
+        motionPlan = plan;
+        motionPlan.run(this);
     }
 
-    public void stopPlan(){
-        if (currentPlanThread != null) {
-            currentPlanThread.interrupt();
-            currentPlanThread = null;
+    public void stop() {
+        if (motionPlan != null) {
+            motionPlan.stop();
+            motionPlan = null;
         }
 
         publishVelocity(0, 0);
@@ -101,25 +92,57 @@ public class RobotController implements NodeMain {
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        movePublisher = connectedNode.newPublisher(topicName, Twist._TYPE);
-        currentMove = movePublisher.newMessage();
+        this.connectedNode = connectedNode;
+        update();
+    }
 
-        navSatFixSubscriber = connectedNode.newSubscriber("/navsat/fix", NavSatFix._TYPE);
-        navSatFixSubscriber.addMessageListener(new MessageListener<NavSatFix>() {
-
-            @Override
-            public void onNewMessage(NavSatFix navSatFix) {
-               setNavSatFix(navSatFix);
+    public void update() {
+        if(this.connectedNode != null) {
+            if (movePublisher != null) {
+                movePublisher.shutdown();
             }
-        });
 
-        laserScanSubscriber = connectedNode.newSubscriber("/scan", LaserScan._TYPE);
-        laserScanSubscriber.addMessageListener(new MessageListener<LaserScan>() {
-            @Override
-            public void onNewMessage(LaserScan laserScan) {
-                setLaserScan(laserScan);
+            if (navSatFixSubscriber != null) {
+                navSatFixSubscriber.shutdown();
             }
-        });
+
+            if (laserScanSubscriber != null) {
+                laserScanSubscriber.shutdown();
+            }
+
+            String moveTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_joystick_topic", context.getString(R.string.joy_topic));
+            String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_camera_topic", context.getString(R.string.camera_topic));
+            String laserScanTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_laser_scan_topic", context.getString(R.string.laser_scan_topic));
+            String odometryTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_odometry_topic", context.getString(R.string.odometry_topic));
+
+            movePublisher = connectedNode.newPublisher(moveTopic, Twist._TYPE);
+            currentMove = movePublisher.newMessage();
+
+            navSatFixSubscriber = connectedNode.newSubscriber(navSatTopic, NavSatFix._TYPE);
+            navSatFixSubscriber.addMessageListener(new MessageListener<NavSatFix>() {
+
+                @Override
+                public void onNewMessage(NavSatFix navSatFix) {
+                    setNavSatFix(navSatFix);
+                }
+            });
+
+            laserScanSubscriber = connectedNode.newSubscriber(laserScanTopic, LaserScan._TYPE);
+            laserScanSubscriber.addMessageListener(new MessageListener<LaserScan>() {
+                @Override
+                public void onNewMessage(LaserScan laserScan) {
+                    setLaserScan(laserScan);
+                }
+            });
+
+            odometrySubscriber = connectedNode.newSubscriber(odometryTopic, Odometry._TYPE);
+            odometrySubscriber.addMessageListener(new MessageListener<Odometry>() {
+                @Override
+                public void onNewMessage(Odometry odometry) {
+                    setOdometry(odometry);
+                }
+            });
+        }
     }
 
     @Override
@@ -128,20 +151,12 @@ public class RobotController implements NodeMain {
 
     @Override
     public void onShutdownComplete(Node node) {
-
+        this.connectedNode = null;
     }
 
     @Override
     public void onError(Node node, Throwable throwable) {
 
-    }
-
-    public String getTopicName() {
-        return this.topicName;
-    }
-
-    public void setTopicName(String topicName) {
-        this.topicName = topicName;
     }
 
     public LaserScan getLaserScan() {
@@ -150,7 +165,7 @@ public class RobotController implements NodeMain {
         }
     }
 
-    public void setLaserScan(LaserScan laserScan) {
+    protected void setLaserScan(LaserScan laserScan) {
         synchronized (laserScanMutex) {
             this.laserScan = laserScan;
         }
@@ -162,9 +177,21 @@ public class RobotController implements NodeMain {
         }
     }
 
-    public void setNavSatFix(NavSatFix navSatFix) {
+    protected void setNavSatFix(NavSatFix navSatFix) {
         synchronized (navSatFixMutex) {
             this.navSatFix = navSatFix;
+        }
+    }
+
+    public Odometry getOdometry() {
+        synchronized (odometryMutex) {
+            return odometry;
+        }
+    }
+
+    protected void setOdometry(Odometry odometry) {
+        synchronized (odometryMutex) {
+            this.odometry = odometry;
         }
     }
 }
