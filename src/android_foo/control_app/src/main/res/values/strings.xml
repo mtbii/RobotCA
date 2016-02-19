@@ -12,23 +12,19 @@
     <string name="camera_pref_title">Image Topic</string>
 
     <string name="joy_pref_summary">
-        Topic that the joystick widget publishes to.
-        Expected message type: std_msgs/Twist
+        Topic that the joystick widget publishes to.\nExpected message type: std_msgs/Twist
     </string>
 
     <string name="laser_pref_summary">
-        Topic that the laser scan widget subscribes to.
-        Expected message type: sensor_msgs/LaserScan
+        Topic that the laser scan widget subscribes to.\nExpected message type: sensor_msgs/LaserScan
     </string>
 
     <string name="camera_pref_summary">
-        Topic that the camera widget subscribes to.
-        Expected message type: sensor_msgs/CompressedImage
+        Topic that the camera widget subscribes to.\nExpected message type: sensor_msgs/CompressedImage
     </string>
 
     <string name="odometry_pref_summary">
-        Topic that the application gets odometry data from
-        Expected message type: nav_msgs/Odometry
+        Topic that the application gets odometry data from.\nExpected message type: nav_msgs/Odometry
     </string>
 
     <string name="add_robot">Add Robot</string>
@@ -59,4 +55,9 @@
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
     <string name="odometry_pref_title">Odometry Topic</string>
+    <string name="STOP">STOP</string>
+    <string name="laser_scan_detail_pref_summary">Sets the detail level of the laser scan visualization. A higher number will draw more laser points</string>
+    <string name="laser_scan_detail_pref_title">Laser Scan Detail</string>
+    <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where the random walk algorithm will stop and turn.</string>
+    <string name="random_walk_range_minimum_pref_title">Random Walk Range Minimum</string>
 </resources>

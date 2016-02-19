@@ -46,5 +46,15 @@ public abstract class RobotPlan {
         thread.start();
     }
 
+    protected void waitFor(long milliseconds){
+        try {
+            long currentTime = System.currentTimeMillis();
+            while (currentTime + milliseconds > System.currentTimeMillis() && !isInterrupted()) {
+                //thread.sleep(50);
+            }
+        }
+        catch(Exception e){}
+    }
+
     protected abstract void start(RobotController controller) throws Exception;
 }

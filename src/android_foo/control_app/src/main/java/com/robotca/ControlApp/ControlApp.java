@@ -52,7 +52,7 @@ import org.ros.node.NodeMainExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlApp extends RosActivity implements ListView.OnItemClickListener, View.OnClickListener, IWaypointProvider {
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
@@ -147,10 +147,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
         
-        //declare button
-        emergencyStop = (Button) findViewById(R.id.emergencyStop);
-//        emergencyStop.setOnClickListener(new View.onClickListener);
-        
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -175,17 +171,40 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
         controller = new RobotController(this);
+
+        //declare button
+        emergencyStop = (Button) findViewById(R.id.emergencyStop);
+        emergencyStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.stop();
+                joystickFragment.stop();
+            }
+        });
     }
 
     @Override
     protected void onStop() {
         RobotStorage.update(this, ROBOT_INFO);
+
+        if(controller != null)
+        controller.stop();
+
+        if(joystickFragment != null)
+        joystickFragment.stop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if(controller != null)
+            controller.stop();
+
+        if(joystickFragment != null)
+            joystickFragment.stop();
+
         this.nodeMainExecutorService.forceShutdown();
     }
 
@@ -442,7 +461,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             controller.runPlan(new WaypointPlan(this));
         }
         else if(controlMode == ControlMode.RandomWalk) {
-            controller.runPlan(new RandomWalkPlan());
+            controller.runPlan(new RandomWalkPlan(
+                    Float.parseFloat(PreferenceManager
+                            .getDefaultSharedPreferences(this)
+                    .getString("edittext_random_walk_range_proximity", "1"))
+            ));
         }
         else{
             controller.stop();
@@ -453,11 +476,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     public void setWaypoint(Location location){
         waypoint = location;
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 
     @Override

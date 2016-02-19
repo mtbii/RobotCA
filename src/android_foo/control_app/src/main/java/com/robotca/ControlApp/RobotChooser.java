@@ -161,7 +161,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     }
 
     public boolean addRobot(RobotInfo info) {
-
         RobotStorage.add(this, info);
 
         mAdapter.notifyItemInserted(RobotStorage.getRobots().size() - 1);

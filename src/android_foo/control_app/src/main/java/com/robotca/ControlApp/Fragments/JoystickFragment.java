@@ -101,4 +101,8 @@ public class JoystickFragment extends RosFragment {
             }
         }
     }
+
+    public void stop() {
+        virtualJoystick.stop();
+    }
 }

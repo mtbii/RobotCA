@@ -40,7 +40,7 @@ public class WaypointPlan extends RobotPlan {
                 float currentBearing = (float)(2*Math.PI - getRotation(Quaternion.fromQuaternionMessage(odom.getPose().getPose().getOrientation())));
 
                 if(currentDistance < 1){
-                    controller.publishVelocity(0,0);
+                    controller.publishVelocity(0, 0, 0);
                 }
                 else{
 

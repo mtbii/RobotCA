@@ -31,4 +31,21 @@
         android:singleLine="true"
         android:summary="@string/odometry_pref_summary"
         />
+
+    <EditTextPreference
+        android:key="edittext_laser_scan_detail"
+        android:inputType="number"
+        android:defaultValue="1"
+        android:title="@string/laser_scan_detail_pref_title"
+        android:singleLine="true"
+        android:summary="@string/laser_scan_detail_pref_summary"/>
+
+    <EditTextPreference
+        android:key="edittext_random_walk_range_proximity"
+        android:inputType="numberDecimal"
+        android:defaultValue="2"
+        android:title="@string/random_walk_range_minimum_pref_title"
+        android:singleLine="true"
+        android:summary="@string/random_walk_range_minimum_pref_summary"/>
+
 </PreferenceScreen>

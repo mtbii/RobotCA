@@ -2,6 +2,7 @@ package com.robotca.ControlApp.Core;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.robotca.ControlApp.Core.Plans.RobotPlan;
 import com.robotca.ControlApp.R;
@@ -16,6 +17,9 @@ import org.ros.node.NodeMainExecutor;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import geometry_msgs.Twist;
 import nav_msgs.Odometry;
 import sensor_msgs.LaserScan;
@@ -27,9 +31,11 @@ import sensor_msgs.NavSatFix;
 public class RobotController implements NodeMain {
 
     private final Context context;
+    private Timer publisherTimer;
+    private boolean publishVelocity;
 
     private Publisher<Twist> movePublisher;
-    private Twist currentMove;
+    private Twist currentVelocityCommand;
 
     private Subscriber<NavSatFix> navSatFixSubscriber;
     private NavSatFix navSatFix;
@@ -43,8 +49,6 @@ public class RobotController implements NodeMain {
     private Odometry odometry;
     private Object odometryMutex;
 
-    //    private NodeMainExecutor nodeMainExecutor;
-//    private NodeConfiguration nodeConfiguration;
     private RobotPlan motionPlan;
     private ConnectedNode connectedNode;
 
@@ -52,6 +56,7 @@ public class RobotController implements NodeMain {
         this.context = context;
         navSatFixMutex = new Object();
         laserScanMutex = new Object();
+        odometryMutex = new Object();
     }
 
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
@@ -60,6 +65,8 @@ public class RobotController implements NodeMain {
 
     public void runPlan(RobotPlan plan) {
         stop();
+
+        publishVelocity = true;
         motionPlan = plan;
         motionPlan.run(this);
     }
@@ -70,18 +77,25 @@ public class RobotController implements NodeMain {
             motionPlan = null;
         }
 
-        publishVelocity(0, 0);
+        publishVelocity = false;
+        publishVelocity(0, 0, 0);
+
+        if(movePublisher != null){
+            movePublisher.publish(currentVelocityCommand);
+        }
     }
 
-    public void publishVelocity(double forwardVelocity, double angularVelocity) {
-        if (currentMove != null) {
-            currentMove.getLinear().setX(forwardVelocity);
-            currentMove.getLinear().setY(0);
-            currentMove.getLinear().setZ(0);
-            currentMove.getAngular().setX(0);
-            currentMove.getAngular().setY(0);
-            currentMove.getAngular().setZ(-angularVelocity);
-            movePublisher.publish(currentMove);
+    public void publishVelocity(double linearVelocityX, double linearVelocityY,
+                                double angularVelocityZ) {
+        if (currentVelocityCommand != null) {
+            currentVelocityCommand.getLinear().setX(linearVelocityX);
+            currentVelocityCommand.getLinear().setY(-linearVelocityY);
+            currentVelocityCommand.getLinear().setZ(0);
+            currentVelocityCommand.getAngular().setX(0);
+            currentVelocityCommand.getAngular().setY(0);
+            currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
+        } else {
+            Log.w("Emergency Stop", "currentVelocityCommand is null");
         }
     }
 
@@ -98,17 +112,7 @@ public class RobotController implements NodeMain {
 
     public void update() {
         if(this.connectedNode != null) {
-            if (movePublisher != null) {
-                movePublisher.shutdown();
-            }
-
-            if (navSatFixSubscriber != null) {
-                navSatFixSubscriber.shutdown();
-            }
-
-            if (laserScanSubscriber != null) {
-                laserScanSubscriber.shutdown();
-            }
+            shutdownTopics();
 
             String moveTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_joystick_topic", context.getString(R.string.joy_topic));
             String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_camera_topic", context.getString(R.string.camera_topic));
@@ -116,7 +120,18 @@ public class RobotController implements NodeMain {
             String odometryTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_odometry_topic", context.getString(R.string.odometry_topic));
 
             movePublisher = connectedNode.newPublisher(moveTopic, Twist._TYPE);
-            currentMove = movePublisher.newMessage();
+            currentVelocityCommand = movePublisher.newMessage();
+
+            publisherTimer = new Timer();
+            publisherTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (publishVelocity) {
+                        movePublisher.publish(currentVelocityCommand);
+                    }
+                }
+            }, 0, 80);
+            publishVelocity = false;
 
             navSatFixSubscriber = connectedNode.newSubscriber(navSatTopic, NavSatFix._TYPE);
             navSatFixSubscriber.addMessageListener(new MessageListener<NavSatFix>() {
@@ -145,8 +160,31 @@ public class RobotController implements NodeMain {
         }
     }
 
+    private void shutdownTopics() {
+        if(publisherTimer != null) {
+            publisherTimer.cancel();
+        }
+
+        if (movePublisher != null) {
+            movePublisher.shutdown();
+        }
+
+        if (navSatFixSubscriber != null) {
+            navSatFixSubscriber.shutdown();
+        }
+
+        if (laserScanSubscriber != null) {
+            laserScanSubscriber.shutdown();
+        }
+
+        if(odometrySubscriber != null){
+            odometrySubscriber.shutdown();
+        }
+    }
+
     @Override
     public void onShutdown(Node node) {
+        shutdownTopics();
     }
 
     @Override

@@ -38,12 +38,17 @@ public class LaserScanFragment extends RosFragment {
 
         List<Layer> layers = new ArrayList<>();
 
-        layers.add(new LaserScanLayer(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic))));
+        layers.add(new LaserScanLayer(
+                PreferenceManager
+                        .getDefaultSharedPreferences(getActivity())
+                        .getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic)),
+                Float.parseFloat(PreferenceManager
+                        .getDefaultSharedPreferences(getActivity())
+                        .getString("edittext_laser_scan_detail", "1"))));
         layers.add(new RobotLayer("base_link"));
         laserView.onCreate(layers);
 
         laserView.init(nodeMainExecutor);
-
         if (nodeConfiguration != null)
             nodeMainExecutor.execute(laserView, nodeConfiguration.setNodeName("android/laser_view"));
 

@@ -13,8 +13,10 @@ import sensor_msgs.LaserScan;
 public class RandomWalkPlan extends RobotPlan {
 
     private final Random random;
+    private float minRange;
 
-    public RandomWalkPlan() {
+    public RandomWalkPlan(float minRange) {
+        this.minRange = Math.max(minRange, 0.2f);
         random = new Random();
     }
 
@@ -39,19 +41,17 @@ public class RandomWalkPlan extends RobotPlan {
                 angle += angleIncrement;
             }
 
-            if (shortestDistance < 20 * laserScan.getRangeMin()) {
-                controller.publishVelocity(0, 0);
-                Thread.sleep(1000, 0);
-                Timer timer = new Timer();
+            if (shortestDistance < minRange) {
+                controller.publishVelocity(0, 0, 0);
+                waitFor(1000);
+
                 long delay = (long) (2000 * (1 + random.nextFloat()));
-                long start = System.currentTimeMillis();
-                while (!isInterrupted() && System.currentTimeMillis() - start < delay) {
-                    controller.publishVelocity(0, .75);
-                }
-                controller.publishVelocity(0, 0);
-                Thread.sleep(1000, 0);
+                controller.publishVelocity(0, 0, .75);
+                waitFor(delay);
+                controller.publishVelocity(0, 0,  0);
+                waitFor(1000);
             } else {
-                controller.publishVelocity(.75, 0);
+                controller.publishVelocity(.75, 0, 0);
             }
         }
     }
