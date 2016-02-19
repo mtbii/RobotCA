@@ -77,10 +77,16 @@ public class JoystickFragment extends RosFragment {
             case Joystick:
                 show();
                 break;
+
             case Motion:
                 show();
                 break;
+
             case Waypoint:
+                hide();
+                break;
+
+            case RandomWalk:
                 hide();
                 break;
         }
@@ -94,5 +100,9 @@ public class JoystickFragment extends RosFragment {
                 virtualJoystick.controlSchemeChanged();
             }
         }
+    }
+
+    public void stop() {
+        virtualJoystick.stop();
     }
 }

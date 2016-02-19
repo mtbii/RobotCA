@@ -50,19 +50,21 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     private final Object mutex;
 
+    private float laserScanDetail;
     private GraphName frame;
     private FloatBuffer vertexFrontBuffer;
     private FloatBuffer vertexBackBuffer;
 
 //    private static final String TAG = "LaserScanLayer";
 
-    public LaserScanLayer(String topicName) {
-        this(GraphName.of(topicName));
+    public LaserScanLayer(String topicName, float detail) {
+        this(GraphName.of(topicName), detail);
     }
 
-    public LaserScanLayer(GraphName topicName) {
+    public LaserScanLayer(GraphName topicName, float detail) {
         super(topicName, sensor_msgs.LaserScan._TYPE);
         mutex = new Object();
+        this.laserScanDetail = Math.max(detail, 1);
     }
 
     @Override
@@ -135,7 +137,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
             y = (float) (ranges[i] * Math.sin(angle));
 
             if (i == 0 || i == ranges.length - 1 || (/*ranges[i] < maximumRange &&*/
-                    ((x - xp) * (x - xp) + (y - yp) * (y - yp)) > MIN_DISTANCE_SQUARED))
+                    ((x - xp) * (x - xp) + (y - yp) * (y - yp)) > (1.0f/(this.laserScanDetail*this.laserScanDetail))*MIN_DISTANCE_SQUARED))
             {
                 vertexBackBuffer.put(x);
                 vertexBackBuffer.put(y);

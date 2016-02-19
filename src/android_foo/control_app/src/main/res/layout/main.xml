@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/holo_red_dark"
-                android:text="STOP" />
+                android:text="@string/STOP" />
         </RelativeLayout>
         <!-- The navigation drawer -->
         <ListView

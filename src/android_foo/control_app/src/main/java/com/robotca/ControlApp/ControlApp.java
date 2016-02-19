@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.Display;
@@ -30,7 +30,11 @@ import android.widget.ListView;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
+import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
+import com.robotca.ControlApp.Core.Plans.WaypointPlan;
+import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
@@ -40,7 +44,6 @@ import com.robotca.ControlApp.Fragments.LaserScanFragment;
 import com.robotca.ControlApp.Fragments.MapFragment;
 import com.robotca.ControlApp.Fragments.OverviewFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
-import com.robotca.ControlApp.Views.JoystickView;
 
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
@@ -49,7 +52,7 @@ import org.ros.node.NodeMainExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlApp extends RosActivity implements ListView.OnItemClickListener, View.OnClickListener {
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
@@ -64,14 +67,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private ActionBarDrawerToggle mDrawerToggle;
     //creating emergency stop button
     private Button emergencyStop;
-
     private JoystickFragment joystickFragment;
+    private RobotController controller;
 
     private int drawerIndex = 1;
     private String mTitle;
     private String mDrawerTitle;
 
     private static final String TAG = "ControlApp";
+    private Location waypoint;
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
@@ -96,15 +100,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             editor.apply();
         }
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+//        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        if (dpWidth >= 550) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+//        if (dpWidth >= 550) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        } else {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        }
         setContentView(R.layout.main);
 
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
@@ -143,10 +147,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
         
-        //declare button
-        emergencyStop = (Button) findViewById(R.id.emergencyStop);
-//        emergencyStop.setOnClickListener(new View.onClickListener);
-        
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -170,17 +170,41 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList.setOnItemClickListener(this);
 
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
+        controller = new RobotController(this);
+
+        //declare button
+        emergencyStop = (Button) findViewById(R.id.emergencyStop);
+        emergencyStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.stop();
+                joystickFragment.stop();
+            }
+        });
     }
 
     @Override
     protected void onStop() {
         RobotStorage.update(this, ROBOT_INFO);
+
+        if(controller != null)
+        controller.stop();
+
+        if(joystickFragment != null)
+        joystickFragment.stop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if(controller != null)
+            controller.stop();
+
+        if(joystickFragment != null)
+            joystickFragment.stop();
+
         this.nodeMainExecutorService.forceShutdown();
     }
 
@@ -198,6 +222,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
             joystickFragment.invalidate();
+
+            //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+            controller.initialize(nodeMainExecutor, nodeConfiguration);
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -289,11 +316,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         Fragment fragment = null;
         Bundle args = new Bundle();
 
-        if(getControlMode() != ControlMode.Waypoint){
+        if(getControlMode().ordinal() < ControlMode.Waypoint.ordinal()){
             joystickFragment.show();
         }
 
         emergencyStop.setVisibility(View.VISIBLE);
+
+        if(controller != null) {
+            controller.update();
+        }
 
         switch (position) {
             case 0:
@@ -383,6 +414,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 setControlMode(ControlMode.Waypoint);
                 return true;
 
+            case R.id.action_random_walk_control:
+                setControlMode(ControlMode.RandomWalk);
+                return true;
+
             default:
                 return mDrawerToggle.onOptionsItemSelected(item);
         }
@@ -419,12 +454,32 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     public void setControlMode(ControlMode controlMode) {
+        lockOrientation(controlMode == ControlMode.Motion);
         joystickFragment.setControlMode(controlMode);
+
+        if(getControlMode() == ControlMode.Waypoint){
+            controller.runPlan(new WaypointPlan(this));
+        }
+        else if(controlMode == ControlMode.RandomWalk) {
+            controller.runPlan(new RandomWalkPlan(
+                    Float.parseFloat(PreferenceManager
+                            .getDefaultSharedPreferences(this)
+                    .getString("edittext_random_walk_range_proximity", "1"))
+            ));
+        }
+        else{
+            controller.stop();
+        }
+
         invalidateOptionsMenu();
     }
 
-    @Override
-    public void onClick(View v) {
+    public void setWaypoint(Location location){
+        waypoint = location;
+    }
 
+    @Override
+    public Location getDestination() {
+        return waypoint;
     }
 }
