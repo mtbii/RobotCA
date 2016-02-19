@@ -12,6 +12,11 @@
         android:orientation="vertical"
         android:weightSum="2">
 
+        <!--<FrameLayout-->
+            <!--android:id="@+id/hud_fragment_placeholder"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"/>-->
+
         <org.ros.android.view.RosImageView
             android:id="@+id/camera_view"
             android:layout_width="fill_parent"

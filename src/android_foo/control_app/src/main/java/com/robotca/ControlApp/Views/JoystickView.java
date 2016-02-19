@@ -16,7 +16,6 @@
 
 package com.robotca.ControlApp.Views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -32,7 +31,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -40,7 +38,6 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -1136,8 +1133,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Comparing 2 float values.
      *
-     * @param v1
-     * @param v2
      * @return True if v1 and v2 and within {@value #FLOAT_EPSILON} of each other.
      * False otherwise.
      */

@@ -27,14 +27,16 @@
                 android:layout_height="200dip"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 tools:layout="@layout/fragment_joystick_view" />
             <Button
                 android:id="@+id/emergencyStop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:background="@android:color/holo_red_dark"
-                android:text="STOP"/>
+                android:text="@string/stop"/>
         </RelativeLayout>
         <!-- The navigation drawer -->
         <ListView android:id="@+id/left_drawer"

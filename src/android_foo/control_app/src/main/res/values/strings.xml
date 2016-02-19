@@ -36,6 +36,8 @@
     <string name="delete">Delete</string>
     <string name="no_robots">No Robots. Add a new one!</string>
 
+    <string name="stop">STOP</string>
+
     <string-array name="feature_titles">
         <item>Select Robot</item>
         <item>Overview</item>
@@ -49,6 +51,9 @@
     <string name="show_advanced_options">Show Advanced Options</string>
     <string name="percent_string">%1$d%%</string>
 
+    <string name="speed_string">Velocity: %1$f</string>
+    <string name="turnrate_string">TurnRate: %1$f</string>
+
     <string name="use_tilt_sensor_string">Use Tilt</string>
     <string name="joystick_control">Joystick Control</string>
     <string name="motion_control">Motion Control</string>
@@ -60,4 +65,5 @@
     <string name="laser_scan_detail_pref_title">Laser Scan Detail</string>
     <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where the random walk algorithm will stop and turn.</string>
     <string name="random_walk_range_minimum_pref_title">Random Walk Range Minimum</string>
+
 </resources>

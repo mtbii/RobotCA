@@ -8,11 +8,16 @@
     android:baselineAligned="false">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:orientation="vertical"
         android:weightSum="2">
+
+        <FrameLayout
+            android:id="@+id/hud_fragment_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <org.ros.android.view.RosImageView
             android:id="@+id/camera_view"

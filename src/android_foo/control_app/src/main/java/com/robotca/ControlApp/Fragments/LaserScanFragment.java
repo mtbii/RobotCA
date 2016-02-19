@@ -1,6 +1,5 @@
 package com.robotca.ControlApp.Fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -13,13 +12,12 @@ import com.robotca.ControlApp.R;
 import org.ros.android.view.visualization.VisualizationView;
 import org.ros.android.view.visualization.layer.Layer;
 import org.ros.android.view.visualization.layer.RobotLayer;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
  * Created by Michael Brunson on 11/7/15.
  */
 public class LaserScanFragment extends RosFragment {

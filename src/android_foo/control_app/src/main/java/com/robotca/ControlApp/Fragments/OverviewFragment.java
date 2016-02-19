@@ -1,6 +1,5 @@
 package com.robotca.ControlApp.Fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -10,15 +9,12 @@ import android.view.ViewGroup;
 
 import com.robotca.ControlApp.Layers.LaserScanLayer;
 import com.robotca.ControlApp.R;
-import com.robotca.ControlApp.Views.JoystickView;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.view.RosImageView;
 import org.ros.android.view.visualization.VisualizationView;
 import org.ros.android.view.visualization.layer.Layer;
 import org.ros.android.view.visualization.layer.RobotLayer;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +22,17 @@ import java.util.List;
 import sensor_msgs.CompressedImage;
 
 /**
+ *
  * Created by Michael Brunson on 11/7/15.
  */
 public class OverviewFragment extends RosFragment {
 
     private VisualizationView vizView;
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
-//    private JoystickView joystickView;
+
+//    private HUDFragment hudFragment;
+//
+//    private static final String TAG = "OverviewFragment";
 
     public OverviewFragment(){}
 
@@ -55,6 +55,9 @@ public class OverviewFragment extends RosFragment {
         layers.add(new RobotLayer("base_link"));
         vizView.onCreate(layers);
 
+        vizView.init(nodeMainExecutor);
+
+        //noinspection unchecked
         cameraView = (RosImageView) view.findViewById(R.id.camera_view);
         cameraView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_camera_topic", getString(R.string.camera_topic)));
         cameraView.setMessageType(CompressedImage._TYPE);
@@ -63,11 +66,15 @@ public class OverviewFragment extends RosFragment {
 //        joystickView = (JoystickView) view.findViewById(R.id.joystick_view);
 //        joystickView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
-        vizView.init(nodeMainExecutor);
-
         nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/camera_view"));
 //        nodeMainExecutor.execute(joystickView, nodeConfiguration.setNodeName("android/joystick_view"));
         nodeMainExecutor.execute(vizView, nodeConfiguration.setNodeName("android/viz_view"));
+
+//        // Initialize HUD fragment
+//        if (hudFragment == null)
+//            hudFragment = new HUDFragment();
+//        getFragmentManager().beginTransaction().replace(R.id.hud_fragment_placeholder, hudFragment).commit();
+//        hudFragment.initialize(nodeMainExecutor, nodeConfiguration);
 
         return view;
     }
