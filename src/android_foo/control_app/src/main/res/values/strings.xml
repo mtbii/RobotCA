@@ -54,6 +54,8 @@
     <string name="speed_string">Velocity: %1$f</string>
     <string name="turnrate_string">TurnRate: %1$f</string>
 
+    <string name="tilt_calibration_message">Tap the joystick to reset calibration</string>
+
     <string name="use_tilt_sensor_string">Use Tilt</string>
     <string name="joystick_control">Joystick Control</string>
     <string name="motion_control">Motion Control</string>

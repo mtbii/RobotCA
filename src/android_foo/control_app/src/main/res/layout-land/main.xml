@@ -21,6 +21,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <fragment
+                android:id="@+id/hud_fragment"
+                android:name="com.robotca.ControlApp.Fragments.HUDFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/fragment_hud" />
+            <fragment
                 android:id="@+id/joystick_fragment"
                 android:name="com.robotca.ControlApp.Fragments.JoystickFragment"
                 android:layout_width="200dip"
@@ -29,14 +35,14 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 tools:layout="@layout/fragment_joystick_view" />
-            <Button
-                android:id="@+id/emergencyStop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:background="@android:color/holo_red_dark"
-                android:text="@string/stop"/>
+            <!--<Button-->
+                <!--android:id="@+id/emergencyStop"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:background="@android:color/holo_red_dark"-->
+                <!--android:text="@string/stop"/>-->
         </RelativeLayout>
         <!-- The navigation drawer -->
         <ListView android:id="@+id/left_drawer"

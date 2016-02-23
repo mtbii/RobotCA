@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,6 +39,7 @@ import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
+import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
 import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
@@ -68,6 +70,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     //creating emergency stop button
     private Button emergencyStop;
     private JoystickFragment joystickFragment;
+    private HUDFragment hudFragment;
     private RobotController controller;
 
     private int drawerIndex = 1;
@@ -169,10 +172,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
 
+        // Joystick fragment
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
         controller = new RobotController(this);
 
-        //declare button
+        // Hud fragment
+        hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
+
+        // Emergency stop button
         emergencyStop = (Button) findViewById(R.id.emergencyStop);
         emergencyStop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,8 +240,31 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     mDrawerList.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, temp.getX(), temp.getY(), 0));
 
-
                     selectItem(drawerIndex);
+
+                    // Add HUD to joystick odometry subscriber
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            while (!joystickFragment.getJoystickView().addOdometryListener(hudFragment)) {
+                                Log.w(TAG, "Unable to add HUD to joystick odometry listener");
+                                try
+                                {
+                                    Thread.sleep(100L);
+                                }
+                                catch (InterruptedException e)
+                                {
+                                    Log.e(TAG, "", e);
+                                    return;
+                                }
+                            }
+                            Log.d(TAG, "Added HUD to joystick odometry listener!");
+                        }
+                    }, 100);
+
                 }
             });
         } catch (Exception e) {

@@ -49,6 +49,10 @@ public class JoystickFragment extends RosFragment {
         return view;
     }
 
+    public JoystickView getJoystickView() {
+        return virtualJoystick;
+    }
+
     @Override
     void shutdown() {
         if (isSetup && isInitialized()) {

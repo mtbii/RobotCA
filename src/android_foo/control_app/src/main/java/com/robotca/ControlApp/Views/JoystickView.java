@@ -41,6 +41,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
@@ -55,6 +56,8 @@ import org.ros.node.topic.Subscriber;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import nav_msgs.Odometry;
 
 //import org.ros.android.android_15.R;
 
@@ -266,12 +269,16 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Used for tilt sensor control.
      */
-
     private ControlMode controlMode = ControlMode.Joystick;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private float[] tiltOffset = null;
     private boolean accelContactUp;
+
+    /**
+     * Odometry subscriber
+     */
+    Subscriber<nav_msgs.Odometry> odometrySubscriber;
 
     /**
      * Angles larger than this are capped.
@@ -440,6 +447,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
                 tiltOffset = null;
                 sensorManager.registerListener(ACCEL_LISTENER, accelerometer, SensorManager.SENSOR_DELAY_GAME);
                 onContactDown();
+
+                Toast.makeText(getContext(), R.string.tilt_calibration_message, Toast.LENGTH_LONG).show();
             }
             else {
                 sensorManager.unregisterListener(ACCEL_LISTENER);
@@ -474,6 +483,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
     @Override
     public void onNewMessage(final nav_msgs.Odometry message) {
+
         double heading;
         // For some reason the values of z and y seem to be interchanged. If they
         // are not swapped then heading is always incorrect.
@@ -501,9 +511,14 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        // Ignore touch events if using the tilt sensor
-        if (controlMode == ControlMode.Motion)
+        // Touch events indicate user wants to reset calibration in Tilt mode
+        if (controlMode == ControlMode.Motion) {
+
+            // Reset calibration
+            tiltOffset = null;
+
             return true;
+        }
 
         final int action = event.getAction();
 
@@ -1161,9 +1176,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         publisher = connectedNode.newPublisher(topicName, geometry_msgs.Twist._TYPE);
         currentVelocityCommand = publisher.newMessage();
 
-        Subscriber<nav_msgs.Odometry> subscriber =
-                connectedNode.newSubscriber("odom", nav_msgs.Odometry._TYPE);
-        subscriber.addMessageListener(this);
+        odometrySubscriber = connectedNode.newSubscriber("odometry/filtered", nav_msgs.Odometry._TYPE);
+        odometrySubscriber.addMessageListener(this);
 
         publisherTimer = new Timer();
         publisherTimer.schedule(new TimerTask() {
@@ -1174,6 +1188,16 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
                 }
             }
         }, 0, 80);
+    }
+
+    public boolean addOdometryListener(MessageListener<Odometry> listener)
+    {
+        if (odometrySubscriber != null && listener != null) {
+            odometrySubscriber.addMessageListener(listener);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
