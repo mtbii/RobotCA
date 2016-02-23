@@ -22,6 +22,8 @@ package com.robotca.ControlApp.Layers;
  * the License.
  */
 
+import com.google.common.base.Preconditions;
+
 import org.ros.android.view.visualization.Color;
 import org.ros.android.view.visualization.Vertices;
 import org.ros.android.view.visualization.VisualizationView;
@@ -46,7 +48,10 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 //    private static final int LASER_SCAN_STRIDE = 15;
 
     // Only adds laser scan points if they are at least this much further from the previous point
-    private static final float MIN_DISTANCE_SQUARED = 5.0e-2f;
+    private static final float MIN_DISTANCE_SQUARED = 10.0e-2f;
+
+    // Used for calculating range color
+    private static final float MAX_DISTANCE = 6.0f;
 
     private final Object mutex;
 
@@ -74,18 +79,51 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         {
             synchronized (mutex)
             {
-                Vertices.drawTriangleFan(gl, vertexFrontBuffer, FREE_SPACE_COLOR);
+//                Vertices.drawTriangleFan(gl, vertexFrontBuffer, FREE_SPACE_COLOR);
+                drawPoints(gl, vertexFrontBuffer, 0.0f, true);
                 // Drop the first point which is required for the triangle fan but is
                 // not a range reading.
                 FloatBuffer pointVertices = vertexFrontBuffer.duplicate();
-                pointVertices.position(3);
-                Vertices.drawPoints(gl, pointVertices, OCCUPIED_SPACE_COLOR, LASER_SCAN_POINT_SIZE);
-
+                pointVertices.position(3 + 4);
+//                Vertices.drawPoints(gl, pointVertices, OCCUPIED_SPACE_COLOR, LASER_SCAN_POINT_SIZE);
+                drawPoints(gl, pointVertices, LASER_SCAN_POINT_SIZE, false);
 
             }
         }
     }
 
+    public static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
+        vertices.mark();
+
+        if (!fan)
+            gl.glPointSize(size);
+
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+
+        gl.glVertexPointer(3, GL10.GL_FLOAT, (3 + 4) * 4, vertices);
+
+        FloatBuffer colors = vertices.duplicate();
+        colors.position(3);
+        gl.glColorPointer(4, GL10.GL_FLOAT, (3 + 4) * 4, colors);
+
+        gl.glDrawArrays(fan ? GL10.GL_TRIANGLE_FAN : GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
+
+        if (!fan)
+        {
+            gl.glDrawArrays(GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
+        }
+
+        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+
+        vertices.reset();
+    }
+
+    private static int countVertices(FloatBuffer vertices, int size) {
+        Preconditions.checkArgument(vertices.remaining() % size == 0, "Number of vertices: " + vertices.remaining());
+        return vertices.remaining() / size;
+    }
 
     @Override
     public void onStart(VisualizationView view, ConnectedNode connectedNode) {
@@ -103,7 +141,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     private void updateVertexBuffer(LaserScan laserScan)
     {
         float[] ranges = laserScan.getRanges();
-        int size = ((ranges.length) + 2) * 3;//((ranges.length / stride) + 2) * 3;
+        int size = ((ranges.length) + 2) * (3 + 4);//((ranges.length / stride) + 2) * 3;
 
         if (vertexBackBuffer == null || vertexBackBuffer.capacity() < size)
         {
@@ -117,6 +155,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         vertexBackBuffer.put(0);
         vertexBackBuffer.put(0);
 
+        // Color
+        vertexBackBuffer.put(FREE_SPACE_COLOR.getRed());
+        vertexBackBuffer.put(FREE_SPACE_COLOR.getGreen());
+        vertexBackBuffer.put(FREE_SPACE_COLOR.getBlue());
+        vertexBackBuffer.put(0.1f);
+
 //        float minimumRange = laserScan.getRangeMin();
 //        float maximumRange = laserScan.getRangeMax();
         float angle = laserScan.getAngleMin();
@@ -124,6 +168,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
         float x, y, xp, yp = xp = 0.0f;
         int num = 0;
+        float p;
 
         // Calculate the coordinates of the laser range values.
         for (int i = 0; i < ranges.length; ++i)
@@ -136,12 +181,30 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
             x = (float) (ranges[i] * Math.cos(angle));
             y = (float) (ranges[i] * Math.sin(angle));
 
+            p = ranges[i];
+
+            if (p > MAX_DISTANCE)
+            {
+                p = 1.0f;
+            }
+            else
+            {
+                p /= MAX_DISTANCE;
+            }
+
             if (i == 0 || i == ranges.length - 1 || (/*ranges[i] < maximumRange &&*/
-                    ((x - xp) * (x - xp) + (y - yp) * (y - yp)) > (1.0f/(this.laserScanDetail*this.laserScanDetail))*MIN_DISTANCE_SQUARED))
+                    ((x - xp) * (x - xp) + (y - yp) * (y - yp))
+                            > (1.0f/(this.laserScanDetail*this.laserScanDetail))*MIN_DISTANCE_SQUARED))
             {
                 vertexBackBuffer.put(x);
                 vertexBackBuffer.put(y);
                 vertexBackBuffer.put(0.0f);
+
+                // Color
+                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getRed() + (1.0f - p));
+                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getGreen());
+                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getBlue());
+                vertexBackBuffer.put(0.1f);
 
                 xp = x;
                 yp = y;
@@ -152,7 +215,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         }
 
         vertexBackBuffer.rewind();
-        vertexBackBuffer.limit(num * 3);
+        vertexBackBuffer.limit(num * (3 + 4));
 
         synchronized (mutex)
         {
