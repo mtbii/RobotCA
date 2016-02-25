@@ -9,9 +9,9 @@
 
     <TextView
         android:id="@+id/hud_speed"
-        android:paddingLeft="16sp"
-        android:paddingStart="16sp"
-        android:paddingEnd="16sp"
+        android:paddingLeft="8sp"
+        android:paddingStart="8sp"
+        android:paddingEnd="8sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -21,13 +21,25 @@
         android:id="@+id/hud_turnrate"
         android:layout_toRightOf="@id/hud_speed"
         android:layout_toEndOf="@id/hud_speed"
-        android:paddingLeft="16sp"
-        android:paddingStart="16sp"
-        android:paddingEnd="16sp"
+        android:paddingLeft="8sp"
+        android:paddingStart="8sp"
+        android:paddingEnd="8sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:text="@string/turnrate_string"/>
+
+    <TextView
+        android:id="@+id/hud_location"
+        android:layout_toRightOf="@id/hud_turnrate"
+        android:layout_toEndOf="@id/hud_turnrate"
+        android:paddingLeft="8sp"
+        android:paddingStart="8sp"
+        android:paddingEnd="8sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        />
 
     <Button
         android:id="@+id/emergencyStop"

@@ -1,7 +1,6 @@
 package com.robotca.ControlApp.Fragments;
 
-import android.app.Fragment;
-import android.os.AsyncTask;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,14 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.robotca.ControlApp.Core.RobotGPSSub;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
-import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
-import org.ros.node.topic.Subscriber;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
 
 import nav_msgs.Odometry;
 
@@ -26,16 +23,19 @@ import nav_msgs.Odometry;
  *
  * @author Nathaniel Stone
  */
-public class HUDFragment extends Fragment implements MessageListener<Odometry>{
+public class HUDFragment extends RosFragment implements MessageListener<Odometry>{
 
     private static final String TAG = "HUDFragment";
 
-//    private OdometryListener odometryListener;
-
     private View view;
-    private TextView speedView, turnrateView;
+    private TextView speedView, turnrateView, locationView;
 
     private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
+
+    // Node for receiving GPS events
+    private RobotGPSSub robotGPSNode;
+
+    private boolean isSetup;
 
     /**
      * Default Constructor.
@@ -52,13 +52,62 @@ public class HUDFragment extends Fragment implements MessageListener<Odometry>{
 
             speedView = (TextView) view.findViewById(R.id.hud_speed);
             turnrateView = (TextView) view.findViewById(R.id.hud_turnrate);
+            locationView = (TextView) view.findViewById(R.id.hud_location);
 
             updateUI(0.0, 0.0);
         }
 
+        // Create the GPS Node
+        if (robotGPSNode == null)
+            robotGPSNode = new RobotGPSSub();
+
         return view;
     }
 
+    @Override
+    public void initialize(NodeMainExecutor mainExecutor, NodeConfiguration nodeConfiguration)
+    {
+        super.initialize(mainExecutor, nodeConfiguration);
+
+        if (!isSetup) {
+            isSetup = true;
+
+            Log.d(TAG, "initialized: " + nodeMainExecutor + " " + robotGPSNode);
+
+            nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
+        }
+    }
+
+    public RobotGPSSub getRobotGPSNode() {
+        return robotGPSNode;
+    }
+
+    /**
+     * Callback for receiving odometry messages.
+     * @param message The Odometry message
+     */
+    @Override
+    public void onNewMessage(Odometry message) {
+//            Log.d(TAG, "New Message: " + message.getTwist().getTwist().getLinear().getX());
+
+        updateUI(message.getTwist().getTwist().getLinear().getX(),
+                message.getTwist().getTwist().getAngular().getZ());
+    }
+
+    /**
+     * Shuts down the GPS Node
+     */
+    @Override
+    public void shutdown(){
+
+        if (isInitialized()) {
+            nodeMainExecutor.shutdownNodeMain(robotGPSNode);
+        }
+    }
+
+    /*
+     *
+     */
     private void updateUI(final double speed, final double turnrate)
     {
         if (!isDetached()) {
@@ -69,14 +118,9 @@ public class HUDFragment extends Fragment implements MessageListener<Odometry>{
         }
     }
 
-    @Override
-    public void onNewMessage(Odometry message) {
-//            Log.d(TAG, "New Message: " + message.getTwist().getTwist().getLinear().getX());
-
-        updateUI(message.getTwist().getTwist().getLinear().getX(),
-                message.getTwist().getTwist().getAngular().getZ());
-    }
-
+    /*
+     * Runnable for refreshing the HUD's UI.
+     */
     private class UpdateUIRunnable implements Runnable
     {
         public double speed, turnrate;
@@ -101,6 +145,19 @@ public class HUDFragment extends Fragment implements MessageListener<Odometry>{
 
                 if (turnrateView != null)
                     turnrateView.setText(String.format((String) getText(R.string.turnrate_string), turnrate));
+
+                if (locationView != null) {
+                    Location loc = robotGPSNode.getLastKnownLocation();
+
+                    if (loc != null) {
+                        String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
+                        String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
+
+                        locationView.setText(String.format((String) getText(R.string.location_string),
+                                strLatitude, strLongitude));
+                    }
+                }
+
             } catch (IllegalStateException e) {
                 // Ignore
             }

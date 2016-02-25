@@ -1,6 +1,7 @@
 package com.robotca.ControlApp.Core;
 
 import android.location.Location;
+import android.util.Log;
 
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
@@ -41,9 +42,13 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
 
                 try {
                     Thread.sleep(1000, 0);
+
+                    Log.d("GPS: ", "" + navSatFix);
+
                     if (mMyLocatationComsumer != null) {
                         mMyLocatationComsumer.onLocationChanged(mLocation, RobotGPSSub.this);
                     }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

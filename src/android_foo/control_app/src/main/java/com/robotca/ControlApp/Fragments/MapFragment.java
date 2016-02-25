@@ -33,9 +33,9 @@ import java.util.ArrayList;
 import java.lang.Math.*;
 
 
-public class MapFragment extends RosFragment implements MapEventsReceiver {
+public class MapFragment extends Fragment implements MapEventsReceiver {
 
-    private RobotGPSSub robotGPSNode;
+//    private RobotGPSSub robotGPSNode;
     Button recenterButton;
     MyLocationNewOverlay myLocationOverlay;
     MapView mapView;
@@ -77,7 +77,11 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
             e.printStackTrace();
         }*/
 
-        robotGPSNode = new RobotGPSSub();
+//        robotGPSNode = new RobotGPSSub();
+
+        // Use the RobotGPSSub that the HUDFragment uses
+        RobotGPSSub robotGPSNode = ((HUDFragment)getActivity().
+                getFragmentManager().findFragmentById(R.id.hud_fragment)).getRobotGPSNode();
 
         myLocationOverlay = new MyLocationNewOverlay(getActivity(), robotGPSNode, mapView);
         mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);
@@ -91,7 +95,7 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
         IMapController mapViewController = mapView.getController();
         mapViewController.setZoom(18);
 
-        nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
+//        nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
         return view;
     }
     private OnClickListener recenterListener = new OnClickListener() {
@@ -100,9 +104,9 @@ public class MapFragment extends RosFragment implements MapEventsReceiver {
         }
     };
 
-    public void shutdown(){
-        nodeMainExecutor.shutdownNodeMain(robotGPSNode);
-    }
+//    public void shutdown(){
+//        nodeMainExecutor.shutdownNodeMain(robotGPSNode);
+//    }
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {

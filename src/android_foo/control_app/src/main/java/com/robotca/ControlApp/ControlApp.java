@@ -230,6 +230,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
             joystickFragment.invalidate();
 
+            hudFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
+
             //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
             controller.initialize(nodeMainExecutor, nodeConfiguration);
 
