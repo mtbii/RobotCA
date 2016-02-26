@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="48sp"
     android:orientation="horizontal"
     android:background="@android:color/darker_gray"
     android:alpha="0.65"
@@ -49,5 +49,16 @@
         android:background="@android:color/holo_red_dark"
         android:text="@string/stop"
         tools:ignore="RelativeOverlap" />
+
+    <ImageView
+        android:id="@+id/hud_wifi_strength"
+        android:src="@drawable/wifi_0"
+        android:scaleType="fitCenter"
+        android:layout_toLeftOf="@id/emergencyStop"
+        android:layout_toStartOf="@id/emergencyStop"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="6sp"
+        android:contentDescription="@string/wifi_strength_content_description" />
 
 </RelativeLayout>

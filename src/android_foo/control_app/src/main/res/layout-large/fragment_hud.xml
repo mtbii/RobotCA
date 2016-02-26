@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:layout_height="48sp"
     android:background="@android:color/darker_gray"
     android:alpha="0.65"
     tools:context="com.robotca.ControlApp.Fragments.HUDFragment">
@@ -12,6 +11,7 @@
         android:paddingLeft="8sp"
         android:paddingStart="8sp"
         android:paddingEnd="8sp"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -21,6 +21,7 @@
         android:id="@+id/hud_turnrate"
         android:layout_toRightOf="@id/hud_speed"
         android:layout_toEndOf="@id/hud_speed"
+        android:textSize="20sp"
         android:paddingLeft="8sp"
         android:paddingStart="8sp"
         android:paddingEnd="8sp"
@@ -36,6 +37,7 @@
         android:paddingLeft="8sp"
         android:paddingStart="8sp"
         android:paddingEnd="8sp"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -50,5 +52,16 @@
         android:background="@android:color/holo_red_dark"
         android:text="@string/stop"
         tools:ignore="RelativeOverlap" />
+
+    <ImageView
+        android:id="@+id/hud_wifi_strength"
+        android:src="@drawable/wifi_0"
+        android:scaleType="fitCenter"
+        android:layout_toLeftOf="@id/emergencyStop"
+        android:layout_toStartOf="@id/emergencyStop"
+        android:padding="6sp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/wifi_strength_content_description" />
 
 </RelativeLayout>

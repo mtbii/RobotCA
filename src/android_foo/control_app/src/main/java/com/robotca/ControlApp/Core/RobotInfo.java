@@ -1,5 +1,7 @@
 package com.robotca.ControlApp.Core;
 
+import android.support.annotation.NonNull;
+
 import java.net.URI;
 import java.util.UUID;
 
@@ -8,7 +10,7 @@ import java.util.UUID;
  */
 public class RobotInfo implements Comparable<RobotInfo>{
     private static int robotCount = 1;
-    private UUID id = UUID.randomUUID();;
+    private UUID id = UUID.randomUUID();
     private String name;
     private String masterUriString;
 
@@ -88,14 +90,14 @@ public class RobotInfo implements Comparable<RobotInfo>{
     }
 
     @Override
-    public int compareTo(RobotInfo another) {
+    public int compareTo(@NonNull RobotInfo another) {
         if(this.getId() == null){
             return -1;
         }
 
-        if(another == null){
-            return 1;
-        }
+//        if(another == null){
+//            return 1;
+//        }
 
         if(another.getId() == null){
             return 1;

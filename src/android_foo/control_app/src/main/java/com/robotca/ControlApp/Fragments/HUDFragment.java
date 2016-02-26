@@ -1,11 +1,14 @@
 package com.robotca.ControlApp.Fragments;
 
+import android.content.Context;
 import android.location.Location;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.robotca.ControlApp.Core.RobotGPSSub;
@@ -29,13 +32,23 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
 
     private View view;
     private TextView speedView, turnrateView, locationView;
+    private ImageView wifiStrengthView;
 
     private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
+    private final Updater UPDATER = new Updater();
 
     // Node for receiving GPS events
     private RobotGPSSub robotGPSNode;
 
+    // Used for getting connection strength info
+    private WifiManager wifiManager;
+
     private boolean isSetup;
+
+    private double lastSpeed, lastTurnrate;
+    private int lastWifiImage;
+
+    private static int[] wifiIcons;
 
     /**
      * Default Constructor.
@@ -54,12 +67,23 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
             turnrateView = (TextView) view.findViewById(R.id.hud_turnrate);
             locationView = (TextView) view.findViewById(R.id.hud_location);
 
+            wifiStrengthView = (ImageView) view.findViewById(R.id.hud_wifi_strength);
+
             updateUI(0.0, 0.0);
         }
 
         // Create the GPS Node
         if (robotGPSNode == null)
             robotGPSNode = new RobotGPSSub();
+
+        // Get WifiManager
+        wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+
+        wifiIcons = new int[] {R.drawable.wifi_0,
+                R.drawable.wifi_1,
+                R.drawable.wifi_2,
+                R.drawable.wifi_3,
+                R.drawable.wifi_4};
 
         return view;
     }
@@ -71,11 +95,11 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
 
         if (!isSetup) {
             isSetup = true;
-
-            Log.d(TAG, "initialized: " + nodeMainExecutor + " " + robotGPSNode);
-
             nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
         }
+
+        // Start the Update
+        new Thread(UPDATER).start();
     }
 
     public RobotGPSSub getRobotGPSNode() {
@@ -103,6 +127,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         if (isInitialized()) {
             nodeMainExecutor.shutdownNodeMain(robotGPSNode);
         }
+
+        UPDATER.kill();
     }
 
     /*
@@ -111,10 +137,58 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
     private void updateUI(final double speed, final double turnrate)
     {
         if (!isDetached()) {
-            UPDATE_UI_RUNNABLE.speed = speed;
-            UPDATE_UI_RUNNABLE.turnrate = turnrate;
+            lastSpeed = speed;
+            lastTurnrate = turnrate;
 
             view.post(UPDATE_UI_RUNNABLE);
+        }
+    }
+
+    private static String getLatLongString(String str)
+    {
+        return str.replaceFirst(":", "\u00B0 ").replaceFirst(":", "' ") + "\"";
+    }
+
+    /*
+     * Thread for periodically checking state info.
+     */
+    private class Updater implements Runnable
+    {
+        private boolean alive;
+        private static final long SLEEP = 1000L;
+
+        /**
+         * Run
+         */
+        @Override
+        public void run() {
+            alive = true;
+
+            int rssi, temp;
+
+            while (alive) {
+
+//                Log.d(TAG, "RSSI: " + wifiManager.getConnectionInfo().getRssi());
+
+                rssi = wifiManager.getConnectionInfo().getRssi();
+                temp = lastWifiImage;
+                lastWifiImage = WifiManager.calculateSignalLevel(rssi, 5);
+
+                if (temp != lastWifiImage)
+                    view.post(UPDATE_UI_RUNNABLE);
+
+                try {
+                    Thread.sleep(SLEEP);
+                }
+                catch (InterruptedException e) {
+                    // Ignore
+                }
+            }
+        }
+
+        public void kill()
+        {
+            alive = false;
         }
     }
 
@@ -123,8 +197,6 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
      */
     private class UpdateUIRunnable implements Runnable
     {
-        public double speed, turnrate;
-
         /**
          * Starts executing the active part of the class' code. This method is
          * called when a thread is started that has been created with a class which
@@ -137,8 +209,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
                 return;
 
             try {
-                speed = (int) (speed * 100.0) / 100.0;
-                turnrate = (int) (turnrate * 100.0) / 100.0;
+                double speed = (int) (lastSpeed * 100.0) / 100.0;
+                double turnrate = (int) (lastTurnrate * 100.0) / 100.0;
 
                 if (speedView != null)
                     speedView.setText(String.format((String) getText(R.string.speed_string), speed));
@@ -153,9 +225,16 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
                         String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
                         String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
 
+                        strLongitude = getLatLongString(strLongitude);
+                        strLatitude = getLatLongString(strLatitude);
+
                         locationView.setText(String.format((String) getText(R.string.location_string),
                                 strLatitude, strLongitude));
                     }
+                }
+
+                if (wifiStrengthView != null) {
+                    wifiStrengthView.setImageResource(wifiIcons[lastWifiImage]);
                 }
 
             } catch (IllegalStateException e) {

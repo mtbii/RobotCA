@@ -22,8 +22,8 @@
             <fragment
                 android:id="@+id/hud_fragment"
                 android:name="com.robotca.ControlApp.Fragments.HUDFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="64sp"
                 tools:layout="@layout/fragment_hud" />
 
             <fragment

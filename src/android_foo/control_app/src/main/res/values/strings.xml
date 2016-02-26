@@ -51,9 +51,11 @@
     <string name="show_advanced_options">Show Advanced Options</string>
     <string name="percent_string">%1$d%%</string>
 
-    <string name="speed_string">Velocity: %1$f</string>
-    <string name="turnrate_string">TurnRate: %1$f</string>
-    <string name="location_string">(%1$s, %2$s)</string>
+    <string name="speed_string">VEL: %1$5.2f</string>
+    <string name="turnrate_string">TURN: %1$5.2f</string>
+    <string name="location_string">LAT: %1$14s  LONG: %2$14s</string>
+
+    <string name="wifi_strength_content_description">Shows WIFI signal strength</string>
 
     <string name="map_center_string">Center</string>
 

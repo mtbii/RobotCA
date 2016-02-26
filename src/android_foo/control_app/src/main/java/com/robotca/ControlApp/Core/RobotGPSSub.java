@@ -43,8 +43,6 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
                 try {
                     Thread.sleep(1000, 0);
 
-                    Log.d("GPS: ", "" + navSatFix);
-
                     if (mMyLocatationComsumer != null) {
                         mMyLocatationComsumer.onLocationChanged(mLocation, RobotGPSSub.this);
                     }
