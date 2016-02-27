@@ -48,10 +48,10 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 //    private static final int LASER_SCAN_STRIDE = 15;
 
     // Only adds laser scan points if they are at least this much further from the previous point
-    private static final float MIN_DISTANCE_SQUARED = 10.0e-2f;
+    private static final float MIN_DISTANCE_SQUARED = 20.0e-2f; // meters
 
     // Used for calculating range color
-    private static final float MAX_DISTANCE = 6.0f;
+    private static final float MAX_DISTANCE = 10.0f; // meters
 
     private final Object mutex;
 

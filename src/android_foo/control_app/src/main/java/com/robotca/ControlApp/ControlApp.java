@@ -180,14 +180,16 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
 
         // Emergency stop button
-        emergencyStop = (Button) findViewById(R.id.emergencyStop);
-        emergencyStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.stop();
-                joystickFragment.stop();
-            }
-        });
+        if (emergencyStop != null) {
+            emergencyStop = (Button) findViewById(R.id.emergencyStop);
+            emergencyStop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    controller.stop();
+                    joystickFragment.stop();
+                }
+            });
+        }
     }
 
     @Override
@@ -265,7 +267,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                             }
                             Log.d(TAG, "Added HUD to joystick odometry listener!");
                         }
-                    }, 100);
+                    }, 100L);
 
                 }
             });
@@ -352,7 +354,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             joystickFragment.show();
         }
 
-        emergencyStop.setVisibility(View.VISIBLE);
+        hudFragment.show();
+//        emergencyStop.setVisibility(View.VISIBLE);
 
         if(controller != null) {
             controller.update();
@@ -380,7 +383,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 break;
 
             case 5:
-                emergencyStop.setVisibility(View.GONE);
+                hudFragment.hide();
+//                emergencyStop.setVisibility(View.GONE);
                 joystickFragment.hide();
                 fragment = new PreferencesFragment();
                 break;

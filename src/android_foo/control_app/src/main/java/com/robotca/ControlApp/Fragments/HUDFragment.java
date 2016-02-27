@@ -31,7 +31,7 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
     private static final String TAG = "HUDFragment";
 
     private View view;
-    private TextView speedView, turnrateView, locationView;
+    private TextView speedView, turnrateView, locationView, latView, longView;
     private ImageView wifiStrengthView;
 
     private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
@@ -66,6 +66,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
             speedView = (TextView) view.findViewById(R.id.hud_speed);
             turnrateView = (TextView) view.findViewById(R.id.hud_turnrate);
             locationView = (TextView) view.findViewById(R.id.hud_location);
+            latView = (TextView) view.findViewById(R.id.hud_gps_lat);
+            longView = (TextView) view.findViewById(R.id.hud_gps_long);
 
             wifiStrengthView = (ImageView) view.findViewById(R.id.hud_wifi_strength);
 
@@ -144,9 +146,28 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         }
     }
 
-    private static String getLatLongString(String str)
+    private static String getLatLongString(String str, boolean lat)
     {
-        return str.replaceFirst(":", "\u00B0 ").replaceFirst(":", "' ") + "\"";
+        String r = str.replaceFirst(":", "\u00B0 ").replaceFirst(":", "' ") + "\"";
+
+        if (lat){
+            if (r.contains("-")) {
+                r = r.replace("-", "") + " S";
+            }
+            else {
+                r += " N";
+            }
+        }
+        else {
+            if (r.contains("-")) {
+                r = r.replace("-", "") + " W";
+            }
+            else {
+                r += " E";
+            }
+        }
+
+        return r;
     }
 
     /*
@@ -225,11 +246,29 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
                         String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
                         String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
 
-                        strLongitude = getLatLongString(strLongitude);
-                        strLatitude = getLatLongString(strLatitude);
+                        strLongitude = getLatLongString(strLongitude, false);
+                        strLatitude = getLatLongString(strLatitude, true);
 
                         locationView.setText(String.format((String) getText(R.string.location_string),
                                 strLatitude, strLongitude));
+                    }
+                }
+                if (latView != null) {
+                    Location loc = robotGPSNode.getLastKnownLocation();
+
+                    if (loc != null) {
+                        String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
+                        strLatitude = getLatLongString(strLatitude, true);
+                        latView.setText(strLatitude);
+                    }
+                }
+                if (longView != null) {
+                    Location loc = robotGPSNode.getLastKnownLocation();
+
+                    if (loc != null) {
+                        String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
+                        strLongitude = getLatLongString(strLongitude, false);
+                        longView.setText(strLongitude);
                     }
                 }
 

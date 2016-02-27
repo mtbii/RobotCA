@@ -1,64 +1,150 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48sp"
+    android:layout_height="32sp"
     android:orientation="horizontal"
     android:background="@android:color/darker_gray"
     android:alpha="0.65"
     tools:context="com.robotca.ControlApp.Fragments.HUDFragment">
 
-    <TextView
-        android:id="@+id/hud_speed"
-        android:paddingLeft="8sp"
-        android:paddingStart="8sp"
-        android:paddingEnd="8sp"
-        android:paddingTop="4sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/speed_string"/>
-
-    <TextView
-        android:id="@+id/hud_turnrate"
-        android:layout_below="@id/hud_speed"
-        android:paddingLeft="8sp"
-        android:paddingStart="8sp"
-        android:paddingEnd="8sp"
-        android:paddingTop="4sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/turnrate_string"/>
-
-    <TextView
-        android:id="@+id/hud_location"
-        android:layout_toRightOf="@id/hud_turnrate"
-        android:layout_toEndOf="@id/hud_turnrate"
-        android:paddingLeft="8sp"
-        android:paddingStart="8sp"
-        android:paddingEnd="8sp"
-        android:paddingTop="4sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-
     <Button
         android:id="@+id/emergencyStop"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@android:color/holo_red_dark"
         android:text="@string/stop"
         tools:ignore="RelativeOverlap" />
 
-    <ImageView
-        android:id="@+id/hud_wifi_strength"
-        android:src="@drawable/wifi_0"
-        android:scaleType="fitCenter"
-        android:layout_toLeftOf="@id/emergencyStop"
-        android:layout_toStartOf="@id/emergencyStop"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="6sp"
-        android:contentDescription="@string/wifi_strength_content_description" />
+        android:layout_toLeftOf="@id/emergencyStop"
+        android:layout_toStartOf="@id/emergencyStop">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/hud_speedometer_icon"
+                android:src="@drawable/speedometer"
+                android:paddingTop="5sp"
+                android:paddingBottom="5sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/speedometer_icon_content_description"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                />
+
+            <TextView
+                android:id="@+id/hud_speed"
+                android:layout_toRightOf="@id/hud_speedometer_icon"
+                android:layout_toEndOf="@id/hud_speedometer_icon"
+                android:paddingLeft="8sp"
+                android:paddingStart="8sp"
+                android:paddingEnd="8sp"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/speed_string"/>
+
+            <TextView
+                android:id="@+id/hud_turnrate"
+                android:layout_toRightOf="@id/hud_speed"
+                android:layout_toEndOf="@id/hud_speed"
+                android:textSize="16sp"
+                android:paddingLeft="8sp"
+                android:paddingStart="8sp"
+                android:paddingEnd="8sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/turnrate_string"/>
+
+            <ImageView
+                android:id="@+id/hud_gps_icon"
+                android:src="@drawable/gps"
+                android:paddingTop="3sp"
+                android:paddingBottom="3sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/hud_turnrate"
+                android:layout_toEndOf="@id/hud_turnrate"
+                android:contentDescription="@string/gps_icon_content_description"
+                />
+
+            <TextView
+                android:id="@+id/hud_location"
+                android:layout_toRightOf="@id/hud_gps_icon"
+                android:layout_toEndOf="@id/hud_gps_icon"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/location_string"
+                />
+
+
+        </RelativeLayout>
+    </HorizontalScrollView>
 
 </RelativeLayout>
+
+
+
+<!--<TextView-->
+<!--android:id="@+id/hud_speed"-->
+<!--android:paddingLeft="8sp"-->
+<!--android:paddingStart="8sp"-->
+<!--android:paddingEnd="8sp"-->
+<!--android:paddingTop="4sp"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="@string/speed_string"/>-->
+
+<!--<TextView-->
+<!--android:id="@+id/hud_turnrate"-->
+<!--android:layout_below="@id/hud_speed"-->
+<!--android:paddingLeft="8sp"-->
+<!--android:paddingStart="8sp"-->
+<!--android:paddingEnd="8sp"-->
+<!--android:paddingTop="4sp"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="@string/turnrate_string"/>-->
+
+<!--<TextView-->
+<!--android:id="@+id/hud_location"-->
+<!--android:layout_toRightOf="@id/hud_turnrate"-->
+<!--android:layout_toEndOf="@id/hud_turnrate"-->
+<!--android:paddingLeft="8sp"-->
+<!--android:paddingStart="8sp"-->
+<!--android:paddingEnd="8sp"-->
+<!--android:paddingTop="4sp"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+    <!--/>-->
+
+<!--<Button-->
+<!--android:id="@+id/emergencyStop"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:layout_alignParentRight="true"-->
+<!--android:layout_alignParentEnd="true"-->
+<!--android:background="@android:color/holo_red_dark"-->
+<!--android:text="@string/stop"-->
+<!--tools:ignore="RelativeOverlap" />-->
+
+<!--<ImageView-->
+<!--android:id="@+id/hud_wifi_strength"-->
+<!--android:src="@drawable/wifi_0"-->
+<!--android:scaleType="fitCenter"-->
+<!--android:layout_toLeftOf="@id/emergencyStop"-->
+<!--android:layout_toStartOf="@id/emergencyStop"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="match_parent"-->
+<!--android:padding="6sp"-->
+<!--android:contentDescription="@string/wifi_strength_content_description" />-->
