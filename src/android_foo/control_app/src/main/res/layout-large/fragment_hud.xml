@@ -62,16 +62,6 @@
         android:layout_toEndOf="@id/hud_speed_display"
         android:contentDescription="@string/gps_icon_content_description"/>
 
-    <!--<TextView-->
-        <!--android:id="@+id/hud_location"-->
-        <!--android:layout_toRightOf="@id/hud_gps_icon"-->
-        <!--android:layout_toEndOf="@id/hud_gps_icon"-->
-        <!--android:textSize="20sp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:text="@string/location_string"-->
-        <!--/>-->
     <LinearLayout
         android:id="@+id/hud_gps_display"
         android:orientation="vertical"

@@ -38,54 +38,76 @@
                 android:layout_alignParentStart="true"
                 />
 
-            <TextView
-                android:id="@+id/hud_speed"
+            <LinearLayout
+                android:id="@+id/hud_speed_display"
+                android:orientation="vertical"
                 android:layout_toRightOf="@id/hud_speedometer_icon"
                 android:layout_toEndOf="@id/hud_speedometer_icon"
-                android:paddingLeft="8sp"
-                android:paddingStart="8sp"
-                android:paddingEnd="8sp"
-                android:textSize="16sp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/speed_string"/>
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/hud_turnrate"
-                android:layout_toRightOf="@id/hud_speed"
-                android:layout_toEndOf="@id/hud_speed"
-                android:textSize="16sp"
-                android:paddingLeft="8sp"
-                android:paddingStart="8sp"
-                android:paddingEnd="8sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/turnrate_string"/>
+                <TextView
+                    android:id="@+id/hud_speed"
+
+                    android:paddingLeft="8sp"
+                    android:paddingStart="8sp"
+                    android:paddingEnd="8sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/speed_string"/>
+
+                <TextView
+                    android:id="@+id/hud_turnrate"
+                    android:paddingLeft="8sp"
+                    android:paddingStart="8sp"
+                    android:paddingEnd="8sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/turnrate_string"/>
+
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/hud_gps_icon"
                 android:src="@drawable/gps"
-                android:paddingTop="3sp"
-                android:paddingBottom="3sp"
+                android:paddingTop="6sp"
+                android:paddingBottom="6sp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@id/hud_turnrate"
-                android:layout_toEndOf="@id/hud_turnrate"
-                android:contentDescription="@string/gps_icon_content_description"
-                />
+                android:layout_toRightOf="@id/hud_speed_display"
+                android:layout_toEndOf="@id/hud_speed_display"
+                android:contentDescription="@string/gps_icon_content_description"/>
 
-            <TextView
-                android:id="@+id/hud_location"
+            <LinearLayout
+                android:id="@+id/hud_gps_display"
+                android:orientation="vertical"
                 android:layout_toRightOf="@id/hud_gps_icon"
                 android:layout_toEndOf="@id/hud_gps_icon"
-                android:textSize="16sp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="@string/location_string"
-                />
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/hud_gps_lat"
+
+                    android:paddingLeft="8sp"
+                    android:paddingStart="8sp"
+                    android:paddingEnd="8sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/hud_gps_long"
+                    android:paddingLeft="8sp"
+                    android:paddingStart="8sp"
+                    android:paddingEnd="8sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
 
 
         </RelativeLayout>

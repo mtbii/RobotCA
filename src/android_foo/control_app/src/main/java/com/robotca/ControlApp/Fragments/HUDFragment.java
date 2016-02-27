@@ -65,7 +65,7 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
 
             speedView = (TextView) view.findViewById(R.id.hud_speed);
             turnrateView = (TextView) view.findViewById(R.id.hud_turnrate);
-            locationView = (TextView) view.findViewById(R.id.hud_location);
+//            locationView = (TextView) view.findViewById(R.id.hud_location);
             latView = (TextView) view.findViewById(R.id.hud_gps_lat);
             longView = (TextView) view.findViewById(R.id.hud_gps_long);
 
@@ -81,7 +81,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         // Get WifiManager
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
-        wifiIcons = new int[] {R.drawable.wifi_0,
+        wifiIcons = new int[] {
+                R.drawable.wifi_0,
                 R.drawable.wifi_1,
                 R.drawable.wifi_2,
                 R.drawable.wifi_3,

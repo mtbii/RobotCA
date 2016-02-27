@@ -282,30 +282,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         selectItem(position);
     }
 
-//    /**
-//     * Called when the tilt-control check box is pressed.
-//     * @param view The pressed View
-//     */
-//    public void buttonPressed(View view) {
-//        switch (view.getId()) {
-//            case R.id.tilt_checkbox:
-//                JoystickView joystickView = (JoystickView) mDrawerLayout.findViewById(R.id.joystick_view);
-//
-//                if (joystickView != null) {
-//                    joystickView.controlSchemeChanged();
-//
-//                    lockOrientation(getControlMode() == ControlMode.Motion);
-//
-//                } else
-//                    Log.w(TAG, "JoystickView is null");
-//
-//
-//                break;
-//        }
-//    }
-
-
-
     /**
      * Locks/unlocks the screen orientation.
      * Adapted from an answer on StackOverflow by jp36
@@ -346,16 +322,17 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      * Swaps fragments in the main content view
      */
     private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
+
         Fragment fragment = null;
         Bundle args = new Bundle();
 
-        if(getControlMode().ordinal() < ControlMode.Waypoint.ordinal()){
+        if(joystickFragment != null && getControlMode().ordinal() < ControlMode.Waypoint.ordinal()){
             joystickFragment.show();
         }
 
-        hudFragment.show();
-//        emergencyStop.setVisibility(View.VISIBLE);
+        if (hudFragment != null) {
+            hudFragment.show();
+        }
 
         if(controller != null) {
             controller.update();
@@ -363,6 +340,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         switch (position) {
             case 0:
+                Log.d(TAG, "Drawer item 0 selected, finishing");
                 finish();
                 return;
 
@@ -384,7 +362,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             case 5:
                 hudFragment.hide();
-//                emergencyStop.setVisibility(View.GONE);
                 joystickFragment.hide();
                 fragment = new PreferencesFragment();
                 break;

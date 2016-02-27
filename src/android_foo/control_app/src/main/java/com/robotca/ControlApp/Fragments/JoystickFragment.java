@@ -21,6 +21,7 @@ import org.ros.node.NodeMainExecutor;
  */
 public class JoystickFragment extends RosFragment {
     private JoystickView virtualJoystick;
+    private View view;
     private ControlMode controlMode = ControlMode.Joystick;
     private boolean isSetup;
 
@@ -31,19 +32,20 @@ public class JoystickFragment extends RosFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if (savedInstanceState != null)
-            return virtualJoystick;
+//        if (savedInstanceState != null)
+//            return view;
 
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_joystick_view, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_joystick_view, null);
+            virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
 
-        virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
+            virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
-        virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-
-        if (!isSetup && isInitialized()) {
-            isSetup = true;
-            nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+            if (!isSetup && isInitialized()) {
+                isSetup = true;
+                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+            }
         }
 
         return view;

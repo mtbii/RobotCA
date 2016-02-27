@@ -57,7 +57,8 @@ public class LaserScanFragment extends RosFragment {
     public void onStart() {
         super.onStart();
 
-        laserView.getCamera().jumpToFrame("base_link");
+        if (laserView != null)
+            laserView.getCamera().jumpToFrame("base_link");
         //laserView.getCamera().zoom(laserView.getCamera().getViewport().getWidth() / 2, laserView.getCamera().getViewport().getHeight() / 2, .5);
 
     }
