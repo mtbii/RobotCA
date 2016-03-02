@@ -1,27 +1,5 @@
 package com.robotca.ControlApp.Layers;
 
-/**
- * Improved version of the ros laser scan layer.
- * Instead of using a preset stride to limit the number of points drawn, points are drawn when their
- * distance from the last drawn point exceeds some value.
- * Created by Nathaniel on 2/12/16.
- */
-/*
- * Copyright (C) 2011 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
 import com.google.common.base.Preconditions;
 
 import org.ros.android.view.visualization.Color;
@@ -40,12 +18,33 @@ import javax.microedition.khronos.opengles.GL10;
 
 import sensor_msgs.LaserScan;
 
+/**
+ * Improved version of the ros laser scan layer.
+ * Instead of using a preset stride to limit the number of points drawn, points are drawn when their
+ * distance from the last drawn point exceeds some value.
+ * Created by Nathaniel on 2/12/16.
+ *
+ * Copyright (C) 2011 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLayer {
 
-    private static final Color FREE_SPACE_COLOR = Color.fromHexAndAlpha("377dfa", 0.1f);
-    private static final Color OCCUPIED_SPACE_COLOR = Color.fromHexAndAlpha("377dfa", 0.3f);
+    // Base color of the laser scan
+    private static final Color LASER_SCAN_COLOR = Color.fromHexAndAlpha("377dfa", 0.1f);
+
+    // Default point size of laser scan points
     private static final float LASER_SCAN_POINT_SIZE = 10.f;
-//    private static final int LASER_SCAN_STRIDE = 15;
 
     // Only adds laser scan points if they are at least this much further from the previous point
     private static final float MIN_DISTANCE_SQUARED = 20.0e-2f; // meters
@@ -53,25 +52,48 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Used for calculating range color
     private static final float MAX_DISTANCE = 10.0f; // meters
 
+    // Lock for synchronizing drawing
     private final Object mutex;
 
+    // Controls the density of scan points
     private float laserScanDetail;
+
+    // GraphName for LaserScan
     private GraphName frame;
+
+    // Buffer of scan points for drawing
     private FloatBuffer vertexFrontBuffer;
+
+    // Buffer of scan points for updating
     private FloatBuffer vertexBackBuffer;
 
 //    private static final String TAG = "LaserScanLayer";
 
+    /**
+     * Creates a LaserScanLayer.
+     * @param topicName Topic name for laser scanner
+     * @param detail Detail of drawn points
+     */
     public LaserScanLayer(String topicName, float detail) {
         this(GraphName.of(topicName), detail);
     }
 
+    /**
+     * Creates a LaserScanLayer.
+     * @param topicName Topic name for laser scanner
+     * @param detail Detail of drawn points
+     */
     public LaserScanLayer(GraphName topicName, float detail) {
         super(topicName, sensor_msgs.LaserScan._TYPE);
         mutex = new Object();
         this.laserScanDetail = Math.max(detail, 1);
     }
 
+    /**
+     * Draws the LaserScan.
+     * @param view The VisualizationView this LaserScanLayer is attached to.
+     * @param gl The GL10 instance for drawing
+     */
     @Override
     public void draw(VisualizationView view, GL10 gl)
     {
@@ -79,19 +101,28 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         {
             synchronized (mutex)
             {
-//                Vertices.drawTriangleFan(gl, vertexFrontBuffer, FREE_SPACE_COLOR);
+                // Draw the scan area
                 drawPoints(gl, vertexFrontBuffer, 0.0f, true);
+
                 // Drop the first point which is required for the triangle fan but is
                 // not a range reading.
                 FloatBuffer pointVertices = vertexFrontBuffer.duplicate();
                 pointVertices.position(3 + 4);
-//                Vertices.drawPoints(gl, pointVertices, OCCUPIED_SPACE_COLOR, LASER_SCAN_POINT_SIZE);
+
+                // Draw the scan points
                 drawPoints(gl, pointVertices, LASER_SCAN_POINT_SIZE, false);
 
             }
         }
     }
 
+    /**
+     * Draws the contents of the specified buffer.
+     * @param gl GL10 object for drawing
+     * @param vertices FloatBuffer of vertices to draw
+     * @param size Size of draw points
+     * @param fan If true, draws the buffer as a triangle fan, otherwise draws it as a point cloud
+     */
     public static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
         vertices.mark();
 
@@ -120,11 +151,19 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         vertices.reset();
     }
 
+    /*
+     * Helper function to calculate the number of vertices in a FloatBuffer.
+     */
     private static int countVertices(FloatBuffer vertices, int size) {
         Preconditions.checkArgument(vertices.remaining() % size == 0, "Number of vertices: " + vertices.remaining());
         return vertices.remaining() / size;
     }
 
+    /**
+     * Initializes the LaserScanLayer.
+     * @param view Parent VisualizationView
+     * @param connectedNode Node this layer is connected to
+     */
     @Override
     public void onStart(VisualizationView view, ConnectedNode connectedNode) {
         super.onStart(view, connectedNode);
@@ -138,6 +177,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         });
     }
 
+    /*
+     * Updates the contents of the vertexBackBuffer to the result of the specified LaserScan.
+     */
     private void updateVertexBuffer(LaserScan laserScan)
     {
         float[] ranges = laserScan.getRanges();
@@ -156,13 +198,11 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         vertexBackBuffer.put(0);
 
         // Color
-        vertexBackBuffer.put(FREE_SPACE_COLOR.getRed());
-        vertexBackBuffer.put(FREE_SPACE_COLOR.getGreen());
-        vertexBackBuffer.put(FREE_SPACE_COLOR.getBlue());
+        vertexBackBuffer.put(LASER_SCAN_COLOR.getRed());
+        vertexBackBuffer.put(LASER_SCAN_COLOR.getGreen());
+        vertexBackBuffer.put(LASER_SCAN_COLOR.getBlue());
         vertexBackBuffer.put(0.1f);
 
-//        float minimumRange = laserScan.getRangeMin();
-//        float maximumRange = laserScan.getRangeMax();
         float angle = laserScan.getAngleMin();
         float angleIncrement = laserScan.getAngleIncrement();
 
@@ -201,9 +241,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 vertexBackBuffer.put(0.0f);
 
                 // Color
-                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getRed() + (1.0f - p));
-                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getGreen());
-                vertexBackBuffer.put(p * FREE_SPACE_COLOR.getBlue());
+                vertexBackBuffer.put(p * LASER_SCAN_COLOR.getRed() + (1.0f - p));
+                vertexBackBuffer.put(p * LASER_SCAN_COLOR.getGreen());
+                vertexBackBuffer.put(p * LASER_SCAN_COLOR.getBlue());
                 vertexBackBuffer.put(0.1f);
 
                 xp = x;
@@ -225,6 +265,10 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         }
     }
 
+    /**
+     * Returns this layers' GraphName
+     * @return  The GraphName of this Layer
+     */
     @Override
     public GraphName getFrame() {
         return frame;

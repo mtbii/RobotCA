@@ -17,14 +17,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Fragment for the LaserScanLayer.
  *
  * Created by Michael Brunson on 11/7/15.
  */
 public class LaserScanFragment extends RosFragment {
     private VisualizationView laserView;
 
+    /**
+     * Default Constructor.
+     */
     public LaserScanFragment(){}
 
+    /**
+     * Inflates the Fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -47,6 +54,7 @@ public class LaserScanFragment extends RosFragment {
         laserView.onCreate(layers);
 
         laserView.init(nodeMainExecutor);
+
         if (nodeConfiguration != null)
             nodeMainExecutor.execute(laserView, nodeConfiguration.setNodeName("android/laser_view"));
 
@@ -63,6 +71,7 @@ public class LaserScanFragment extends RosFragment {
 
     }
 
+    @Override
     public void shutdown(){
     }
 }

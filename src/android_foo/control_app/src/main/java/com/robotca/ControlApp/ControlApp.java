@@ -196,17 +196,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     protected void onStop() {
         RobotStorage.update(this, ROBOT_INFO);
 
+        Log.d(TAG, "onStop()");
+
         if(controller != null)
-        controller.stop();
+            controller.stop();
 
         if(joystickFragment != null)
-        joystickFragment.stop();
+            joystickFragment.stop();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Log.d(TAG, "onDestroy()");
 
         if(controller != null)
             controller.stop();
@@ -308,6 +312,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                     else
                         orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
             }
 
             //noinspection ResourceType
@@ -361,8 +366,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 break;
 
             case 5:
-                hudFragment.hide();
-                joystickFragment.hide();
+                if (hudFragment != null)
+                    hudFragment.hide();
+                if (joystickFragment != null)
+                    joystickFragment.hide();
                 fragment = new PreferencesFragment();
                 break;
 

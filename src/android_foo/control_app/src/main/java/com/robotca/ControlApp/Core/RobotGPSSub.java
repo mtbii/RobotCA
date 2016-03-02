@@ -58,7 +58,8 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
 
     @Override
     public void onShutdown(Node node) {
-        mSubscriber.shutdown();
+        if (mSubscriber != null)
+            mSubscriber.shutdown();
     }
 
     @Override

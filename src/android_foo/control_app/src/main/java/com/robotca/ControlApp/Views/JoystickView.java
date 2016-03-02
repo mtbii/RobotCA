@@ -397,7 +397,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+            // Ignore
         }
     };
 
