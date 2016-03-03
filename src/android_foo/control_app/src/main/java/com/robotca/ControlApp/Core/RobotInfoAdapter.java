@@ -1,11 +1,16 @@
 package com.robotca.ControlApp.Core;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,23 +24,37 @@ import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.R;
 
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 
 /**
+ * Contains the list of Robot definitions users can create and then connect to.
+ *
  * Created by Michael Brunson on 1/23/16.
  */
 public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.ViewHolder> {
     private List<RobotInfo> mDataset;
-    private AppCompatActivity activity;
 
+    private static AppCompatActivity activity;
+    private static RobotInfo lastInfo;
+
+    /**
+     * Constructor for RobotInfoAdapter.
+     * @param activity The parent activity
+     * @param dataset The list of previsously created RobotInfos to load
+     */
     public RobotInfoAdapter(AppCompatActivity activity, List<RobotInfo> dataset) {
-        this.activity = activity;
+        RobotInfoAdapter.activity = activity;
         mDataset = dataset;
     }
 
+    /**
+     * Creates a ViewHolder.
+     * @param parent The ViewHolder's parent ViewGroup.
+     * @param viewType The ViewHolder's view type
+     * @return The created ViewHolder
+     */
     public RobotInfoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater
                 .from(parent.getContext())
@@ -45,17 +64,29 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
         //return viewHolder;
     }
 
+    /**
+     * Binds the specified ViewHolder.
+     * @param holder The ViewHolder
+     * @param position The ViewHolder's position in the list
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mRobotNameTextView.setText(mDataset.get(position).getName());
         holder.mMasterUriTextView.setText(mDataset.get(position).getUri().toString());
     }
 
+    /**
+     * Returns the number of ViewHolders inside this RobotInfoAdapter.
+     * @return The number
+     */
     @Override
     public int getItemCount() {
         return mDataset.size();
     }
 
+    /**
+     * Container for the Views inside this RobotInfoAdapter.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView mRobotNameTextView;
         public TextView mMasterUriTextView;
@@ -76,6 +107,12 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
             mDeleteButton.setOnClickListener(this);
         }
 
+        /**
+         * Handles clicks on the RobotInfoAdapter.ViewHolder.
+         *
+         * @param v The clicked View. Can be either the edit button, delete button, or the adapter itself,
+         *          in which case a connection is initiated to the RobotInfo contained in this Adapter
+         */
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
@@ -114,64 +151,22 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
 
                 default:
 
-                    final ProgressDialog mProgressDialog = ProgressDialog.show(activity, "Connecting", "Connecting to " + info.getName() + " (" + info.getUri().toString() + ")", true, false);
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-
-//                                if (!InetAddress.getByName(info.getUri().getHost()).isReachable(10000)) {
-//                                    throw new Exception("Cannot connect to ROS. Please make sure ROS is running and that the Master URI is correct.");
-//                                }
-
-                                if(!isPortOpen(info.getUri().getHost(), info.getUri().getPort(), 10000)){
-                                    throw new Exception("Cannot connect to ROS. Please make sure ROS is running and that the Master URI is correct.");
-                                }
-
-                                final Intent intent = new Intent(activity, ControlApp.class);
-
-                                // !!!---- EVIL USE OF STATIC VARIABLE ----!! //
-                                // Should not be doing this but there is no other way that I can see -Michael
-                                ControlApp.ROBOT_INFO = info;
-
-                                mProgressDialog.dismiss();
-
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        activity.startActivity(intent);
-                                    }
-                                });
-                            }
-                            catch (final NetworkOnMainThreadException e){
-                                mProgressDialog.dismiss();
-
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(activity, "Invalid Master URI", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                            catch (final Exception e) {
-                                mProgressDialog.dismiss();
-
-                                activity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                        }
-                    }).start();
+                    FragmentManager fragmentManager = activity.getFragmentManager();
+                    ConnectionProgressDialogFragment f = new ConnectionProgressDialogFragment(info);
+                    f.show(fragmentManager, "ConnectionProgressDialog");
 
                     break;
             }
         }
     }
 
+    /**
+     * Tests whether the specified port is open within the specified timeout.
+     * @param ip The IP
+     * @param port The port
+     * @param timeout Time to wait before assuming the port is closed
+     * @return True if the port is open before the timeout ends, false otherwise
+     */
     public static boolean isPortOpen(final String ip, final int port, final int timeout) {
         try {
             Socket socket = new Socket();
@@ -189,5 +184,120 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
             ex.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Dialog Fragment for connecting to a Robot.
+     */
+    public static class ConnectionProgressDialogFragment extends DialogFragment {
+
+        private static final String TAG = "ConnectionProgress";
+
+        private final RobotInfo INFO;
+        private Thread thread;
+
+        /**
+         * Default Constructor.
+         */
+        public ConnectionProgressDialogFragment()
+        {
+            INFO = lastInfo;
+
+            if (INFO == null)
+                throw new IllegalArgumentException("info must be non null!");
+        }
+
+        /**
+         * Creates a ConnectionProgressDialogFragment for the specified RobotInfo.
+         * @param info The RobotInfo with which to connect
+         */
+        @SuppressLint("ValidFragment")
+        public ConnectionProgressDialogFragment(RobotInfo info)
+        {
+            INFO = info;
+            lastInfo = info;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final ProgressDialog progressDialog
+                    = ProgressDialog.show(activity, "Connecting", "Connecting to "
+                    + INFO.getName() + " (" + INFO.getUri().toString() + ")", true, false);
+
+            run();
+
+            return progressDialog;
+        }
+
+        @Override
+        public void onDestroy()
+        {
+            thread.interrupt();
+
+            super.onDestroy();
+        }
+
+        /*
+         * Starts the connection process.
+         */
+        private void run()
+        {
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if(!isPortOpen(INFO.getUri().getHost(), INFO.getUri().getPort(), 10000)){
+                            throw new Exception("Cannot connect to ROS. Please make sure ROS is running and that the Master URI is correct.");
+                        }
+
+                        final Intent intent = new Intent(activity, ControlApp.class);
+
+                        // !!!---- EVIL USE OF STATIC VARIABLE ----!! //
+                        // Should not be doing this but there is no other way that I can see -Michael
+                        ControlApp.ROBOT_INFO = INFO;
+
+                        dismiss();
+
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                activity.startActivity(intent);
+                            }
+                        });
+                    }
+                    catch (final NetworkOnMainThreadException e){
+                        dismiss();
+
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(activity, "Invalid Master URI", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    catch (InterruptedException e)
+                    {
+                        // Ignore
+                        Log.d(TAG, "interrupted");
+                    }
+                    catch (final Exception e) {
+
+                        if (ConnectionProgressDialogFragment.this.getFragmentManager() != null)
+                            dismiss();
+
+                        activity.runOnUiThread(new Runnable() {
+                                @Override
+            public void run() {
+                            Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                        });
+                    }
+                }
+            });
+
+            thread.start();
+        }
+
     }
 }
