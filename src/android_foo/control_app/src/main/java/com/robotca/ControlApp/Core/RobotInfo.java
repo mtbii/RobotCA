@@ -206,4 +206,12 @@ public class RobotInfo implements Comparable<RobotInfo> {
 
         robotCount = max + 1;
     }
+
+    /**
+     * @return The robot count.
+     */
+    static int getRobotCount()
+    {
+        return robotCount;
+    }
 }
