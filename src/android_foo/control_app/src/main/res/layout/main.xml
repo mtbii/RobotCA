@@ -31,6 +31,8 @@
                 android:name="com.robotca.ControlApp.Fragments.JoystickFragment"
                 android:layout_width="150dip"
                 android:layout_height="150dip"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 tools:layout="@layout/fragment_joystick_view" />
             <!--<Button-->

@@ -1,5 +1,8 @@
 package com.robotca.ControlApp.Layers;
 
+import android.util.Log;
+import android.view.MotionEvent;
+
 import com.google.common.base.Preconditions;
 
 import org.ros.android.view.visualization.Color;
@@ -7,10 +10,13 @@ import org.ros.android.view.visualization.Vertices;
 import org.ros.android.view.visualization.VisualizationView;
 import org.ros.android.view.visualization.layer.SubscriberLayer;
 import org.ros.android.view.visualization.layer.TfLayer;
+import org.ros.android.view.visualization.shape.PixelSpacePoseShape;
+import org.ros.android.view.visualization.shape.Shape;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
+import org.ros.rosjava_geometry.Vector3;
 
 import java.nio.FloatBuffer;
 
@@ -67,7 +73,16 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Buffer of scan points for updating
     private FloatBuffer vertexBackBuffer;
 
-//    private static final String TAG = "LaserScanLayer";
+    // Used for panning the view
+    private boolean isMoving;
+    private float xStart, yStart;
+    private float xShift, yShift;
+    private float offX, offY;
+
+    // Shape to draw to show the robot's position
+    private Shape shape;
+
+    private static final String TAG = "LaserScanLayer";
 
     /**
      * Creates a LaserScanLayer.
@@ -87,6 +102,55 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         super(topicName, sensor_msgs.LaserScan._TYPE);
         mutex = new Object();
         this.laserScanDetail = Math.max(detail, 1);
+
+        xShift = yShift = 0.0f;
+    }
+
+    /**
+     * Recenters the LaserScanLayer.
+     */
+    public void recenter()
+    {
+        isMoving = false;
+        xShift = 0.0f;
+        yShift = 0.0f;
+    }
+
+    /**
+     * Callback for touch events to this Layer.
+     * @param view
+     * @param event
+     * @return
+     */
+    public boolean onTouchEvent(VisualizationView view, MotionEvent event)
+    {
+        final float s = 1.0f / (float) view.getCamera().getZoom();
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                if (!isMoving){
+                    isMoving = true;
+                    xStart = event.getY() * s;
+                    yStart = -event.getX() * s;
+
+                    offX = xShift;
+                    offY = yShift;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (isMoving){
+                    isMoving = false;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (isMoving) {
+                    xShift = xStart - event.getY() * s + offX;
+                    yShift = yStart + event.getX() * s + offY;
+                }
+                break;
+        }
+
+        return true;
     }
 
     /**
@@ -101,6 +165,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         {
             synchronized (mutex)
             {
+                // Draw the shape
+//                shape.getTransform().getTranslation().add(new Vector3(xShift, yShift, 0.0f));
+//                shape.getTransform().apply(new Vector3(xShift, yShift, 0.0f));
+                gl.glTranslatef(xShift, yShift, 0.0f);
+                shape.draw(view, gl);
+
                 // Draw the scan area
                 drawPoints(gl, vertexFrontBuffer, 0.0f, true);
 
@@ -112,6 +182,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 // Draw the scan points
                 drawPoints(gl, pointVertices, LASER_SCAN_POINT_SIZE, false);
 
+                gl.glTranslatef(-xShift, -yShift, 0.0f);
             }
         }
     }
@@ -135,7 +206,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         gl.glVertexPointer(3, GL10.GL_FLOAT, (3 + 4) * 4, vertices);
 
         FloatBuffer colors = vertices.duplicate();
-        colors.position(3);
+        colors.position(fan ? 3: 10);
         gl.glColorPointer(4, GL10.GL_FLOAT, (3 + 4) * 4, colors);
 
         gl.glDrawArrays(fan ? GL10.GL_TRIANGLE_FAN : GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
@@ -175,6 +246,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 updateVertexBuffer(laserScan);
             }
         });
+
+        this.shape = new PixelSpacePoseShape();
     }
 
     /*
@@ -193,8 +266,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         vertexBackBuffer.clear();
 
         // We start with the origin of the triangle fan.
-        vertexBackBuffer.put(0);
-        vertexBackBuffer.put(0);
+        vertexBackBuffer.put(0.0f);
+        vertexBackBuffer.put(0.0f);
         vertexBackBuffer.put(0);
 
         // Color
