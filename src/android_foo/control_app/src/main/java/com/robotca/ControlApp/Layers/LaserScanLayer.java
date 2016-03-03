@@ -1,6 +1,5 @@
 package com.robotca.ControlApp.Layers;
 
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.google.common.base.Preconditions;
@@ -16,7 +15,6 @@ import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
-import org.ros.rosjava_geometry.Vector3;
 
 import java.nio.FloatBuffer;
 
@@ -28,7 +26,8 @@ import sensor_msgs.LaserScan;
  * Improved version of the ros laser scan layer.
  * Instead of using a preset stride to limit the number of points drawn, points are drawn when their
  * distance from the last drawn point exceeds some value.
- * Created by Nathaniel on 2/12/16.
+ *
+ * Created by Nathaniel Stone on 2/12/16.
  *
  * Copyright (C) 2011 Google Inc.
  *
@@ -82,6 +81,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Shape to draw to show the robot's position
     private Shape shape;
 
+    @SuppressWarnings("unused")
     private static final String TAG = "LaserScanLayer";
 
     /**
@@ -118,9 +118,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Callback for touch events to this Layer.
-     * @param view
-     * @param event
-     * @return
+     * @param view The touched View
+     * @param event The touch MotionEvent
+     * @return True indicating the even was handled successfully
      */
     public boolean onTouchEvent(VisualizationView view, MotionEvent event)
     {

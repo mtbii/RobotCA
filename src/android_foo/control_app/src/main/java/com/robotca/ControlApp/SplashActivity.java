@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.robotca.ControlApp.Core.RobotStorage;
+
+/**
+ * Simple splash screen.
+ */
 public class SplashActivity extends Activity {
 
     @Override

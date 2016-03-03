@@ -753,6 +753,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         LayoutInflater.from(context).inflate(R.layout.virtual_joystick, this, true);
         mainLayout = (RelativeLayout) findViewById(R.id.virtual_joystick_layout);
         magnitudeText = (TextView) findViewById(R.id.magnitude);
+        magnitudeText.setTextColor(0xFFFFFFFF);
         intensity = (ImageView) findViewById(R.id.intensity);
         thumbDivet = (ImageView) findViewById(R.id.thumb_divet);
         thumbDivet.setColorFilter(Color.RED);
@@ -1054,8 +1055,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // Don't update when the user is turning in place.
         if (!turnInPlaceMode) {
             magnitudeText.setText(String.format(
-                    getResources().getString(R.string.percent_string),
-                    (int) (normalizedMagnitude * 100)));
+                    getResources().getString(R.string.percent_string), (int) (normalizedMagnitude * 100)));
             magnitudeText.setTranslationX((float) (parentSize / 4 * Math.cos((90 + contactTheta)
                     * Math.PI / 180.0)));
             magnitudeText.setTranslationY((float) (parentSize / 4 * Math.sin((90 + contactTheta)

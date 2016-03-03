@@ -1,8 +1,6 @@
 package com.robotca.ControlApp;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,19 +11,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotInfoAdapter;
 import com.robotca.ControlApp.Core.RobotStorage;
-import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 
 /**
+ * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
+ * robot or can create a new one.
+ *
  * Created by Michael Brunson on 1/23/16.
  */
 public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener {
@@ -33,15 +28,16 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     private View mEmptyView;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         this.setContentView(R.layout.robot_chooser);
+
         mEmptyView = findViewById(R.id.robot_empty_view);
         mRecyclerView = (RecyclerView) findViewById(R.id.robot_recycler_view);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -99,6 +95,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         checkRobotList();
     }
 
+    /*
+     * Refreshes the list of RobotInfo choices.
+     */
     private void checkRobotList() {
         if (RobotStorage.getRobots().isEmpty()) {
             mRecyclerView.setVisibility(View.GONE);
@@ -160,6 +159,11 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     }
 
+    /**
+     * Adds a new RobotInfo.
+     * @param info The new RobotInfo
+     * @return True if the RobotInfo was added successfully, false otherwise
+     */
     public boolean addRobot(RobotInfo info) {
         RobotStorage.add(this, info);
 
@@ -167,11 +171,21 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         return true;
     }
 
+    /**
+     * Updates the RobotInfo at the specified position.
+     * @param position The position of the RobotInfo to update
+     * @param newRobotInfo The updated RobotInfo
+     */
     public void updateRobot(int position, RobotInfo newRobotInfo) {
         RobotStorage.update(this, newRobotInfo);
         mAdapter.notifyItemChanged(position);
     }
 
+    /**
+     * Removes the RobotInfo at the specified position.
+     * @param position The position of the RobotInfo to remove
+     * @return The removed RobotInfo if it existed
+     */
     public RobotInfo removeRobot(int position) {
         RobotInfo removed = RobotStorage.remove(this, position);
 

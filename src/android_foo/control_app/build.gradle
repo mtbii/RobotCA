@@ -36,7 +36,7 @@ repositories {
 dependencies {
     compile project(':control_app_lib')
     ///////////////
-    
+
 
     compile 'org.ros.android_core:android_10:[0.2,0.3)'
     compile 'org.ros.android_core:android_15:[0.2,0.3)'
@@ -66,4 +66,5 @@ android {
             testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         }
     }
+    sourceSets { main { java.srcDirs = ['src/main/java', 'src/test/java'] } }
 }
