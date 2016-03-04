@@ -87,4 +87,12 @@ public class RobotGPSSub implements NodeMain, IMyLocationProvider {
     public Location getLastKnownLocation() {
         return mLocation;
     }
+
+    /*
+     * Sets the Location.
+     */
+    public void setLocation(Location location)
+    {
+        mLocation = location;
+    }
 }

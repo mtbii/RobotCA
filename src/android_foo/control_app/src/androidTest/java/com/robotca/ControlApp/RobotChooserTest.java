@@ -18,7 +18,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Rudimentary Instrumentation test that tests adding and removing RobotInfo's int the RobotChooser Activity.
+ * Rudimentary instrumentation test that tests adding and removing RobotInfo's int the RobotChooser Activity.
  * Created by Nathaniel Stone on 3/3/16.
  */
 @RunWith(AndroidJUnit4.class)
