@@ -1,6 +1,7 @@
 package com.robotca.ControlApp.Core;
 
 import android.content.Context;
+import android.location.Location;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -17,9 +18,11 @@ import org.ros.node.NodeMainExecutor;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import geometry_msgs.Pose;
 import geometry_msgs.Twist;
 import nav_msgs.Odometry;
 import sensor_msgs.LaserScan;
@@ -39,24 +42,25 @@ public class RobotController implements NodeMain {
 
     private Subscriber<NavSatFix> navSatFixSubscriber;
     private NavSatFix navSatFix;
-    private Object navSatFixMutex;
+    private final Object navSatFixMutex = new Object();
 
     private Subscriber<LaserScan> laserScanSubscriber;
     private LaserScan laserScan;
-    private Object laserScanMutex;
+    private final Object laserScanMutex = new Object();
 
     private Subscriber<Odometry> odometrySubscriber;
     private Odometry odometry;
-    private Object odometryMutex;
+    private final Object odometryMutex = new Object();
+
+    private Subscriber<Pose> poseSubscriber;
+    private Pose pose;
+    private final Object poseMutex = new Object();
 
     private RobotPlan motionPlan;
     private ConnectedNode connectedNode;
 
     public RobotController(Context context) {
         this.context = context;
-        navSatFixMutex = new Object();
-        laserScanMutex = new Object();
-        odometryMutex = new Object();
     }
 
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
@@ -118,6 +122,7 @@ public class RobotController implements NodeMain {
             String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_camera_topic", context.getString(R.string.camera_topic));
             String laserScanTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_laser_scan_topic", context.getString(R.string.laser_scan_topic));
             String odometryTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_odometry_topic", context.getString(R.string.odometry_topic));
+            String poseTopic = PreferenceManager.getDefaultSharedPreferences(context).getString("edittext_pose_topic", context.getString(R.string.pose_topic));
 
             movePublisher = connectedNode.newPublisher(moveTopic, Twist._TYPE);
             currentVelocityCommand = movePublisher.newMessage();
@@ -157,6 +162,14 @@ public class RobotController implements NodeMain {
                     setOdometry(odometry);
                 }
             });
+
+            poseSubscriber = connectedNode.newSubscriber(poseTopic, Pose._TYPE);
+            poseSubscriber.addMessageListener(new MessageListener<Pose>() {
+                @Override
+                public void onNewMessage(Pose pose) {
+                    setPose(pose);
+                }
+            });
         }
     }
 
@@ -179,6 +192,10 @@ public class RobotController implements NodeMain {
 
         if(odometrySubscriber != null){
             odometrySubscriber.shutdown();
+        }
+
+        if(poseSubscriber != null){
+            poseSubscriber.shutdown();
         }
     }
 
@@ -230,6 +247,18 @@ public class RobotController implements NodeMain {
     protected void setOdometry(Odometry odometry) {
         synchronized (odometryMutex) {
             this.odometry = odometry;
+        }
+    }
+
+    public Pose getPose() {
+        synchronized (poseMutex) {
+            return pose;
+        }
+    }
+
+    public void setPose(Pose pose){
+        synchronized (poseMutex){
+            this.pose = pose;
         }
     }
 }

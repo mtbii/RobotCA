@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Layers.LaserScanLayer;
 import com.robotca.ControlApp.R;
 
@@ -41,8 +42,8 @@ public class LaserScanFragment extends RosFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if(savedInstanceState != null)
-            return laserView;
+//        if(savedInstanceState != null)
+//            return laserView;
 
         View view = inflater.inflate(R.layout.laser_scan_view, container, false);
 
@@ -56,7 +57,7 @@ public class LaserScanFragment extends RosFragment {
                         .getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic)),
                 Float.parseFloat(PreferenceManager
                         .getDefaultSharedPreferences(getActivity())
-                        .getString("edittext_laser_scan_detail", "1"))));
+                        .getString("edittext_laser_scan_detail", "1")), (ControlApp)getActivity()));
 //        layers.add(new RobotLayer("base_link"));
         laserView.onCreate(layers);
 

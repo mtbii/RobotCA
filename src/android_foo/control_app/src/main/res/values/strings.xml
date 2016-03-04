@@ -6,6 +6,7 @@
     <string name="camera_topic">/image_raw/compressed</string>
     <string name="laser_scan_topic">/scan</string>
     <string name="odometry_topic">/odometry/filtered</string>
+    <string name="pose_topic">/pose</string>
 
     <string name="joy_pref_title">Joystick Topic</string>
     <string name="laser_pref_title">Laser Scan Topic</string>
@@ -74,5 +75,7 @@
     <string name="laser_scan_detail_pref_title">Laser Scan Detail</string>
     <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where the random walk algorithm will stop and turn.</string>
     <string name="random_walk_range_minimum_pref_title">Random Walk Range Minimum</string>
+    <string name="pose_pref_title">Pose Topic</string>
+    <string name="pose_pref_summary">Topic where the application gets pose information.\nExpected message type: geometry_msgs/Pose</string>
 
 </resources>

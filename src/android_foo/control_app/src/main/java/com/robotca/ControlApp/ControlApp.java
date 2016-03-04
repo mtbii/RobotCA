@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -14,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.Display;
@@ -50,6 +50,7 @@ import com.robotca.ControlApp.Fragments.PreferencesFragment;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+import org.ros.rosjava_geometry.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private String mDrawerTitle;
 
     private static final String TAG = "ControlApp";
-    private Location waypoint;
+    private Vector3 waypoint;
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
@@ -103,15 +104,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             editor.apply();
         }
 
-//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-//        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-//        if (dpWidth >= 550) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        } else {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        }
+        if (dpWidth >= 550) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         setContentView(R.layout.main);
 
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
@@ -180,16 +181,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
 
         // Emergency stop button
-        if (emergencyStop != null) {
-            emergencyStop = (Button) findViewById(R.id.emergencyStop);
-            emergencyStop.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    controller.stop();
-                    joystickFragment.stop();
-                }
-            });
+        if (emergencyStop == null) {
+            try {
+                emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
+                emergencyStop.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        controller.stop();
+                        joystickFragment.stop();
+                    }
+                });
+            }
+            catch(Exception e){}
         }
+
+        setDestination(new Vector3(6, 0, 0));
     }
 
     @Override
@@ -218,7 +224,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         if(joystickFragment != null)
             joystickFragment.stop();
 
-        this.nodeMainExecutorService.forceShutdown();
+        //this.nodeMainExecutorService.forceShutdown();
     }
 
     @Override
@@ -494,12 +500,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         invalidateOptionsMenu();
     }
 
-    public void setWaypoint(Location location){
+    public void setDestination(Vector3 location){
         waypoint = location;
     }
 
     @Override
-    public Location getDestination() {
+    public Vector3 getDestination() {
         return waypoint;
     }
+
+    public RobotController getController(){return controller;}
 }

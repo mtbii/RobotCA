@@ -33,6 +33,13 @@
         />
 
     <EditTextPreference
+        android:key="edittext_pose_topic"
+        android:defaultValue="@string/pose_topic"
+        android:title="@string/pose_pref_title"
+        android:singleLine="true"
+        android:summary="@string/pose_pref_summary"/>
+
+    <EditTextPreference
         android:key="edittext_laser_scan_detail"
         android:inputType="number"
         android:defaultValue="1"
@@ -47,5 +54,4 @@
         android:title="@string/random_walk_range_minimum_pref_title"
         android:singleLine="true"
         android:summary="@string/random_walk_range_minimum_pref_summary"/>
-
 </PreferenceScreen>
