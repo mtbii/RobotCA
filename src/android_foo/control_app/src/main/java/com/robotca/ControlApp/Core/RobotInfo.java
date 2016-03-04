@@ -166,10 +166,6 @@ public class RobotInfo implements Comparable<RobotInfo> {
             return -1;
         }
 
-//        if(another == null){
-//            return 1;
-//        }
-
         if(another.getId() == null){
             return 1;
         }

@@ -1,7 +1,5 @@
 package com.robotca.ControlApp.Core;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,6 +25,6 @@ public class RobotInfoTest {
 
         RobotInfo.resolveRobotCount(testString);
 
-        Assert.assertEquals(RobotInfo.getRobotCount(), 8);
+        assertEquals(RobotInfo.getRobotCount(), 8);
     }
 }
