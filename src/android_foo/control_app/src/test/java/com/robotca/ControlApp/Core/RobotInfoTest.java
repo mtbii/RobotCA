@@ -1,7 +1,5 @@
 package com.robotca.ControlApp.Core;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,6 +25,19 @@ public class RobotInfoTest {
 
         RobotInfo.resolveRobotCount(testString);
 
-        Assert.assertEquals(RobotInfo.getRobotCount(), 8);
+        assertEquals(RobotInfo.getRobotCount(), 8);
+    }
+
+    @Test
+    public void testRobotInfo() throws Exception{
+
+        RobotInfo robot1 = new RobotInfo();
+        assertEquals(robot1.getName(), "Robot" + (RobotInfo.getRobotCount() - 1));
+        assertEquals(robot1.getMasterUri(), "http://localhost:11311");
+        assertEquals(robot1.getJoystickTopic(), "/joy_teleop/cmd_vel");
+        assertEquals(robot1.getCameraTopic(), "/image_raw/compressed");
+        assertEquals(robot1.getLaserTopic(), "/scan");
+        RobotInfo robot2 = new RobotInfo(null, "robot2", "http://localhost:11311", null, null, null);
+        assertEquals(robot2.getMasterUri(), robot1.getMasterUri());
     }
 }

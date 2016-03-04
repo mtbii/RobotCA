@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:tools="http://schemas.android.com/tools"
+    package="${applicationId}">
+    <uses-sdk tools:overrideLibrary="android.app, android.support.test,
+    android.support.test.rule,
+    android.support.test.espresso,
+    android.support.test.espresso.idling,
+    android.support.test.uiautomator.v18"/>
+</manifest>

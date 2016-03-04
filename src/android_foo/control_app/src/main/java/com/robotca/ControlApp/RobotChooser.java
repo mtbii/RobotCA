@@ -199,4 +199,12 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         return removed;
     }
+
+    /**
+     * @return mAdapter item count.
+     */
+    int getAdapterSize()
+    {
+        return mAdapter.getItemCount();
+    }
 }

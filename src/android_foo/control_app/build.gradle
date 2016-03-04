@@ -65,9 +65,8 @@ android {
         multiDexEnabled true
         versionCode 1
         versionName "1.0"
-        defaultConfig {
-            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        }
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     sourceSets {
         main { java.srcDirs = ['src/main/java'] }
@@ -76,10 +75,24 @@ android {
 }
 
 dependencies {
-
     // Required -- JUnit 4 framework
     testCompile 'junit:junit:4.12'
     // Optional -- Mockito framework
     testCompile 'org.mockito:mockito-core:1.10.19'
 
+    androidTestCompile 'com.android.support:support-annotations:23.2.0'
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    androidTestCompile 'com.android.support.test:rules:0.4'
+    // Optional -- Hamcrest library
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    // Optional -- UI testing with Espresso
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    // Optional -- UI testing with UI Automator
+//    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v15'
+}
+
+// Needed to resolve app vs test dependencies, specifically, transitive dependencies of
+// libraryq and libraryz. Forcing the use of the smaller version after regression testing.
+configurations.all {
+    resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
 }

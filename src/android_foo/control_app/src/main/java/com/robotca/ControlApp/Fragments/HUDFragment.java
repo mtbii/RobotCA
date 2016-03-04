@@ -137,7 +137,7 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
     /*
      *
      */
-    private void updateUI(final double speed, final double turnrate)
+    void updateUI(final double speed, final double turnrate)
     {
         if (!isDetached()) {
             lastSpeed = speed;
@@ -147,7 +147,15 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         }
     }
 
-    private static String getLatLongString(String str, boolean lat)
+    /*
+     *
+     */
+    RobotGPSSub getGPSSub()
+    {
+        return robotGPSNode;
+    }
+
+    static String getLatLongString(String str, boolean lat)
     {
         String r = str.replaceFirst(":", "\u00B0 ").replaceFirst(":", "' ") + "\"";
 
