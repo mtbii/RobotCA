@@ -1,11 +1,12 @@
 package com.robotca.ControlApp.Layers;
 
-import android.util.Log;
+import android.graphics.PointF;
 import android.view.MotionEvent;
 
 import com.google.common.base.Preconditions;
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Fragments.HUDFragment;
 
 import org.ros.android.view.visualization.Color;
 import org.ros.android.view.visualization.Vertices;
@@ -18,14 +19,12 @@ import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
-import org.ros.rosjava_geometry.Quaternion;
 import org.ros.rosjava_geometry.Vector3;
 
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import geometry_msgs.Pose;
 import sensor_msgs.LaserScan;
 
 /**
@@ -70,9 +69,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Controls the density of scan po;ints
     private float laserScanDetail;
 
-    // For tracking robot pose
-    private Vector3 robotPosition;
-    private double robotHeading;
+//    // For tracking robot pose
+//    private Vector3 robotPosition;
+//    private double robotHeading;
 
     // GraphName for LaserScan
     private GraphName frame;
@@ -158,32 +157,30 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
                 if(!hasMoved) {
                     try {
-                        Pose pose = controlApp.getController().getOdometry().getPose().getPose();
-                        robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
-                        robotHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
+//                        Pose pose = controlApp.getController().getOdometry().getPose().getPose();
+//                        robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
+//                        robotHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
 
                         double height = controlApp.getResources().getDisplayMetrics().heightPixels;
                         double width = controlApp.getResources().getDisplayMetrics().widthPixels;
 
-                        double x = event.getX()  + (width - view.getWidth()) - width/ 2;
-                        double y = event.getY() + (height - view.getHeight()) / 2 - height / 2;
+                        double x = event.getX()  + (width - view.getWidth()) - width / 2.0;
+                        double y = event.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
 
                         x *= s;
                         y *= s;
 
+                        //noinspection SuspiciousNameCombination
                         x -= yShift;
+                        //noinspection SuspiciousNameCombination
                         y += xShift;
 
-                        Log.d(TAG, String.format("Clicked Position: (%f, %f)", x, y));
-                        //controlApp.setDestination(new Vector3(robotPosition.getX() - y - xShift, robotPosition.getY() + x - yShift, 0));
-
-                        //Rotate offset based on robot heading
-                        Vector3 offset = Utils.rotateVector(new Vector3(x,-y,0), robotHeading); //new Vector3(x*Math.cos(-robotHeading)-y*Math.sin(-robotHeading), x*Math.sin(-robotHeading)+y*Math.cos(-robotHeading), 0);
-
-                        //Set destination in world coordinates
-                        controlApp.setDestination(robotPosition.add(offset));
+                        controlApp.addWaypointWithCheck(screenToWorld(y, x));
                     }
-                    catch(Exception e){}
+                    catch (Exception e)
+                    {
+                        // Ignore
+                    }
                 }
 
                 hasMoved = false;
@@ -216,9 +213,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
             synchronized (mutex)
             {
                 // Draw the shape
-//                shape.getTransform().getTranslation().add(new Vector3(xShift, yShift, 0.0f));
-//                shape.getTransform().apply(new Vector3(xShift, yShift, 0.0f));
                 gl.glTranslatef(xShift, yShift, 0.0f);
+
+                // Draw start position
+                drawPoint(gl, 0.0, 0.0, 32.0f, 0xFFCCCCDD, null);
+
+                // Draw the robot
                 shape.draw(view, gl);
 
                 // Draw the scan area
@@ -232,32 +232,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 // Draw the scan points
                 drawPoints(gl, pointVertices, LASER_SCAN_POINT_SIZE, false);
 
-                try {
-                    Pose pose = controlApp.getController().getOdometry().getPose().getPose();
-                    robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
-                    robotHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
-                    Vector3 destination = controlApp.getDestination();
-
-                    Vector3 offset = destination.subtract(robotPosition);
-                    offset = Utils.rotateVector(offset, robotHeading);
-                    offset = new Vector3(offset.getX(), -offset.getY(), 0);
-
-                    Log.d(TAG, String.format("Draw Position: (%f, %f)", offset.getX(), offset.getY()));
-
-                    FloatBuffer goalPoint = Vertices.allocateBuffer(7 + 3 + 4); // padding + xyz + color (rgba)
-                    goalPoint.position(7);
-                    goalPoint.put((float) (offset.getX())); // x
-                    goalPoint.put((float) (offset.getY())); // y
-                    goalPoint.put(0); // z
-
-                    goalPoint.put(0); // r
-                    goalPoint.put(1); // g
-                    goalPoint.put(0); // b
-                    goalPoint.put(1); // a
-                    goalPoint.position(0);
-                    drawPoints(gl, goalPoint, LASER_SCAN_POINT_SIZE * 3, false);
-                }
-                catch(Exception e){}
+                // Draw waypoints
+                drawWayPoints(gl);
 
                 gl.glTranslatef(-xShift, -yShift, 0.0f);
             }
@@ -271,7 +247,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      * @param size Size of draw points
      * @param fan If true, draws the buffer as a triangle fan, otherwise draws it as a point cloud
      */
-    public static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
+    private static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
         vertices.mark();
 
         if (!fan)
@@ -422,5 +398,78 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     @Override
     public GraphName getFrame() {
         return frame;
+    }
+
+    private void drawWayPoints(GL10 gl) {
+
+        FloatBuffer b = Vertices.allocateBuffer(3 * 4 * controlApp.getWaypoints().size());
+        PointF res = new PointF();
+        boolean first = true;
+
+        // Draw the waypoints
+        synchronized (controlApp) {
+            for (Vector3 pt : controlApp.getWaypoints()) {
+
+                drawPoint(gl, pt.getX(), pt.getY(), 24.0f, first ? 0xFF22CC33: 0xFF2233CC, res);
+                first = false;
+
+                b.put(res.x);
+                b.put(res.y);
+                b.put(0.0f);
+            }
+        }
+
+        b.rewind();
+
+        // Draw the path
+//        gl.glColor4x(0x22, 0x33, 0xCC, 0x88);
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+
+        gl.glVertexPointer(3, GL10.GL_FLOAT, 3 * 4, b);
+        gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, b.capacity() / (3 * 4));
+
+        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+    }
+
+    /*
+     * Draws a point specified in world space.
+     */
+    private static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
+        double rx = HUDFragment.getX();
+        double ry = HUDFragment.getY();
+
+        // Calculations
+        double dir = Utils.pointDirection(rx, ry, x, y);
+        dir = Utils.angleDifference(HUDFragment.getHeading(), dir);
+        double len = Utils.distance(rx, ry, x, y);
+
+        x = Math.cos(dir) * len;
+        y = Math.sin(dir) * len;
+
+        Utils.drawPoint(gl, (float) x, (float) y, size, color);
+
+        if (result != null)
+        {
+            result.set((float) x, (float) y);
+        }
+    }
+
+    /*
+     * Converts a screen point to world space.
+     */
+    private static Vector3 screenToWorld(double sx, double sy) {
+        double rx = HUDFragment.getX();
+        double ry = HUDFragment.getY();
+
+        double cos = -Math.cos(HUDFragment.getHeading());
+        double sin = -Math.sin(HUDFragment.getHeading());
+
+        double xx = sx * cos - sy * sin;
+        double yy = sx * sin + sy * cos;
+
+        sx = rx + xx;
+        sy = ry + yy;
+
+        return new Vector3(sx, sy, 0.0);
     }
 }

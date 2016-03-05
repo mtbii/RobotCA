@@ -12,12 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.robotca.ControlApp.Core.RobotGPSSub;
+import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import geometry_msgs.Point;
+import geometry_msgs.Quaternion;
 import nav_msgs.Odometry;
 
 /**
@@ -29,6 +32,9 @@ import nav_msgs.Odometry;
 public class HUDFragment extends RosFragment implements MessageListener<Odometry>{
 
     private static final String TAG = "HUDFragment";
+
+    private static Point startPos, currentPos;
+    private static Quaternion rotation;
 
     private View view;
     private TextView speedView, turnrateView, locationView, latView, longView;
@@ -117,6 +123,17 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
     public void onNewMessage(Odometry message) {
 //            Log.d(TAG, "New Message: " + message.getTwist().getTwist().getLinear().getX());
 
+        // Record position
+        if (startPos == null) {
+            startPos = message.getPose().getPose().getPosition();
+        } else {
+            currentPos = message.getPose().getPose().getPosition();
+
+//            Log.d(TAG, startPos.getX() + ", " + startPos.getY() + " ~ "
+//                    + currentPos.getX() + ", " + currentPos.getY());
+        }
+        rotation = message.getPose().getPose().getOrientation();
+
         updateUI(message.getTwist().getTwist().getLinear().getX(),
                 message.getTwist().getTwist().getAngular().getZ());
     }
@@ -177,6 +194,37 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         }
 
         return r;
+    }
+
+    public static Point getStartPosition()
+    {
+        return startPos;
+    }
+
+    public static Point getLastPosition()
+    {
+        return currentPos;
+    }
+
+    public static double getX() {
+        if (currentPos == null)
+            return 0.0;
+        else
+            return currentPos.getX() - startPos.getX();
+    }
+
+    public static double getY() {
+        if (currentPos == null)
+            return 0.0;
+        else
+            return currentPos.getY() - startPos.getY();
+    }
+
+    public static double getHeading() {
+        if (rotation == null)
+            return 0.0;
+        else
+            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
     }
 
     /*

@@ -1,5 +1,7 @@
 package com.robotca.ControlApp.Core.Plans;
 
+import android.util.Log;
+
 import com.robotca.ControlApp.Core.RobotController;
 
 import geometry_msgs.Twist;
@@ -11,6 +13,8 @@ import sensor_msgs.NavSatFix;
  */
 public abstract class RobotPlan {
     private Thread thread;
+
+    private static final String TAG = "RobotPlan";
 
     public boolean isRunning() {
         return thread.isAlive();
@@ -25,7 +29,8 @@ public abstract class RobotPlan {
             try {
                 thread.interrupt();
                 thread.join();
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
             }
         }
     }
@@ -39,6 +44,7 @@ public abstract class RobotPlan {
                 try {
                     start(controller);
                 } catch (Exception e) {
+                    Log.e(TAG, "", e);
                 }
             }
         });

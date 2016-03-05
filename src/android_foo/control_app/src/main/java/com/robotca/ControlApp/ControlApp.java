@@ -1,8 +1,11 @@
 package com.robotca.ControlApp;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -34,10 +37,12 @@ import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
+import com.robotca.ControlApp.Core.Plans.SimpleWaypointPlan;
 import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
+import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
@@ -53,6 +58,7 @@ import org.ros.node.NodeMainExecutor;
 import org.ros.rosjava_geometry.Vector3;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
@@ -79,10 +85,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private String mDrawerTitle;
 
     private static final String TAG = "ControlApp";
-    private Vector3 waypoint;
+//    private Vector3 waypoint;
+
+    // List of waypoints
+    private LinkedList<Vector3> waypoints;
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
+
+        waypoints = new LinkedList<>();
     }
 
     /**
@@ -479,35 +490,169 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         return joystickFragment.getControlMode();
     }
 
+    /**
+     * Sets the ControlMode for controlling the Robot.
+     *
+     * @param controlMode The new ControlMode
+     */
     public void setControlMode(ControlMode controlMode) {
+
         lockOrientation(controlMode == ControlMode.Motion);
         joystickFragment.setControlMode(controlMode);
 
-        if(getControlMode() == ControlMode.Waypoint){
-            controller.runPlan(new WaypointPlan(this));
+        if (getControlMode() == ControlMode.Waypoint){
+            // TODO replaced WaypointPlan with SimpleWaypointPlan for testing
+            controller.runPlan(new SimpleWaypointPlan(this));
         }
-        else if(controlMode == ControlMode.RandomWalk) {
+        else if (controlMode == ControlMode.RandomWalk) {
             controller.runPlan(new RandomWalkPlan(
                     Float.parseFloat(PreferenceManager
                             .getDefaultSharedPreferences(this)
                     .getString("edittext_random_walk_range_proximity", "1"))
             ));
         }
-        else{
+        else {
             controller.stop();
         }
 
         invalidateOptionsMenu();
     }
 
+    /**
+     * Sets the destination point.
+     * @param location The point
+     */
     public void setDestination(Vector3 location){
-        waypoint = location;
+        synchronized (this) {
+            waypoints.addFirst(location);
+        }
     }
 
+    /**
+     * @return The Robot's x position
+     */
+    public double getRobotX() {
+        try {
+            return controller.getPose().getPosition().getX();
+        }
+        catch (NullPointerException e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * @return The Robot's y position
+     */
+    public double getRobotY() {
+        try {
+            return controller.getPose().getPosition().getY();
+        }
+        catch (NullPointerException e){
+            return 0.0;
+        }
+    }
+
+    /**
+     * @return The Robot's heading
+     */
+    public double getHeading() {
+        try {
+            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(
+                    controller.getPose().getOrientation()));
+        }
+        catch (NullPointerException e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Adds a waypoint.
+     * @param point The point
+     */
+    public void addWaypoint(Vector3 point) {
+        synchronized (this) {
+            waypoints.addLast(point);
+        }
+    }
+
+    /**
+     * Same as above but will remove a nearby way point if one is close instead of adding the new point.
+     * @param point The point
+     */
+    public void addWaypointWithCheck(Vector3 point) {
+
+        // First find the nearest point
+        double minDist = Double.MAX_VALUE, dist;
+        Vector3 near = null;
+
+        synchronized (this) {
+            for (Vector3 pt: waypoints) {
+                dist = Utils.distanceSquared(point.getX(), point.getY(), pt.getX(), pt.getY());
+
+                if (dist < minDist) {
+                    minDist = dist;
+                    near = pt;
+                }
+            }
+        }
+
+        // TODO remove magic number
+        if (near != null && minDist < 1.0) {
+
+            final Vector3 remove = near;
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(ControlApp.this);
+            alert.setTitle("Delete Waypoint");
+            alert.setMessage("Are you sure you wish to delete this way point?");
+            alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    synchronized (ControlApp.this) {
+                        waypoints.remove(remove);
+                    }
+
+                    dialog.dismiss();
+                }
+            });
+            alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                }
+            });
+
+            alert.show();
+
+        } else {
+            addWaypoint(point);
+        }
+    }
+
+    /**
+     * @return The next waypoint in line
+     */
     @Override
     public Vector3 getDestination() {
-        return waypoint;
+        return waypoints.peekFirst();
     }
 
-    public RobotController getController(){return controller;}
+    /**
+     * @return The next waypoint in line an removes it
+     */
+    public Vector3 pollDestination() {
+        return waypoints.pollFirst();
+    }
+
+    /**
+     * @return The list of way points.
+     */
+    public LinkedList<Vector3> getWaypoints() {
+        return waypoints;
+    }
+
+//    public RobotController getController(){
+//        return controller;
+//    }
 }
