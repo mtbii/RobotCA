@@ -16,7 +16,7 @@ import org.ros.rosjava_geometry.Vector3;
  */
 public class SimpleWaypointPlan extends RobotPlan {
 
-    private ControlApp controlApp;
+    private final ControlApp controlApp;
 
     private static final String TAG = "SimpleWaypointPlan";
 

@@ -26,6 +26,9 @@ public abstract class RobotPlan {
 
     public void stop() {
         if (thread != null) {
+
+            Log.d(TAG, "Stopping plan");
+
             try {
                 thread.interrupt();
                 thread.join(1000L);
@@ -41,11 +44,11 @@ public abstract class RobotPlan {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    start(controller);
-                } catch (Exception e) {
-                    Log.e(TAG, "", e);
-                }
+            try {
+                start(controller);
+            } catch (Exception e) {
+                Log.e(TAG, "", e);
+            }
             }
         });
 
@@ -54,20 +57,18 @@ public abstract class RobotPlan {
 
     /**
      * Waits for the specified amount of time.
+     *
      * @param milliseconds The time, in milliseconds
      * @throws InterruptedException If the thread gets interrupted
      */
-    protected void waitFor(long milliseconds) throws InterruptedException{
+    protected void waitFor(long milliseconds) throws InterruptedException {
         try {
             long currentTime = System.currentTimeMillis();
             while (currentTime + milliseconds > System.currentTimeMillis() && !isInterrupted())
                 Thread.sleep(milliseconds / 3);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw e;
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             Log.e(TAG, "", e);
         }
     }

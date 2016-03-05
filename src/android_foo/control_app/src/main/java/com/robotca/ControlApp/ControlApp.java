@@ -90,6 +90,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     // List of waypoints
     private LinkedList<Vector3> waypoints;
 
+    private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
+
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
 
@@ -115,15 +117,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             editor.apply();
         }
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-
-        if (dpWidth >= 550) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+//        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+//
+//        if (dpWidth >= 550) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        } else {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        }
         setContentView(R.layout.main);
 
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
@@ -209,7 +211,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             }
         }
 
-        setDestination(new Vector3(6, 0, 0));
+        if (savedInstanceState != null) {
+            //noinspection unchecked
+            List<Vector3> list = (List<Vector3>) savedInstanceState.getSerializable(WAYPOINT_BUNDLE_ID);
+
+            if (list != null)
+                waypoints = new LinkedList<>(list);
+
+        }
     }
 
     @Override
@@ -239,6 +248,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             joystickFragment.stop();
 
         //this.nodeMainExecutorService.forceShutdown();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        // Waypoints
+        bundle.putSerializable(WAYPOINT_BUNDLE_ID, waypoints);
     }
 
     @Override
