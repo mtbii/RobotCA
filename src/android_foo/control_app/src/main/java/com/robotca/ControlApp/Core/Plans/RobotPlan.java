@@ -28,7 +28,7 @@ public abstract class RobotPlan {
         if (thread != null) {
             try {
                 thread.interrupt();
-                thread.join();
+                thread.join(1000L);
             } catch (Exception e) {
                 Log.e(TAG, "", e);
             }
@@ -52,14 +52,24 @@ public abstract class RobotPlan {
         thread.start();
     }
 
-    protected void waitFor(long milliseconds){
+    /**
+     * Waits for the specified amount of time.
+     * @param milliseconds The time, in milliseconds
+     * @throws InterruptedException If the thread gets interrupted
+     */
+    protected void waitFor(long milliseconds) throws InterruptedException{
         try {
             long currentTime = System.currentTimeMillis();
-            while (currentTime + milliseconds > System.currentTimeMillis() && !isInterrupted()) {
-                //thread.sleep(50);
-            }
+            while (currentTime + milliseconds > System.currentTimeMillis() && !isInterrupted())
+                Thread.sleep(milliseconds / 3);
         }
-        catch(Exception e){}
+        catch (InterruptedException e) {
+            throw e;
+        }
+        catch(Exception e)
+        {
+            Log.e(TAG, "", e);
+        }
     }
 
     protected abstract void start(RobotController controller) throws Exception;

@@ -194,6 +194,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Emergency stop button
         if (emergencyStop == null) {
             try {
+                //noinspection ConstantConditions
                 emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
                 emergencyStop.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -203,7 +204,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     }
                 });
             }
-            catch(Exception e){}
+            catch(NullPointerException e){
+                // Ignore
+            }
         }
 
         setDestination(new Vector3(6, 0, 0));
@@ -340,7 +343,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
     }
 
-    /**
+    /*
      * Swaps fragments in the main content view
      */
     private void selectItem(int position) {
@@ -356,7 +359,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             hudFragment.show();
         }
 
-        if(controller != null) {
+        if (controller != null) {
             controller.update();
         }
 
@@ -505,6 +508,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             controller.runPlan(new SimpleWaypointPlan(this));
         }
         else if (controlMode == ControlMode.RandomWalk) {
+
             controller.runPlan(new RandomWalkPlan(
                     Float.parseFloat(PreferenceManager
                             .getDefaultSharedPreferences(this)
@@ -642,7 +646,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      * @return The next waypoint in line an removes it
      */
     public Vector3 pollDestination() {
-        return waypoints.pollFirst();
+
+        Vector3 r;
+
+        synchronized (this) {
+            r = waypoints.pollFirst();
+        }
+
+        return r;
     }
 
     /**

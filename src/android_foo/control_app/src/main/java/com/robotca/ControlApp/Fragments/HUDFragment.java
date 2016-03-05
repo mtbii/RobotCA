@@ -206,6 +206,9 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         return currentPos;
     }
 
+    /**
+     * @return
+     */
     public static double getX() {
         if (currentPos == null)
             return 0.0;
