@@ -2,15 +2,13 @@ package com.robotca.ControlApp.Core.Plans;
 
 import android.util.Log;
 
-import com.robotca.ControlApp.Core.IWaypointProvider;
+import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Fragments.HUDFragment;
 
-import org.ros.rosjava_geometry.Quaternion;
 import org.ros.rosjava_geometry.Vector3;
 
-import geometry_msgs.Pose;
-import nav_msgs.Odometry;
 import sensor_msgs.LaserScan;
 
 /**
@@ -25,11 +23,12 @@ public class WaypointPlan extends RobotPlan {
     final static double D_SAFE = 0.1;
     final static double KAPPA = 0.1;
     final static double FORWARD_SPEED_MPS = .5;
+    private static final double MINIMUM_DISTANCE = 1.0;
 
-    private IWaypointProvider provider;
+    private ControlApp controlApp;
 
-    private Vector3 lastPosition;
-    private double lastHeading;
+//    private Vector3 lastPosition;
+//    private double lastHeading;
     private Vector3 currentPosition;
     private double currentHeading;
     private Vector3 goalPosition;
@@ -39,32 +38,40 @@ public class WaypointPlan extends RobotPlan {
     private double linearVelocity;
     private boolean atGoal;
 
-    public WaypointPlan(IWaypointProvider provider){
-        this.provider = provider;
+    public WaypointPlan(ControlApp controlApp){
+        this.controlApp = controlApp;
     }
 
     @Override
     protected void start(RobotController controller) throws Exception {
+
         while(!isInterrupted()) {
-            Pose pose = controller.getPose(); //navSatToLocation(controller.getNavSatFix());
+            //Pose pose = controller.getPose(); //navSatToLocation(controller.getNavSatFix());
             LaserScan scan = controller.getLaserScan();
-            Odometry odom = controller.getOdometry();
+            //Odometry odom = controller.getOdometry();
 
-            if(pose == null){
-                pose = odom.getPose().getPose();
-            }
+//            if(pose == null){
+//                pose = odom.getPose().getPose();
+//            }
 
-            currentPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
-            currentHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
-            goalPosition = provider.getDestination();
+            while (controlApp.getDestination() == null)
+                waitFor(1000L);
+
+            currentPosition = new Vector3(HUDFragment.getX(), HUDFragment.getY(), 0);
+            currentHeading = HUDFragment.getHeading();
+            goalPosition = controlApp.getDestination();
 
             if (goalPosition != null) {
-                Vector3 netForce = calculateForces(pose, scan);
+                Vector3 netForce = calculateForces(scan);
                 applyForce(controller, netForce);
             }
 
-            lastPosition = currentPosition;
-            lastHeading = currentHeading;
+//            lastPosition = currentPosition;
+//            lastHeading = currentHeading;
+
+            double dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), currentPosition.getX(), currentPosition.getY());
+            if (dist < MINIMUM_DISTANCE)
+                controlApp.pollDestination();
         }
     }
 
@@ -127,8 +134,7 @@ public class WaypointPlan extends RobotPlan {
         }
     }
 
-
-    private Vector3 calculateForces(Pose pose, LaserScan laserScan){
+    private Vector3 calculateForces(LaserScan laserScan){
         Vector3 netForce = new Vector3(0,0,0);
 
         Vector3 attractiveForce = goalPosition.subtract(currentPosition);
