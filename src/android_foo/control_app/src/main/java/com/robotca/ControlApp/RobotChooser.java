@@ -1,6 +1,7 @@
 package com.robotca.ControlApp;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,23 +12,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotInfoAdapter;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 
+import java.lang.annotation.Target;
+
 /**
  * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
  * robot or can create a new one.
- *
+ * <p/>
  * Created by Michael Brunson on 1/23/16.
  */
 public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener {
 
+    public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
     private View mEmptyView;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
+
+    private ShowcaseView showcaseView;
+    private boolean addedRobot;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +97,84 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         });
 
         mRecyclerView.setAdapter(mAdapter);
+
+        boolean isFirstLaunch = PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .getBoolean(FIRST_TIME_LAUNCH_KEY, true);
+
+        try {
+            if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
+                //Show initial tutorial message
+                showcaseView = new ShowcaseView.Builder(this)
+                        .setTarget(new ToolbarActionItemTarget(toolbar, R.id.action_add_robot))
+                        .setStyle(R.style.CustomShowcaseTheme2)
+                        .setContentTitle("Add a Robot")
+                        .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
+                        .build();
+
+                //Get ready to show tutorial message when user adds a robot
+                setupNextTutorialMessage();
+
+
+            } else {
+                addedRobot = true;
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    private void setupNextTutorialMessage() {
+        //Have to get a reference to the new robot's list item view AFTER
+        //it shows up in the RecyclerView
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //Wait until the RecyclerView has a child
+                while (mRecyclerView.getChildCount() <= 0) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                View v = null;
+
+                for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                    v = mRecyclerView.getChildAt(i);
+                    if (v != null) {
+                        v = v.findViewById(R.id.robot_info_text);
+
+                        if (v != null) break;
+                    }
+                }
+
+                final View layoutView = v;
+
+
+                if (layoutView != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showcaseView = new ShowcaseView.Builder(RobotChooser.this)
+                                    .setTarget(new ViewTarget(layoutView))
+                                    .setStyle(R.style.CustomShowcaseTheme2)
+                                    .setContentTitle("Connect")
+                                    .setContentText("To connect to this robot, tap it's name.")
+                                    .build();
+
+                            addedRobot = true;
+
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(RobotChooser.this)
+                                    .edit()
+                                    .putBoolean(FIRST_TIME_LAUNCH_KEY, true)
+                                    .commit();
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -99,13 +187,13 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
      * Refreshes the list of RobotInfo choices.
      */
     private void checkRobotList() {
-        if (RobotStorage.getRobots().isEmpty()) {
-            mRecyclerView.setVisibility(View.GONE);
-            mEmptyView.setVisibility(View.VISIBLE);
-        } else {
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mEmptyView.setVisibility(View.GONE);
-        }
+//        if (RobotStorage.getRobots().isEmpty() && !addedRobot) {
+//            mRecyclerView.setVisibility(View.GONE);
+//            mEmptyView.setVisibility(View.VISIBLE);
+//        } else {
+//            mRecyclerView.setVisibility(View.VISIBLE);
+//            mEmptyView.setVisibility(View.GONE);
+//        }
     }
 
     @Override
@@ -161,6 +249,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     /**
      * Adds a new RobotInfo.
+     *
      * @param info The new RobotInfo
      * @return True if the RobotInfo was added successfully, false otherwise
      */
@@ -168,12 +257,14 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         RobotStorage.add(this, info);
 
         mAdapter.notifyItemInserted(RobotStorage.getRobots().size() - 1);
+
         return true;
     }
 
     /**
      * Updates the RobotInfo at the specified position.
-     * @param position The position of the RobotInfo to update
+     *
+     * @param position     The position of the RobotInfo to update
      * @param newRobotInfo The updated RobotInfo
      */
     public void updateRobot(int position, RobotInfo newRobotInfo) {
@@ -183,6 +274,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     /**
      * Removes the RobotInfo at the specified position.
+     *
      * @param position The position of the RobotInfo to remove
      * @return The removed RobotInfo if it existed
      */
@@ -193,7 +285,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
             mAdapter.notifyItemRemoved(position);
         }
 
-        if(RobotStorage.getRobots().size() == 0){
+        if (RobotStorage.getRobots().size() == 0) {
             mAdapter.notifyDataSetChanged();
         }
 
@@ -203,8 +295,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     /**
      * @return mAdapter item count.
      */
-    int getAdapterSize()
-    {
+    int getAdapterSize() {
         return mAdapter.getItemCount();
     }
 }

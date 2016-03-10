@@ -16,13 +16,13 @@ import sensor_msgs.LaserScan;
  */
 public class WaypointPlan extends RobotPlan {
 
-    final static double GAMMA = 3;
-    final static double ALPHA = 1;
-    final static double BETA = 4;
-    final static double EPSILON = 0.01;
-    final static double D_SAFE = 0.1;
-    final static double KAPPA = 0.1;
-    final static double FORWARD_SPEED_MPS = .5;
+    private final static double GAMMA = 3;
+    private final static double ALPHA = 1;
+    private final static double BETA = 4;
+    private final static double EPSILON = 0.01;
+    private final static double D_SAFE = 0.1;
+    private final static double KAPPA = 0.1;
+    private final static double FORWARD_SPEED_MPS = .5;
     private static final double MINIMUM_DISTANCE = 1.0;
 
     private ControlApp controlApp;
@@ -70,6 +70,7 @@ public class WaypointPlan extends RobotPlan {
 //            lastHeading = currentHeading;
 
             double dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), currentPosition.getX(), currentPosition.getY());
+
             if (dist < MINIMUM_DISTANCE)
                 controlApp.pollDestination();
         }
@@ -127,9 +128,9 @@ public class WaypointPlan extends RobotPlan {
 //        }
 
         if(!atGoal){
-            //this.linearVelocity = 0;
-            Log.d("ControlApp", String.format("netForce: (%f, %f); vel: (%f, %f)", netForce.getX(), netForce.getY(), linearVelocity, angularVelocity));
-            Log.d("ControlApp", String.format("position: (%f, %f); goal: (%f, %f)", currentPosition.getX(), currentPosition.getY(), goalPosition.getX(), goalPosition.getY()));
+            Log.d("ControlApp", String.format("Net Force: (%f, %f)", netForce.getX(), netForce.getY()));
+            Log.d("ControlApp", String.format("Velocity: (%f, %f)", linearVelocity, angularVelocity));
+            Log.d("ControlApp", String.format("Position: (%f, %f); Goal: (%f, %f)", currentPosition.getX(), currentPosition.getY(), goalPosition.getX(), goalPosition.getY()));
             controller.publishVelocity(this.linearVelocity, 0, angularVelocity);
         }
     }
@@ -140,6 +141,8 @@ public class WaypointPlan extends RobotPlan {
         Vector3 attractiveForce = goalPosition.subtract(currentPosition);
         attractiveForce = attractiveForce.scale(GAMMA * attractiveForce.getMagnitude()); // f_a = gamma * ||x_g - x_r||^2 = |x_g - x_r|| * gamma * |||x_g - x_r||
         netForce = netForce.add(attractiveForce);
+
+        Log.d("ControlApp", String.format("Attractive Force: (%f, %f)", attractiveForce.getX(), attractiveForce.getY()));
 
         for(int i = 0; i < laserScan.getRanges().length; i++){
             double angleOffset = laserScan.getAngleMin() + laserScan.getAngleIncrement()*i;
@@ -162,17 +165,8 @@ public class WaypointPlan extends RobotPlan {
             netForce = netForce.add(force);
         }
 
+
+
         return netForce;
     }
-
-//    private Vector3 getRPY(Quaternion rot){
-//        Vector3 euler = Vector3.zero();
-//        double[] mat = new Transform(Vector3.zero(), rot).toMatrix();
-//
-//        if(Math.abs(mat[2*4]) >= 1){
-//
-//        }
-//
-//        return euler;
-//    }
 }

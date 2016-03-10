@@ -443,7 +443,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     {
         // Register/unregister the accelerometer listener as needed
         if (accelerometer != null) {
-            if (controlMode == ControlMode.Motion) {
+            if (controlMode == ControlMode.Tilt) {
                 tiltOffset = null;
                 sensorManager.registerListener(ACCEL_LISTENER, accelerometer, SensorManager.SENSOR_DELAY_GAME);
                 onContactDown();
@@ -512,7 +512,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     public boolean onTouchEvent(MotionEvent event) {
 
         // Touch events indicate user wants to reset calibration in Tilt mode
-        if (controlMode == ControlMode.Motion) {
+        if (controlMode == ControlMode.Tilt) {
 
             // Reset calibration
             tiltOffset = null;
@@ -610,8 +610,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         // code. A non-square container does not provide any benefit over a
         // square.
         if (mainLayout.getWidth() != mainLayout.getHeight()) {
-            // TODO(munjaldesai): Need to throw an exception/error. For now the
-            // touch events will not be processed.
+            // TODO(munjaldesai): Need to throw an exception/error. For now the touch events will not be processed.
             this.setOnTouchListener(null);
         }
         parentSize = mainLayout.getWidth();

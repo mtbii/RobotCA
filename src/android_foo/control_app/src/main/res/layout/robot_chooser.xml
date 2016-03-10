@@ -26,5 +26,6 @@
         android:text="@string/no_robots"
         android:elevation="3dp"
         android:layout_gravity="center"
+        android:visibility="gone"
         android:gravity="center" />
 </LinearLayout>

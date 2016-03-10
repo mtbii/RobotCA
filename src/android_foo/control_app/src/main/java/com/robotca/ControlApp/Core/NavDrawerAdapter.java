@@ -33,7 +33,6 @@ public class NavDrawerAdapter extends ArrayAdapter<DrawerItem>{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
 
         DrawerItemHolder drawerHolder;
         View view = convertView;

@@ -1,6 +1,5 @@
 package com.robotca.ControlApp;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -16,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.Display;
@@ -62,6 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
+    private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
     public static String NOTIFICATION_TICKER = "ROS Control";
     public static String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
@@ -366,7 +365,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         Fragment fragment = null;
         Bundle args = new Bundle();
 
-        if(joystickFragment != null && getControlMode().ordinal() < ControlMode.Waypoint.ordinal()){
+        if(joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()){
             joystickFragment.show();
         }
 
@@ -462,7 +461,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 return true;
 
             case R.id.action_motion_control:
-                setControlMode(ControlMode.Motion);
+                setControlMode(ControlMode.Tilt);
+                return true;
+
+            case R.id.action_simple_waypoint_control:
+                setControlMode(ControlMode.SimpleWaypoint);
                 return true;
 
             case R.id.action_waypoint_control:
@@ -515,12 +518,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void setControlMode(ControlMode controlMode) {
 
-        lockOrientation(controlMode == ControlMode.Motion);
+        lockOrientation(controlMode == ControlMode.Tilt);
         joystickFragment.setControlMode(controlMode);
 
-        if (getControlMode() == ControlMode.Waypoint){
-            // TODO replaced WaypointPlan with SimpleWaypointPlan for testing
+        if (getControlMode() == ControlMode.SimpleWaypoint){
             controller.runPlan(new SimpleWaypointPlan(this));
+        }
+        else if (getControlMode() == ControlMode.Waypoint){
+            controller.runPlan(new WaypointPlan(this));
         }
         else if (controlMode == ControlMode.RandomWalk) {
 
@@ -615,8 +620,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             }
         }
 
-        // TODO remove magic number
-        if (near != null && minDist < 1.0) {
+        if (near != null && minDist < MINIMUM_WAYPOINT_DISTANCE) {
 
             final Vector3 remove = near;
 

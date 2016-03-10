@@ -7,7 +7,8 @@ package com.robotca.ControlApp.Core;
  */
 public enum ControlMode {
     Joystick, // Joystick control
-    Motion, // Tilt sensor control
-    Waypoint, // Waypoint control
+    Tilt, // Tilt sensor control
+    SimpleWaypoint, // Waypoint control
+    Waypoint,
     RandomWalk // Random walk
 }

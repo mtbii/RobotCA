@@ -36,7 +36,7 @@ apply plugin: 'catkin'
 
 allprojects {
     /* A github url provides a good standard unique name for your project */
-    group 'com.github.rosjava.android_foo'
+    group 'com.github.sccapstone.robotca'
     //version = project.catkin.pkg.version
 }
 

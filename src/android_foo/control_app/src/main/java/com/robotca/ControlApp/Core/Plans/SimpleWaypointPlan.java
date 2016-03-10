@@ -16,6 +16,7 @@ import org.ros.rosjava_geometry.Vector3;
  */
 public class SimpleWaypointPlan extends RobotPlan {
 
+    private static final double MINIMUM_DISTANCE = 1.0;
     private final ControlApp controlApp;
 
     private static final String TAG = "SimpleWaypointPlan";
@@ -73,7 +74,7 @@ public class SimpleWaypointPlan extends RobotPlan {
             controller.publishVelocity(0.0, 0.0, 0.0);
 
             dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-            if (dist < 1.0) // TODO magic number
+            if (dist < MINIMUM_DISTANCE)
                 controlApp.pollDestination();
 
             waitFor(100L);
