@@ -35,16 +35,18 @@ import java.lang.Math.*;
 
 public class MapFragment extends Fragment implements MapEventsReceiver {
 
-//    private RobotGPSSub robotGPSNode;
-    Button recenterButton;
+    Button robotRecenterButton;
+    Button tabletRecenterButton;
     MyLocationNewOverlay myLocationOverlay;
+    MyLocationNewOverlay secondMyLocationOverlay;
     MapView mapView;
     MapEventsOverlay mapEventsOverlay;
 
     double distanceToTravel;
     ArrayList<GeoPoint> waypoints = new ArrayList<>();
 
-    public MapFragment(){}
+    public MapFragment() {
+    }
 
     @Nullable
     @Override
@@ -52,8 +54,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
 
         View view = inflater.inflate(R.layout.fragment_map, null);
         mapView = (MapView) view.findViewById(R.id.mapview);
-        recenterButton = (Button) view.findViewById(R.id.recenter);
-        recenterButton.setOnClickListener(recenterListener);
+
+        robotRecenterButton = (Button) view.findViewById(R.id.recenter);
+        robotRecenterButton.setOnClickListener(robotRecenterListener);
+        //tabletRecenterButton = (Button) view.findViewById(R.id.tabletRecenter);
+        //tabletRecenterButton.setOnClickListener(tabletRecenterListener);
+
         mapView.setClickable(true);
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
@@ -61,52 +67,43 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         mapView.setTileSource(TileSourceFactory.MAPNIK);
 
 
-        /*try{
-            String m_locale =   Locale.getDefault().getDisplayName();
-            BingMapTileSource bing = new BingMapTileSource(m_locale);
-            Method m = BingMapTileSource.class.getDeclaredMethod("initMetaData");
-            m.setAccessible(true);
-            m.invoke(this);
-            //BingMapTileSource.initMetaData(this);
-            BingMapTileSource.retrieveBingKey(this);
-
-            bing.setStyle(BingMapTileSource.IMAGERYSET_AERIAL);
-            mapView.setTileSource(bing);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }*/
-
-//        robotGPSNode = new RobotGPSSub();
-
         // Use the RobotGPSSub that the HUDFragment uses
-        RobotGPSSub robotGPSNode = ((HUDFragment)getActivity().
+        RobotGPSSub robotGPSNode = ((HUDFragment) getActivity().
                 getFragmentManager().findFragmentById(R.id.hud_fragment)).getRobotGPSNode();
 
         myLocationOverlay = new MyLocationNewOverlay(getActivity(), robotGPSNode, mapView);
+        secondMyLocationOverlay = new MyLocationNewOverlay(getActivity(), mapView);
         mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);
 
         myLocationOverlay.enableMyLocation();
+        secondMyLocationOverlay.enableMyLocation();
+
         myLocationOverlay.enableFollowLocation();
 
         mapView.getOverlays().add(myLocationOverlay);
+        mapView.getOverlays().add(secondMyLocationOverlay);
         mapView.getOverlays().add(0, mapEventsOverlay);
 
         IMapController mapViewController = mapView.getController();
         mapViewController.setZoom(18);
 
-//        nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
         return view;
     }
-    private OnClickListener recenterListener = new OnClickListener() {
+
+    private OnClickListener robotRecenterListener = new OnClickListener() {
         public void onClick(View v) {
+            secondMyLocationOverlay.disableFollowLocation();
             myLocationOverlay.enableFollowLocation();
         }
     };
 
-//    public void shutdown(){
-//        nodeMainExecutor.shutdownNodeMain(robotGPSNode);
-//    }
+    private OnClickListener tabletRecenterListener = new OnClickListener() {
+        public void onClick(View v) {
+            myLocationOverlay.disableFollowLocation();
+            secondMyLocationOverlay.enableFollowLocation();
+        }
+    };
+
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
@@ -123,6 +120,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         myGroundOverlay.setImage(getResources().getDrawable(R.drawable.ic_flag_black_24dp).mutate());
         myGroundOverlay.setDimensions(25.0f);
         mapView.getOverlays().add(myGroundOverlay);
+        mapView.postInvalidate();
 
         //keep storage of markers and current location
         waypoints.add(myLocationOverlay.getMyLocation());
@@ -136,18 +134,21 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
     public double distanceBetweenCoordinates(GeoPoint start, GeoPoint dest) {
         distanceToTravel = 0;
         int earthRadius = 6371000; // m
-        double dLat = Math.toRadians(dest.getLatitude()-start.getLatitude());
-        double dLon = Math.toRadians(dest.getLongitude()-dest.getLongitude());
+        double dLat = Math.toRadians(dest.getLatitude() - start.getLatitude());
+        double dLon = Math.toRadians(dest.getLongitude() - dest.getLongitude());
         double lat1 = Math.toRadians(start.getLatitude());
         double lat2 = Math.toRadians(dest.getLatitude());
 
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         distanceToTravel = earthRadius * c;  // in meters
 
         Toast.makeText(mapView.getContext(), "Waypoint is " + distanceToTravel + " meters away", Toast.LENGTH_LONG).show();
 
         return distanceToTravel;
     }
+
+
 }
+
