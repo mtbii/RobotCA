@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotInfoAdapter;
@@ -21,7 +20,9 @@ import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 
-import java.lang.annotation.Target;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
@@ -38,6 +39,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     private ShowcaseView showcaseView;
     private boolean addedRobot;
+    private Toolbar mToolbar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +53,8 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.robot_chooser_toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.robot_chooser_toolbar);
+        setSupportActionBar(mToolbar);
 
         RobotStorage.load(this);
 
@@ -98,28 +100,57 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         mRecyclerView.setAdapter(mAdapter);
 
-        boolean isFirstLaunch = PreferenceManager
+        ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
+
+        final boolean isFirstLaunch = PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .getBoolean(FIRST_TIME_LAUNCH_KEY, true);
 
-        try {
-            if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
-                //Show initial tutorial message
-                showcaseView = new ShowcaseView.Builder(this)
-                        .setTarget(new ToolbarActionItemTarget(toolbar, R.id.action_add_robot))
-                        .setStyle(R.style.CustomShowcaseTheme2)
-                        .setContentTitle("Add a Robot")
-                        .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
-                        .build();
+        //Delay the initial tutorial a little bit
+        //This makes sure the view gets a good reference to the UI layout positions
+        Runnable task = new Runnable() {
+            public void run() {
 
-                //Get ready to show tutorial message when user adds a robot
-                setupNextTutorialMessage();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
+                                //Show initial tutorial message
+                                showcaseView = new ShowcaseView.Builder(RobotChooser.this)
+                                        .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.action_add_robot))
+                                        .setStyle(R.style.CustomShowcaseTheme2)
+                                        .hideOnTouchOutside()
+                                        .blockAllTouches()
+                                        //.singleShot(0) Can use this instead of manually saving in preferences
+                                        .setContentTitle("Add a Robot")
+                                        .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
+                                        .build();
+
+                                //Get ready to show tutorial message when user adds a robot
+                                setupNextTutorialMessage();
 
 
-            } else {
-                addedRobot = true;
+                            } else {
+                                addedRobot = true;
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                });
             }
-        } catch (Exception e) {
+        };
+
+        worker.schedule(task, 1, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(showcaseView != null){
+            showcaseView.hide();
         }
     }
 
@@ -159,6 +190,8 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                             showcaseView = new ShowcaseView.Builder(RobotChooser.this)
                                     .setTarget(new ViewTarget(layoutView))
                                     .setStyle(R.style.CustomShowcaseTheme2)
+                                    .hideOnTouchOutside()
+                                    .blockAllTouches()
                                     .setContentTitle("Connect")
                                     .setContentText("To connect to this robot, tap it's name.")
                                     .build();
@@ -195,6 +228,8 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 //            mEmptyView.setVisibility(View.GONE);
 //        }
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

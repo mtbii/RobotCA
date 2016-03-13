@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Fragment for the LaserScanLayer.
- *
+ * <p/>
  * Created by Michael Brunson on 11/7/15.
  */
 public class LaserScanFragment extends RosFragment {
@@ -34,7 +34,8 @@ public class LaserScanFragment extends RosFragment {
     /**
      * Default Constructor.
      */
-    public LaserScanFragment(){}
+    public LaserScanFragment() {
+    }
 
     /**
      * Inflates the Fragment.
@@ -57,7 +58,7 @@ public class LaserScanFragment extends RosFragment {
                         .getString("edittext_laser_scan_topic", getString(R.string.laser_scan_topic)),
                 Float.parseFloat(PreferenceManager
                         .getDefaultSharedPreferences(getActivity())
-                        .getString("edittext_laser_scan_detail", "1")), (ControlApp)getActivity()));
+                        .getString("edittext_laser_scan_detail", "1")), (ControlApp) getActivity()));
 //        layers.add(new RobotLayer("base_link"));
         laserView.onCreate(layers);
 
@@ -68,6 +69,14 @@ public class LaserScanFragment extends RosFragment {
                     @Override
                     public void onClick(View v) {
                         laserScanLayer.recenter();
+                    }
+                });
+
+        (view.findViewById(R.id.clear_waypoints)).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((ControlApp) getActivity()).clearWaypoints();
                     }
                 });
 
@@ -88,6 +97,6 @@ public class LaserScanFragment extends RosFragment {
     }
 
     @Override
-    public void shutdown(){
+    public void shutdown() {
     }
 }

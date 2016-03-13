@@ -78,5 +78,6 @@
     <string name="random_walk_range_minimum_pref_title">Random Walk Range Minimum</string>
     <string name="pose_pref_title">Pose Topic</string>
     <string name="pose_pref_summary">Topic where the application gets pose information.\nExpected message type: geometry_msgs/Pose</string>
+    <string name="map_clear_string">Clear</string>
 
 </resources>

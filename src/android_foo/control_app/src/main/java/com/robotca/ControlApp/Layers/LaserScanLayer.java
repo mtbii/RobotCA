@@ -1,7 +1,9 @@
 package com.robotca.ControlApp.Layers;
 
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 import com.google.common.base.Preconditions;
 import com.robotca.ControlApp.ControlApp;
@@ -21,6 +23,7 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.ros.rosjava_geometry.Vector3;
 
+import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -31,17 +34,17 @@ import sensor_msgs.LaserScan;
  * Improved version of the ros laser scan layer.
  * Instead of using a preset stride to limit the number of points drawn, points are drawn when their
  * distance from the last drawn point exceeds some value.
- *
+ * <p/>
  * Created by Nathaniel Stone on 2/12/16.
- *
+ * <p/>
  * Copyright (C) 2011 Google Inc.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -65,6 +68,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Lock for synchronizing drawing
     private final Object mutex;
     private final ControlApp controlApp;
+    private final ScaleGestureDetector scaleGestureDetector;
 
     // Controls the density of scan po;ints
     private float laserScanDetail;
@@ -88,6 +92,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     private float xStart, yStart;
     private float xShift, yShift;
     private float offX, offY;
+    private float zoomLevel = 1;
 
     // Shape to draw to show the robot's position
     private Shape shape;
@@ -97,8 +102,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Creates a LaserScanLayer.
+     *
      * @param topicName Topic name for laser scanner
-     * @param detail Detail of drawn points
+     * @param detail    Detail of drawn points
      */
     public LaserScanLayer(String topicName, float detail, ControlApp app) {
         this(GraphName.of(topicName), detail, app);
@@ -106,14 +112,37 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Creates a LaserScanLayer.
+     *
      * @param topicName Topic name for laser scanner
-     * @param detail Detail of drawn points
+     * @param detail    Detail of drawn points
      */
     public LaserScanLayer(GraphName topicName, float detail, ControlApp app) {
         super(topicName, sensor_msgs.LaserScan._TYPE);
         mutex = new Object();
         this.laserScanDetail = Math.max(detail, 1);
         this.controlApp = app;
+        this.scaleGestureDetector = new ScaleGestureDetector(controlApp, new ScaleGestureDetector.OnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                zoomLevel *= detector.getScaleFactor();
+
+                // Don't let the object get too small or too large.
+                zoomLevel = Math.max(0.1f, Math.min(zoomLevel, 5.0f));
+
+                Log.d(TAG, String.format("Zoom: %f", zoomLevel));
+                return true;
+            }
+
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                return false;
+            }
+
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+
+            }
+        });
 
         xShift = yShift = 0.0f;
     }
@@ -121,8 +150,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     /**
      * Recenters the LaserScanLayer.
      */
-    public void recenter()
-    {
+    public void recenter() {
         isMoving = false;
         xShift = 0.0f;
         yShift = 0.0f;
@@ -130,17 +158,23 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Callback for touch events to this Layer.
-     * @param view The touched View
+     *
+     * @param view  The touched View
      * @param event The touch MotionEvent
      * @return True indicating the even was handled successfully
      */
-    public boolean onTouchEvent(VisualizationView view, MotionEvent event)
-    {
+    public boolean onTouchEvent(VisualizationView view, MotionEvent event) {
         final float s = 1.0f / (float) view.getCamera().getZoom();
-        switch (event.getAction())
-        {
+
+        scaleGestureDetector.onTouchEvent(event);
+
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                isMoving = false;
+                break;
+
             case MotionEvent.ACTION_DOWN:
-                if (!isMoving){
+                if (!isMoving) {
                     isMoving = true;
                     hasMoved = false;
                     xStart = event.getY() * s;
@@ -151,11 +185,11 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (isMoving){
+                if (isMoving) {
                     isMoving = false;
                 }
 
-                if(!hasMoved) {
+                if (!hasMoved && !scaleGestureDetector.isInProgress()) {
                     try {
 //                        Pose pose = controlApp.getController().getOdometry().getPose().getPose();
 //                        robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
@@ -164,7 +198,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                         double height = controlApp.getResources().getDisplayMetrics().heightPixels;
                         double width = controlApp.getResources().getDisplayMetrics().widthPixels;
 
-                        double x = event.getX()  + (width - view.getWidth()) - width / 2.0;
+                        double x = event.getX() + (width - view.getWidth()) - width / 2.0;
                         double y = event.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
 
                         x *= s;
@@ -176,9 +210,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                         y += xShift;
 
                         controlApp.addWaypointWithCheck(screenToWorld(y, x));
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         // Ignore
                     }
                 }
@@ -186,11 +218,11 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 hasMoved = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (isMoving) {
+                if (isMoving && !scaleGestureDetector.isInProgress()) {
                     xShift = xStart - event.getY() * s + offX;
                     yShift = yStart + event.getX() * s + offY;
 
-                    if(Math.abs(xStart - event.getY() * s) > 0.2f || Math.abs(yStart + event.getX() * s) > 0.2f) {
+                    if (Math.abs(xStart - event.getY() * s) > 0.2f || Math.abs(yStart + event.getX() * s) > 0.2f) {
                         hasMoved = true;
                     }
                 }
@@ -202,16 +234,26 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Draws the LaserScan.
+     *
      * @param view The VisualizationView this LaserScanLayer is attached to.
-     * @param gl The GL10 instance for drawing
+     * @param gl   The GL10 instance for drawing
      */
     @Override
-    public void draw(VisualizationView view, GL10 gl)
-    {
-        if (vertexFrontBuffer != null)
-        {
-            synchronized (mutex)
-            {
+    public void draw(VisualizationView view, GL10 gl) {
+        if (vertexFrontBuffer != null) {
+//            try {
+//                if (view.getCamera().getZoom() != zoomLevel) {
+//                    int x = view.getCamera().getViewport().getHeight() / 2;
+//                    int y = view.getCamera().getViewport().getWidth() / 2;
+//
+//                    double zoom = zoomLevel / view.getCamera().getZoom();
+//
+//                    view.getCamera().zoom(x, y, zoom);
+//                }
+//            }
+//            catch(Exception e){}
+
+            synchronized (mutex) {
                 // Draw the shape
                 gl.glTranslatef(xShift, yShift, 0.0f);
 
@@ -236,16 +278,18 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 drawWayPoints(gl);
 
                 gl.glTranslatef(-xShift, -yShift, 0.0f);
+                gl.glScalef(zoomLevel, zoomLevel, 1);
             }
         }
     }
 
     /**
      * Draws the contents of the specified buffer.
-     * @param gl GL10 object for drawing
+     *
+     * @param gl       GL10 object for drawing
      * @param vertices FloatBuffer of vertices to draw
-     * @param size Size of draw points
-     * @param fan If true, draws the buffer as a triangle fan, otherwise draws it as a point cloud
+     * @param size     Size of draw points
+     * @param fan      If true, draws the buffer as a triangle fan, otherwise draws it as a point cloud
      */
     private static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
         vertices.mark();
@@ -259,13 +303,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         gl.glVertexPointer(3, GL10.GL_FLOAT, (3 + 4) * 4, vertices);
 
         FloatBuffer colors = vertices.duplicate();
-        colors.position(fan ? 3: 10);
+        colors.position(fan ? 3 : 10);
         gl.glColorPointer(4, GL10.GL_FLOAT, (3 + 4) * 4, colors);
 
         gl.glDrawArrays(fan ? GL10.GL_TRIANGLE_FAN : GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
 
-        if (!fan)
-        {
+        if (!fan) {
             gl.glDrawArrays(GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
         }
 
@@ -285,7 +328,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Initializes the LaserScanLayer.
-     * @param view Parent VisualizationView
+     *
+     * @param view          Parent VisualizationView
      * @param connectedNode Node this layer is connected to
      */
     @Override
@@ -306,13 +350,11 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     /*
      * Updates the contents of the vertexBackBuffer to the result of the specified LaserScan.
      */
-    private void updateVertexBuffer(LaserScan laserScan)
-    {
+    private void updateVertexBuffer(LaserScan laserScan) {
         float[] ranges = laserScan.getRanges();
         int size = ((ranges.length) + 2) * (3 + 4);//((ranges.length / stride) + 2) * 3;
 
-        if (vertexBackBuffer == null || vertexBackBuffer.capacity() < size)
-        {
+        if (vertexBackBuffer == null || vertexBackBuffer.capacity() < size) {
             vertexBackBuffer = Vertices.allocateBuffer(size);
         }
 
@@ -337,8 +379,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         float p;
 
         // Calculate the coordinates of the laser range values.
-        for (int i = 0; i < ranges.length; ++i)
-        {
+        for (int i = 0; i < ranges.length; ++i) {
             // Makes the preview look nicer by eliminating round off errors on the last angle
             if (i == ranges.length - 1)
                 angle = laserScan.getAngleMax();
@@ -349,19 +390,15 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
             p = ranges[i];
 
-            if (p > MAX_DISTANCE)
-            {
+            if (p > MAX_DISTANCE) {
                 p = 1.0f;
-            }
-            else
-            {
+            } else {
                 p /= MAX_DISTANCE;
             }
 
             if (i == 0 || i == ranges.length - 1 || (/*ranges[i] < maximumRange &&*/
                     ((x - xp) * (x - xp) + (y - yp) * (y - yp))
-                            > (1.0f/(this.laserScanDetail*this.laserScanDetail))*MIN_DISTANCE_SQUARED))
-            {
+                            > (1.0f / (this.laserScanDetail * this.laserScanDetail)) * MIN_DISTANCE_SQUARED)) {
                 vertexBackBuffer.put(x);
                 vertexBackBuffer.put(y);
                 vertexBackBuffer.put(0.0f);
@@ -383,8 +420,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         vertexBackBuffer.rewind();
         vertexBackBuffer.limit(num * (3 + 4));
 
-        synchronized (mutex)
-        {
+        synchronized (mutex) {
             FloatBuffer tmp = vertexFrontBuffer;
             vertexFrontBuffer = vertexBackBuffer;
             vertexBackBuffer = tmp;
@@ -393,7 +429,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /**
      * Returns this layers' GraphName
-     * @return  The GraphName of this Layer
+     *
+     * @return The GraphName of this Layer
      */
     @Override
     public GraphName getFrame() {
@@ -407,15 +444,22 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         boolean first = true;
 
         // Draw the waypoints
-        synchronized (controlApp) {
+
+        //Lock on waypoints to prevent modifications while reading
+        synchronized (controlApp.getWaypoints()) {
             for (Vector3 pt : controlApp.getWaypoints()) {
 
-                drawPoint(gl, pt.getX(), pt.getY(), 24.0f, first ? 0xFF22CC33: 0xFF2233CC, res);
+                drawPoint(gl, pt.getX(), pt.getY(), 24.0f, first ? 0xFF22CC33 : 0xFF2233CC, res);
                 first = false;
 
-                b.put(res.x);
-                b.put(res.y);
-                b.put(0.0f);
+                try {
+                    b.put(res.x);
+                    b.put(res.y);
+                    b.put(0.0f);
+                }
+                catch(BufferOverflowException e){
+                    return;
+                }
             }
         }
 
@@ -448,8 +492,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
         Utils.drawPoint(gl, (float) x, (float) y, size, color);
 
-        if (result != null)
-        {
+        if (result != null) {
             result.set((float) x, (float) y);
         }
     }

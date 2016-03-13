@@ -90,6 +90,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private LinkedList<Vector3> waypoints;
 
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
+    private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
+    private static final String CONTROL_MODE_BUNDLE_ID = "com.robotca.Views.Fragments.JoystickFragment.controlMode";
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
@@ -217,6 +219,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             if (list != null)
                 waypoints = new LinkedList<>(list);
 
+            int modeNumber = savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID);
+            setControlMode(ControlMode.values()[modeNumber]);
+            drawerIndex = savedInstanceState.getInt(SELECTED_VIEW_NUMBER_BUNDLE_ID);
         }
     }
 
@@ -253,6 +258,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     protected void onSaveInstanceState(Bundle bundle) {
         // Waypoints
         bundle.putSerializable(WAYPOINT_BUNDLE_ID, waypoints);
+        bundle.putInt(CONTROL_MODE_BUNDLE_ID, getControlMode().ordinal());
+        bundle.putInt(SELECTED_VIEW_NUMBER_BUNDLE_ID, drawerIndex);
     }
 
     @Override
@@ -411,6 +418,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 break;
         }
 
+        drawerIndex = position;
+
         try {
             //noinspection ConstantConditions
             ((RosFragment) fragment).initialize(nodeMainExecutor, nodeConfiguration);
@@ -547,7 +556,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      * @param location The point
      */
     public void setDestination(Vector3 location){
-        synchronized (this) {
+        synchronized (waypoints) {
             waypoints.addFirst(location);
         }
     }
@@ -594,7 +603,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      * @param point The point
      */
     public void addWaypoint(Vector3 point) {
-        synchronized (this) {
+        synchronized (waypoints) {
             waypoints.addLast(point);
         }
     }
@@ -609,7 +618,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         double minDist = Double.MAX_VALUE, dist;
         Vector3 near = null;
 
-        synchronized (this) {
+        synchronized (waypoints) {
             for (Vector3 pt: waypoints) {
                 dist = Utils.distanceSquared(point.getX(), point.getY(), pt.getX(), pt.getY());
 
@@ -631,7 +640,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
-                    synchronized (ControlApp.this) {
+                    synchronized (waypoints) {
                         waypoints.remove(remove);
                     }
 
@@ -668,7 +677,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         Vector3 r;
 
-        synchronized (this) {
+        synchronized (waypoints) {
             r = waypoints.pollFirst();
         }
 
@@ -682,6 +691,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         return waypoints;
     }
 
+    public void clearWaypoints(){
+        synchronized (waypoints){
+            waypoints.clear();
+        }
+    }
 //    public RobotController getController(){
 //        return controller;
 //    }

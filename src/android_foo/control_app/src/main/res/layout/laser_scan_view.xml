@@ -9,13 +9,23 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/recenter_laser_scan"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:text="@string/map_center_string"/>
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/recenter_laser_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_center_string"/>
+        <Button
+            android:id="@+id/clear_waypoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_clear_string"/>
+    </LinearLayout>
 
 </RelativeLayout>
