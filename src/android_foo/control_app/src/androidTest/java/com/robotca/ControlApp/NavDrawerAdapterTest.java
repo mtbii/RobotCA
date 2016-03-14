@@ -1,4 +1,4 @@
-package com.robotca.ControlApp.Core;
+package com.robotca.ControlApp;
 
 import junit.framework.TestCase;
 
