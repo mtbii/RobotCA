@@ -383,7 +383,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         if (controller != null) {
             controller.update();
         }
-
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
@@ -392,18 +391,34 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             case 1:
                 fragment = new OverviewFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                        .addToBackStack(null).commit();
+
                 break;
 
             case 2:
                 fragment = new CameraViewFragment();
+                FragmentManager fragmentManager2 = getFragmentManager();
+                fragmentManager2.beginTransaction().replace(R.id.content_frame, fragment)
+                        .addToBackStack(null).commit();
+
                 break;
 
             case 3:
                 fragment = new LaserScanFragment();
+                FragmentManager fragmentManager3 = getFragmentManager();
+                fragmentManager3.beginTransaction().replace(R.id.content_frame, fragment)
+                        .addToBackStack(null).commit();
+
                 break;
 
             case 4:
                 fragment = new MapFragment();
+                FragmentManager fragmentManager4 = getFragmentManager();
+                fragmentManager4.beginTransaction().replace(R.id.content_frame, fragment)
+                        .addToBackStack(null).commit();
+
                 break;
 
             case 5:
@@ -412,6 +427,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 if (joystickFragment != null)
                     joystickFragment.hide();
                 fragment = new PreferencesFragment();
+                FragmentManager fragmentManager5 = getFragmentManager();
+                fragmentManager5.beginTransaction().replace(R.id.content_frame, fragment)
+                        .addToBackStack(null).commit();
+
                 break;
 
             default:
@@ -489,6 +508,18 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 return mDrawerToggle.onOptionsItemSelected(item);
         }
     }
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getFragmentManager();
+        int backCount = fragmentManager.getBackStackEntryCount();
+
+        if(backCount > 1) {
+            super.onBackPressed();
+        } else {
+            finish();
+        }
+    }
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

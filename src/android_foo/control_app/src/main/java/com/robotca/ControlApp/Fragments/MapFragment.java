@@ -1,8 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.app.Fragment;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,8 +13,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.robotca.ControlApp.Core.RobotGPSSub;
+import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.R;
+import com.robotca.ControlApp.ToolbarActionItemTarget;
 
 import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IMapController;
@@ -31,6 +36,9 @@ import org.osmdroid.ResourceProxy;
 
 import java.util.ArrayList;
 import java.lang.Math.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class MapFragment extends Fragment implements MapEventsReceiver {
@@ -42,6 +50,8 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
     MapView mapView;
     MapEventsOverlay mapEventsOverlay;
     IMapController mapViewController;
+    private ShowcaseView showcaseView;
+    private Toolbar mToolbar;
 
     ArrayList<GeoPoint> waypoints = new ArrayList<>();
 
@@ -124,6 +134,52 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         mapViewController.setZoom(18);
 
         return view;
+
+        /*ScheduledExecutorService worker = Executors.newSingleThreadExecutor();
+        Runnable task1 = new Runnable() {
+            public void run() {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            if (RobotStorage.getRobots().size() == 0) {
+                                //Show initial tutorial message
+                                showcaseView = new ShowcaseView.Builder(getActivity())
+                                        .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.recenter))
+                                        .setStyle(R.style.CustomShowcaseTheme3)
+                                        .hideOnTouchOutside()
+                                        .blockAllTouches()
+                                                //.singleShot(0) Can use this instead of manually saving in preferences
+                                        .setContentTitle("Switch the focus")
+                                        .setContentText("You can switch the focus between you and the robot by using this button. Try it!")
+                                        .build();
+
+                                //Get ready to show tutorial message when user adds a robot
+                                //setupNextTutorialMessage();
+
+
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                });
+            }
+        };
+
+        worker.schedule(task1, 1, TimeUnit.SECONDS);
+*/
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if(showcaseView != null){
+            showcaseView.hide();
+        }
     }
 
 
