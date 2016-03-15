@@ -383,6 +383,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         if (controller != null) {
             controller.update();
         }
+        FragmentManager fragmentManager = getFragmentManager();
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
@@ -391,33 +392,45 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             case 1:
                 fragment = new OverviewFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
-                        .addToBackStack(null).commit();
+                //FragmentManager fragmentManager = getFragmentManager();
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
                 break;
 
             case 2:
                 fragment = new CameraViewFragment();
-                FragmentManager fragmentManager2 = getFragmentManager();
-                fragmentManager2.beginTransaction().replace(R.id.content_frame, fragment)
-                        .addToBackStack(null).commit();
+                //FragmentManager fragmentManager2 = getFragmentManager();
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
                 break;
 
             case 3:
                 fragment = new LaserScanFragment();
-                FragmentManager fragmentManager3 = getFragmentManager();
-                fragmentManager3.beginTransaction().replace(R.id.content_frame, fragment)
-                        .addToBackStack(null).commit();
+                //FragmentManager fragmentManager3 = getFragmentManager();
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
                 break;
 
             case 4:
                 fragment = new MapFragment();
-                FragmentManager fragmentManager4 = getFragmentManager();
-                fragmentManager4.beginTransaction().replace(R.id.content_frame, fragment)
-                        .addToBackStack(null).commit();
+                //FragmentManager fragmentManager4 = getFragmentManager();
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
                 break;
 
@@ -427,9 +440,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 if (joystickFragment != null)
                     joystickFragment.hide();
                 fragment = new PreferencesFragment();
-                FragmentManager fragmentManager5 = getFragmentManager();
-                fragmentManager5.beginTransaction().replace(R.id.content_frame, fragment)
-                        .addToBackStack(null).commit();
+                //FragmentManager fragmentManager5 = getFragmentManager();
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
                 break;
 
@@ -450,7 +466,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             fragment.setArguments(args);
 
             // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getFragmentManager();
+            //FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment)
                     .commit();
