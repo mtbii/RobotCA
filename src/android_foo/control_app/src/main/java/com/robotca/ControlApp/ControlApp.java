@@ -41,6 +41,7 @@ import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Fragments.AboutFragment;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
@@ -129,7 +130,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //        }
         setContentView(R.layout.main);
 
-        mFeatureTitles = getResources().getStringArray(R.array.feature_titles);
+        mFeatureTitles = getResources().getStringArray(R.array.feature_titles); //Where you set drawer item titles
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -171,7 +172,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 R.drawable.ic_linked_camera_black_24dp,
                 R.drawable.ic_navigation_black_24dp,
                 R.drawable.ic_terrain_black_24dp,
-                R.drawable.ic_settings_black_24dp
+                R.drawable.ic_settings_black_24dp,
+                R.drawable.ic_info_outline_black_24dp
         };
 
         List<DrawerItem> drawerItems = new ArrayList<>();
@@ -394,10 +396,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 fragment = new OverviewFragment();
                 //FragmentManager fragmentManager = getFragmentManager();
                 if(fragmentManager.getBackStackEntryCount() <= 2) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Overview")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
+                setTitle("Overview");
 
                 break;
 
@@ -405,10 +408,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 fragment = new CameraViewFragment();
                 //FragmentManager fragmentManager2 = getFragmentManager();
                 if(fragmentManager.getBackStackEntryCount() <= 2) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Camera")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
+                setTitle("Camera");
 
                 break;
 
@@ -416,10 +420,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 fragment = new LaserScanFragment();
                 //FragmentManager fragmentManager3 = getFragmentManager();
                 if(fragmentManager.getBackStackEntryCount() <= 2) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Laser")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
+                setTitle("Laser");
 
                 break;
 
@@ -427,10 +432,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 fragment = new MapFragment();
                 //FragmentManager fragmentManager4 = getFragmentManager();
                 if(fragmentManager.getBackStackEntryCount() <= 2) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Map")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
+                setTitle("Map");
 
                 break;
 
@@ -442,12 +448,25 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 fragment = new PreferencesFragment();
                 //FragmentManager fragmentManager5 = getFragmentManager();
                 if(fragmentManager.getBackStackEntryCount() <= 2) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment)
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Preference")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
+                setTitle("Preferences");
 
                 break;
+            case 6:
+                if (hudFragment != null)
+                    hudFragment.hide();
+                if (joystickFragment != null)
+                    joystickFragment.hide();
+                fragment = new AboutFragment();
+
+                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "About")
+                            .addToBackStack(null).commit();
+                }
+                else fragmentManager.popBackStackImmediate();
 
             default:
                 break;

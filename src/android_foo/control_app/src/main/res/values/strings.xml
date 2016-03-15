@@ -46,6 +46,7 @@
         <item>Robot</item>
         <item>Map</item>
         <item>Preferences</item>
+        <item>About</item>
     </string-array>
     <string name="drawer_open">Open Menu</string>
     <string name="drawer_close">Close Menu</string>
