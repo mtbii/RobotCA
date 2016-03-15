@@ -8,13 +8,15 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
 
 
     <TextView
         android:id="@+id/abouttxt"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:textSize="16dp"
         />
     </ScrollView>

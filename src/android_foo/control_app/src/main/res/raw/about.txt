@@ -1,17 +1,11 @@
 
   About ROS Control
 
-  This app is the result of a Senior Project to design an Android application to
-  control a robot.Our goal was to create an Android application (optimized for tablets)
-  to interface with a Robot Operating System (ROS) robot, for direct drive, diagnostic,
-  and navigation information. The application processes data from various sensors
-  on the robot and displays the information in an understandable fashion.
+  This app is the result of a Senior Project to design an Android application to control a robot.Our goal was to create an Android application (optimized for tablets) to interface with a Robot Operating System (ROS) robot, for direct drive, diagnostic, and navigation information. The application processes data from various sensors on the robot and displays the information in an understandable fashion.
 
   1. The Overview:
-         The overview option in the navigation drawer shows both the view from the
-         robots camera,and what the laser scan is seeing. In the laser scan portion
-         of the overview, you can drop waypoints by using a long press and delete
-         them using the same motion.
+
+ The overview option in the navigation drawer shows both the view from the robots camera,and what the laser scan is seeing. In the laser scan portion of the overview, you can drop waypoints by using a long press and delete them using the same motion.
 
   2. The Camera view
 
