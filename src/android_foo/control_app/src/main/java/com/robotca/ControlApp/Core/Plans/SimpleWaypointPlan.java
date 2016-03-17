@@ -21,6 +21,8 @@ public class SimpleWaypointPlan extends RobotPlan {
 
     private static final String TAG = "SimpleWaypointPlan";
 
+    private static final double MAX_SPEED = 0.75;
+
     /**
      * Creates a SimpleWaypointPlan for the specified ControlApp.
      * @param controlApp The ControlApp
@@ -35,50 +37,54 @@ public class SimpleWaypointPlan extends RobotPlan {
         Log.d(TAG, "Started");
 
         Vector3 next;
-        double dir, dist;
+        double dir, dist, spd;
 
         while (!isInterrupted()) {
 
             Log.d(TAG, "begin loop");
 
+            // Wait for the next point to become available
             while (controlApp.getDestination() == null)
                 waitFor(1000L);
 
             next = controlApp.getDestination();
             Log.d(TAG, "Found next point: (" + next.getX() + ", " + next.getY() + ")");
 
-            // First, check angle
-            dir = Utils.pointDirection(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-            dir = Utils.angleDifference(HUDFragment.getHeading(), dir);
+            spd = 0.0;
 
-            Log.d(TAG, "Direction to point: " + (dir * 180 / Math.PI));
+            do {
+                // Increment speed
+                spd += MAX_SPEED / 15.0;
+                if (spd > MAX_SPEED)
+                    spd = MAX_SPEED;
 
-            while (Math.abs(dir) * 180.0 / Math.PI > 5.0) {
-
-                controller.publishVelocity(0.0, 0.0, dir / 2.0);
-                waitFor((long) (Math.abs(dir) * 180.0 / 10.0));
-
+                // Check angle to target
                 dir = Utils.pointDirection(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-                dir = Utils.angleDifference(HUDFragment.getHeading(), dir);
+                dir = Utils.angleDifference(HUDFragment.getHeading(), dir) / 2.0;
+
+                controller.publishVelocity(spd * Math.cos(dir), 0.0, spd * Math.sin(dir));
+
+                // Check distance to target
+                dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
+
+            } while (dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
+
+            // Stop
+            final int N = 15;
+            for (int i = N - 1; i >= 0; --i) {
+
+                // Check angle to target
+                dir = Utils.pointDirection(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
+                dir = Utils.angleDifference(HUDFragment.getHeading(), dir) / 2.0;
+
+                // Slow down
+                controller.publishVelocity(spd * ((double)i / N) * Math.cos(dir), 0.0, spd * ((double)i / N) * Math.sin(dir));
+                waitFor(N);
             }
 
-            controller.publishVelocity(0.0, 0.0, 0.0);
-
-            Log.d(TAG, "facing point");
-
-            // check distance
-            dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-
-            controller.publishVelocity(0.75, 0.0, 0.0);
-            waitFor((long) (dist * 100.0));
-            controller.publishVelocity(0.0, 0.0, 0.0);
-
-            dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-            if (dist < MINIMUM_DISTANCE)
+            // Remove the way point
+            if (next.equals(controlApp.getDestination()))
                 controlApp.pollDestination();
-
-            waitFor(100L);
         }
-
     }
 }
