@@ -80,6 +80,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private HUDFragment hudFragment;
     private RobotController controller;
 
+    private Fragment fragment = null;
+
     private int drawerIndex = 1;
     private String mTitle;
     private String mDrawerTitle;
@@ -165,7 +167,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //        }
 
         //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
-        
+
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -238,7 +240,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         if(joystickFragment != null)
             joystickFragment.stop();
+        onTrimMemory(TRIM_MEMORY_BACKGROUND);
         super.onStop();
+
     }
 
     @Override
@@ -253,6 +257,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         if(joystickFragment != null)
             joystickFragment.stop();
 
+        onTrimMemory(TRIM_MEMORY_BACKGROUND);
+        onTrimMemory(TRIM_MEMORY_COMPLETE);
         //this.nodeMainExecutorService.forceShutdown();
     }
 
@@ -379,7 +385,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     private void selectItem(int position) {
 
-        Fragment fragment = null;
         Bundle args = new Bundle();
 
         if(joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()){
@@ -397,54 +402,54 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
+                int count = fragmentManager.getBackStackEntryCount();
+                for(int i = 0; i < count; ++i) {
+                    fragmentManager.popBackStackImmediate();
+                }
                 finish();
                 return;
 
             case 1:
                 fragment = new OverviewFragment();
-                //FragmentManager fragmentManager = getFragmentManager();
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Overview")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
-                setTitle("Overview");
 
                 break;
 
             case 2:
                 fragment = new CameraViewFragment();
-                //FragmentManager fragmentManager2 = getFragmentManager();
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Camera")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
-                setTitle("Camera");
 
                 break;
 
             case 3:
                 fragment = new LaserScanFragment();
-                //FragmentManager fragmentManager3 = getFragmentManager();
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Laser")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
-                setTitle("Laser");
 
                 break;
 
             case 4:
                 fragment = new MapFragment();
-                //FragmentManager fragmentManager4 = getFragmentManager();
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Map")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
-                setTitle("Map");
 
                 break;
 
@@ -454,13 +459,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 if (joystickFragment != null)
                     joystickFragment.hide();
                 fragment = new PreferencesFragment();
-                //FragmentManager fragmentManager5 = getFragmentManager();
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Preference")
                             .addToBackStack(null).commit();
                 }
                 else fragmentManager.popBackStackImmediate();
-                setTitle("Preferences");
 
                 break;
             case 6:
@@ -470,7 +474,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     joystickFragment.hide();
                 fragment = new AboutFragment();
 
-                if(fragmentManager.getBackStackEntryCount() <= 2) {
+                if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "About")
                             .addToBackStack(null).commit();
                 }
