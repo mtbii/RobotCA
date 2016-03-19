@@ -330,6 +330,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * Called when a collision is imminent from the LaserScanLayer.
+     */
+    public void collisionWarning()
+    {
+        // TODO
+    }
+
+    /**
      * Locks/unlocks the screen orientation.
      * Adapted from an answer on StackOverflow by jp36
      * @param lock Whether to lock the orientation

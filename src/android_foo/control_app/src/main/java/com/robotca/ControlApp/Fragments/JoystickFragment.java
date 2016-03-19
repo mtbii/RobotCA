@@ -62,7 +62,7 @@ public class JoystickFragment extends RosFragment {
     }
 
     /**
-     * Shutowns the JoystickView
+     * Shuts down the JoystickView
      */
     @Override
     void shutdown() {

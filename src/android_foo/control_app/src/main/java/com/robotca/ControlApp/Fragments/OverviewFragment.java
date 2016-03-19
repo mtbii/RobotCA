@@ -1,28 +1,16 @@
 package com.robotca.ControlApp.Fragments;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.robotca.ControlApp.Layers.LaserScanLayer;
 import com.robotca.ControlApp.R;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.view.RosImageView;
-import org.ros.android.view.visualization.VisualizationView;
-import org.ros.android.view.visualization.layer.Layer;
-import org.ros.android.view.visualization.layer.RobotLayer;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import sensor_msgs.CompressedImage;
 
@@ -37,6 +25,7 @@ public class OverviewFragment extends RosFragment {
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
 
 
+    @SuppressWarnings("unused")
     private static final String TAG = "OverviewFragment";
 
     public OverviewFragment(){}

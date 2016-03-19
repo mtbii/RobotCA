@@ -277,8 +277,36 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 // Draw waypoints
                 drawWayPoints(gl);
 
+                // Imminent collision detection
+                double d = Math.max(0.5, Math.pow(HUDFragment.getSpeed() * 1.25, 2.0));
+                double r = -HUDFragment.getTurnRate();
+
+                d /= Math.cos(r);
+                r /= 2.0;
+
+                if (HUDFragment.getSpeed() < -0.01) {
+                    d = -d;
+                    r = -r;
+                }
+
+                // TODO Perform collision detection here.
+                // Just have to check if one of the points intersects the point fan
+                boolean collision = false;
+
+                for (int i = -2; i <= 2; ++i) {
+                    float x = (float) (Math.cos(r + i * Math.PI / (18.0 * d)) * d);
+                    float y = (float) (Math.sin(r + i * Math.PI / (18.0 * d)) * d);
+                    Utils.drawPoint(gl, x, y, 3.0f, 0xFFFF0000);
+
+                    // collision |= ...
+                }
+
+                if (collision) {
+                    controlApp.collisionWarning();
+                }
+
                 gl.glTranslatef(-xShift, -yShift, 0.0f);
-                gl.glScalef(zoomLevel, zoomLevel, 1);
+                gl.glScalef(zoomLevel, zoomLevel, 1.0f);
             }
         }
     }
@@ -437,6 +465,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         return frame;
     }
 
+    /*
+     * Draws the way points.
+     */
     private void drawWayPoints(GL10 gl) {
 
         FloatBuffer b = Vertices.allocateBuffer(3 * 4 * controlApp.getWaypoints().size());
@@ -477,6 +508,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     /*
      * Draws a point specified in world space.
+     * Pass a non-null PointF to result to grab the converted point.
      */
     private static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
         double rx = HUDFragment.getX();

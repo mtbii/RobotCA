@@ -26,7 +26,6 @@ import nav_msgs.Odometry;
 /**
  * Simple fragment showing info about the Robot's current state.
  *
- *
  * @author Nathaniel Stone
  */
 public class HUDFragment extends RosFragment implements MessageListener<Odometry>{
@@ -35,6 +34,7 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
 
     private static Point startPos, currentPos;
     private static Quaternion rotation;
+//    private static
 
     private View view;
     private TextView speedView, turnrateView, locationView, latView, longView;
@@ -51,7 +51,7 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
 
     private boolean isSetup;
 
-    private double lastSpeed, lastTurnrate;
+    private static double lastSpeed, lastTurnrate;
     private int lastWifiImage;
 
     private static int[] wifiIcons;
@@ -151,8 +151,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         UPDATER.kill();
     }
 
-    /*
-     *
+    /**
+     * Updates this Fragment's speed and turnrate displays
      */
     void updateUI(final double speed, final double turnrate)
     {
@@ -164,14 +164,20 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         }
     }
 
-    /*
-     *
+    /**
+     * @return The Robot's GPS node
      */
     RobotGPSSub getGPSSub()
     {
         return robotGPSNode;
     }
 
+    /**
+     * Formats a latitude/longitude String returned by Location.convert().
+     * @param str The String
+     * @param lat True if the String represents a latitude and false for longitude
+     * @return The formatted String
+     */
     static String getLatLongString(String str, boolean lat)
     {
         String r = str.replaceFirst(":", "\u00B0 ").replaceFirst(":", "' ") + "\"";
@@ -196,18 +202,8 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         return r;
     }
 
-    public static Point getStartPosition()
-    {
-        return startPos;
-    }
-
-    public static Point getLastPosition()
-    {
-        return currentPos;
-    }
-
     /**
-     * @return
+     * @return The Robot's x position
      */
     public static double getX() {
         if (currentPos == null)
@@ -216,6 +212,9 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
             return currentPos.getX() - startPos.getX();
     }
 
+    /**
+     * @return The Robot's y position
+     */
     public static double getY() {
         if (currentPos == null)
             return 0.0;
@@ -223,11 +222,28 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
             return currentPos.getY() - startPos.getY();
     }
 
+    /**
+     * @return The Robot's heading in radians
+     */
     public static double getHeading() {
         if (rotation == null)
             return 0.0;
         else
             return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
+    }
+
+    /**
+     * @return The Robot's last reported speed
+     */
+    public static double getSpeed() {
+        return lastSpeed;
+    }
+
+    /**
+     * @return The Robot's last reported turn rate
+     */
+    public static double getTurnRate() {
+        return lastTurnrate;
     }
 
     /*
