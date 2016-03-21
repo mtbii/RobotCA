@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.app.FragmentTransaction;
 
 import android.view.Display;
 import android.view.Menu;
@@ -81,6 +82,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private RobotController controller;
 
     private Fragment fragment = null;
+    FragmentManager fragmentManager;
+    int fragmentsCreatedCounter = 0;
 
     private int drawerIndex = 1;
     private String mTitle;
@@ -301,19 +304,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
                     // Add HUD to joystick odometry subscriber
                     final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
+                    handler.postDelayed(new Runnable() {
                         @Override
-                        public void run()
-                        {
+                        public void run() {
                             while (!joystickFragment.getJoystickView().addOdometryListener(hudFragment)) {
                                 Log.w(TAG, "Unable to add HUD to joystick odometry listener");
-                                try
-                                {
+                                try {
                                     Thread.sleep(100L);
-                                }
-                                catch (InterruptedException e)
-                                {
+                                } catch (InterruptedException e) {
                                     Log.e(TAG, "", e);
                                     return;
                                 }
@@ -383,6 +381,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     /*
      * Swaps fragments in the main content view
      */
+
     private void selectItem(int position) {
 
         Bundle args = new Bundle();
@@ -398,11 +397,13 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         if (controller != null) {
             controller.update();
         }
-        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager = getFragmentManager();
+        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
                 int count = fragmentManager.getBackStackEntryCount();
+                fragmentsCreatedCounter = 0;
                 for(int i = 0; i < count; ++i) {
                     fragmentManager.popBackStackImmediate();
                 }
@@ -411,45 +412,95 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             case 1:
                 fragment = new OverviewFragment();
+                fragmentsCreatedCounter = 0;
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, overFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }*/
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Overview")
+                //if(openLaunch==false) {
+
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Overview")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                //else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
 
                 break;
 
             case 2:
                 fragment = new CameraViewFragment();
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Camera")
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Camera")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);
+
+                // Replace whatever is in the fragment_container view with this fragment,
+                // and add the transaction to the back stack
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, cameraFragment);
+                    transaction.addToBackStack(null);
+                }
+                else {
+                    transaction.replace(R.id.content_frame, cameraFragment);
+                    transaction.addToBackStack(null);
+                }*/
+                //transaction.addToBackStack(null);
+
+                // Commit the transaction
+                //transaction.commit();*/
 
                 break;
 
             case 3:
                 fragment = new LaserScanFragment();
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                
+                //transaction.replace(R.id.content_frame, fragment);
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, laserFragment);
+                    transaction.addToBackStack(null);
+                }
+                else {
+                    transaction.replace(R.id.content_frame, laserFragment);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();*/
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Laser")
+
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Laser")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
 
                 break;
 
             case 4:
                 fragment = new MapFragment();
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Map")
+                //transaction.replace(R.id.content_frame, fragment);
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, mapFragment);
+                    transaction.addToBackStack(null);
+                }
+                else {
+                    transaction.replace(R.id.content_frame, mapFragment);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();*/
+
+
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Map")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
 
                 break;
 
@@ -458,13 +509,26 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                fragment = new PreferencesFragment();
+                Fragment newHudFragment = new PreferencesFragment();
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
+                //transaction.replace(R.id.content_frame, fragment);
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, newHudFragment);
+                    transaction.addToBackStack(null);
+                }
+                else {
+                    transaction.replace(R.id.content_frame, newHudFragment);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();*/
+
+
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Preference")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                else fragmentManager.popBackStackImmediate();*/
 
                 break;
             case 6:
@@ -472,13 +536,26 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                fragment = new AboutFragment();
+                Fragment aboutFragment = new AboutFragment();
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
-                if(fragmentManager.getBackStackEntryCount() <= 1) {
+                //transaction.replace(R.id.content_frame, fragment);
+               /* if(fragmentManager.getBackStackEntryCount() <= 1) {
+                    transaction.add(R.id.content_frame, aboutFragment);
+                    transaction.addToBackStack(null);
+                }
+                else {
+                    transaction.replace(R.id.content_frame, aboutFragment);
+                    transaction.addToBackStack(null);
+                }
+                transaction.commit();
+
+
+                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "About")
                             .addToBackStack(null).commit();
                 }
-                else fragmentManager.popBackStackImmediate();
+                else fragmentManager.popBackStackImmediate();*/
 
             default:
                 break;
@@ -557,16 +634,18 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getFragmentManager();
-        int backCount = fragmentManager.getBackStackEntryCount();
+        
+        if(fragmentsCreatedCounter >= 1) {
+            
+            selectItem(1);
+            fragmentsCreatedCounter=0;
 
-        if(backCount > 1) {
+        } 
+        else {
             super.onBackPressed();
-        } else {
-            finish();
         }
-    }
 
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
