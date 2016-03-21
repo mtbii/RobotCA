@@ -509,7 +509,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                Fragment newHudFragment = new PreferencesFragment();
+                fragment = new PreferencesFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
                 //transaction.replace(R.id.content_frame, fragment);
@@ -536,7 +536,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                Fragment aboutFragment = new AboutFragment();
+                fragment = new AboutFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
                 //transaction.replace(R.id.content_frame, fragment);
