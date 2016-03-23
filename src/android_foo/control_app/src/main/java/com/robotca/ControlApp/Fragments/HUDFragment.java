@@ -4,23 +4,17 @@ import android.content.Context;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.robotca.ControlApp.Core.RobotGPSSub;
-import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
 
-import geometry_msgs.Point;
-import geometry_msgs.Quaternion;
 import nav_msgs.Odometry;
 
 /**
@@ -28,39 +22,49 @@ import nav_msgs.Odometry;
  *
  * @author Nathaniel Stone
  */
-public class HUDFragment extends RosFragment implements MessageListener<Odometry>{
+public class HUDFragment extends SimpleFragment implements MessageListener<Odometry>{
 
+    @SuppressWarnings("unused")
     private static final String TAG = "HUDFragment";
 
-    private static Point startPos, currentPos;
-    private static Quaternion rotation;
-//    private static
+//    private static Point startPos, currentPos;
+//    private static Quaternion rotation;
 
     private View view;
-    private TextView speedView, turnrateView, locationView, latView, longView;
+    private TextView speedView, turnrateView, /*locationView,*/ latView, longView;
     private ImageView wifiStrengthView;
 
     private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
     private final Updater UPDATER = new Updater();
 
-    // Node for receiving GPS events
-    private RobotGPSSub robotGPSNode;
+//    // Node for receiving GPS events
+//    private RobotGPSSub robotGPSNode;
 
     // Used for getting connection strength info
     private WifiManager wifiManager;
-
-    private boolean isSetup;
 
     private static double lastSpeed, lastTurnrate;
     private int lastWifiImage;
 
     private static int[] wifiIcons;
 
+//    /**
+//     * MessageListener for NavSatFix messages.
+//     */
+//    public final MessageListener<NavSatFix> NAV_SAT_FIX_LISTENER = new MessageListener<NavSatFix>() {
+//        @Override
+//        public void onNewMessage(NavSatFix navSatFix) {
+//            location.setLatitude(navSatFix.getLatitude());
+//            location.setLongitude(navSatFix.getLongitude());
+//        }
+//    };
+//    private Location location;
+
     /**
      * Default Constructor.
      */
     public HUDFragment() {
-        // Required empty public constructor
+//        location = new Location("ros");
     }
 
     @Override
@@ -80,9 +84,9 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
             updateUI(0.0, 0.0);
         }
 
-        // Create the GPS Node
-        if (robotGPSNode == null)
-            robotGPSNode = new RobotGPSSub();
+//        // Create the GPS Node
+//        if (robotGPSNode == null)
+//            robotGPSNode = new RobotGPSSub();
 
         // Get WifiManager
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
@@ -94,26 +98,38 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
                 R.drawable.wifi_3,
                 R.drawable.wifi_4};
 
+//        // Register to the RobotController's Odometry subscriber
+//        ((ControlApp)getActivity()).getRobotController().addOdometryListener(this);
+
+        // Start the Update
+        new Thread(UPDATER).start();
+
         return view;
     }
 
     @Override
-    public void initialize(NodeMainExecutor mainExecutor, NodeConfiguration nodeConfiguration)
-    {
-        super.initialize(mainExecutor, nodeConfiguration);
-
-        if (!isSetup) {
-            isSetup = true;
-            nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
-        }
-
-        // Start the Update
-        new Thread(UPDATER).start();
+    public void onDestroy() {
+        super.onDestroy();
+        UPDATER.kill();
     }
 
-    public RobotGPSSub getRobotGPSNode() {
-        return robotGPSNode;
-    }
+//    @Override
+//    public void initialize(NodeMainExecutor mainExecutor, NodeConfiguration nodeConfiguration)
+//    {
+//        super.initialize(mainExecutor, nodeConfiguration);
+//
+//        if (!isSetup) {
+//            isSetup = true;
+//            nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
+//        }
+//
+//        // Start the Update
+//        new Thread(UPDATER).start();
+//    }
+
+//    public RobotGPSSub getRobotGPSNode() {
+//        return robotGPSNode;
+//    }
 
     /**
      * Callback for receiving odometry messages.
@@ -123,33 +139,30 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
     public void onNewMessage(Odometry message) {
 //            Log.d(TAG, "New Message: " + message.getTwist().getTwist().getLinear().getX());
 
-        // Record position
-        if (startPos == null) {
-            startPos = message.getPose().getPose().getPosition();
-        } else {
-            currentPos = message.getPose().getPose().getPosition();
-
-//            Log.d(TAG, startPos.getX() + ", " + startPos.getY() + " ~ "
-//                    + currentPos.getX() + ", " + currentPos.getY());
-        }
-        rotation = message.getPose().getPose().getOrientation();
+//        // Record position
+//        if (startPos == null) {
+//            startPos = message.getPose().getPose().getPosition();
+//        } else {
+//            currentPos = message.getPose().getPose().getPosition();
+//        }
+//        rotation = message.getPose().getPose().getOrientation();
 
         updateUI(message.getTwist().getTwist().getLinear().getX(),
                 message.getTwist().getTwist().getAngular().getZ());
     }
 
-    /**
-     * Shuts down the GPS Node
-     */
-    @Override
-    public void shutdown(){
-
-        if (isInitialized()) {
-            nodeMainExecutor.shutdownNodeMain(robotGPSNode);
-        }
-
-        UPDATER.kill();
-    }
+//    /**
+//     * Shuts down the GPS Node
+//     */
+//    @Override
+//    public void shutdown(){
+//
+//        if (isInitialized()) {
+//            nodeMainExecutor.shutdownNodeMain(robotGPSNode);
+//        }
+//
+//        UPDATER.kill();
+//    }
 
     /**
      * Updates this Fragment's speed and turnrate displays
@@ -164,13 +177,13 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         }
     }
 
-    /**
-     * @return The Robot's GPS node
-     */
-    RobotGPSSub getGPSSub()
-    {
-        return robotGPSNode;
-    }
+//    /**
+//     * @return The Robot's GPS node
+//     */
+//    RobotGPSSub getGPSSub()
+//    {
+//        return robotGPSNode;
+//    }
 
     /**
      * Formats a latitude/longitude String returned by Location.convert().
@@ -202,35 +215,35 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
         return r;
     }
 
-    /**
-     * @return The Robot's x position
-     */
-    public static double getX() {
-        if (currentPos == null)
-            return 0.0;
-        else
-            return currentPos.getX() - startPos.getX();
-    }
-
-    /**
-     * @return The Robot's y position
-     */
-    public static double getY() {
-        if (currentPos == null)
-            return 0.0;
-        else
-            return currentPos.getY() - startPos.getY();
-    }
-
-    /**
-     * @return The Robot's heading in radians
-     */
-    public static double getHeading() {
-        if (rotation == null)
-            return 0.0;
-        else
-            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
-    }
+//    /**
+//     * @return The Robot's x position
+//     */
+//    public static double getX() {
+//        if (currentPos == null)
+//            return 0.0;
+//        else
+//            return currentPos.getX() - startPos.getX();
+//    }
+//
+//    /**
+//     * @return The Robot's y position
+//     */
+//    public static double getY() {
+//        if (currentPos == null)
+//            return 0.0;
+//        else
+//            return currentPos.getY() - startPos.getY();
+//    }
+//
+//    /**
+//     * @return The Robot's heading in radians
+//     */
+//    public static double getHeading() {
+//        if (rotation == null)
+//            return 0.0;
+//        else
+//            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
+//    }
 
     /**
      * @return The Robot's last reported speed
@@ -315,34 +328,37 @@ public class HUDFragment extends RosFragment implements MessageListener<Odometry
                 if (turnrateView != null)
                     turnrateView.setText(String.format((String) getText(R.string.turnrate_string), turnrate));
 
-                if (locationView != null) {
-                    Location loc = robotGPSNode.getLastKnownLocation();
-
-                    if (loc != null) {
-                        String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
-                        String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
-
-                        strLongitude = getLatLongString(strLongitude, false);
-                        strLatitude = getLatLongString(strLatitude, true);
-
-                        locationView.setText(String.format((String) getText(R.string.location_string),
-                                strLatitude, strLongitude));
-                    }
-                }
+//                if (locationView != null) {
+//                    Location location = ((ControlApp)getActivity()).getRobotController().
+//                            LOCATION_PROVIDER.getLastKnownLocation();
+//
+//                    if (location != null) {
+//                        String strLongitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
+//                        String strLatitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
+//
+//                        strLongitude = getLatLongString(strLongitude, false);
+//                        strLatitude = getLatLongString(strLatitude, true);
+//
+//                        locationView.setText(String.format((String) getText(R.string.location_string),
+//                                strLatitude, strLongitude));
+//                    }
+//                }
                 if (latView != null) {
-                    Location loc = robotGPSNode.getLastKnownLocation();
+                    Location location = ((ControlApp)getActivity()).getRobotController().
+                            LOCATION_PROVIDER.getLastKnownLocation();
 
-                    if (loc != null) {
-                        String strLatitude = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
+                    if (location != null) {
+                        String strLatitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
                         strLatitude = getLatLongString(strLatitude, true);
                         latView.setText(strLatitude);
                     }
                 }
                 if (longView != null) {
-                    Location loc = robotGPSNode.getLastKnownLocation();
+                    Location location = ((ControlApp)getActivity()).getRobotController().
+                            LOCATION_PROVIDER.getLastKnownLocation();
 
-                    if (loc != null) {
-                        String strLongitude = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
+                    if (location != null) {
+                        String strLongitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
                         strLongitude = getLatLongString(strLongitude, false);
                         longView.setText(strLongitude);
                     }

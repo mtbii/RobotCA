@@ -59,13 +59,13 @@ public class SimpleWaypointPlan extends RobotPlan {
                     spd = MAX_SPEED;
 
                 // Check angle to target
-                dir = Utils.pointDirection(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-                dir = Utils.angleDifference(HUDFragment.getHeading(), dir) / 2.0;
+                dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
+                dir = Utils.angleDifference(RobotController.getHeading(), dir) / 2.0;
 
                 controller.publishVelocity(spd * Math.cos(dir), 0.0, spd * Math.sin(dir));
 
                 // Check distance to target
-                dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
+                dist = Utils.distance(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
 
             } while (dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
 
@@ -74,8 +74,8 @@ public class SimpleWaypointPlan extends RobotPlan {
             for (int i = N - 1; i >= 0; --i) {
 
                 // Check angle to target
-                dir = Utils.pointDirection(HUDFragment.getX(), HUDFragment.getY(), next.getX(), next.getY());
-                dir = Utils.angleDifference(HUDFragment.getHeading(), dir) / 2.0;
+                dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
+                dir = Utils.angleDifference(RobotController.getHeading(), dir) / 2.0;
 
                 // Slow down
                 controller.publishVelocity(spd * ((double)i / N) * Math.cos(dir), 0.0, spd * ((double)i / N) * Math.sin(dir));

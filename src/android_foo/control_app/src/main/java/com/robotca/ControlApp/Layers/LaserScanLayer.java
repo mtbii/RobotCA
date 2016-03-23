@@ -7,6 +7,7 @@ import android.view.ScaleGestureDetector;
 
 import com.google.common.base.Preconditions;
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Fragments.HUDFragment;
 
@@ -65,6 +66,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     // Used for calculating range color
     private static final float MAX_DISTANCE = 10.0f; // meters
 
+    private VisualizationView view;
+
     // Lock for synchronizing drawing
     private final Object mutex;
     private final ControlApp controlApp;
@@ -96,6 +99,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     // Shape to draw to show the robot's position
     private Shape shape;
+
+    private long lastTime;
+    private static final long DELAY = 10L;
 
     @SuppressWarnings("unused")
     private static final String TAG = "LaserScanLayer";
@@ -240,6 +246,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      */
     @Override
     public void draw(VisualizationView view, GL10 gl) {
+
+        this.view = view;
+
         if (vertexFrontBuffer != null) {
 //            try {
 //                if (view.getCamera().getZoom() != zoomLevel) {
@@ -367,8 +376,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         subscriber.addMessageListener(new MessageListener<LaserScan>() {
             @Override
             public void onNewMessage(LaserScan laserScan) {
-                frame = GraphName.of(laserScan.getHeader().getFrameId());
-                updateVertexBuffer(laserScan);
+
+                if (System.currentTimeMillis() - lastTime > DELAY) {
+                    lastTime = System.currentTimeMillis();
+                    frame = GraphName.of(laserScan.getHeader().getFrameId());
+                    updateVertexBuffer(laserScan);
+                }
             }
         });
 
@@ -379,6 +392,10 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      * Updates the contents of the vertexBackBuffer to the result of the specified LaserScan.
      */
     private void updateVertexBuffer(LaserScan laserScan) {
+
+        if (view == null)
+            return;
+
         float[] ranges = laserScan.getRanges();
         int size = ((ranges.length) + 2) * (3 + 4);//((ranges.length / stride) + 2) * 3;
 
@@ -406,11 +423,22 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         int num = 0;
         float p;
 
+//        boolean onView;
+        final float W = (float) (view.getWidth() / view.getCamera().getZoom()) + Math.abs(offX);
+        final float H = (float) (view.getHeight() / view.getCamera().getZoom()) + Math.abs(offY);
+        final float MAX_RANGE = (float) Math.sqrt(W * W + H * H) / 2.0f;
+
+        boolean draw;
+        float scale;
+
         // Calculate the coordinates of the laser range values.
         for (int i = 0; i < ranges.length; ++i) {
             // Makes the preview look nicer by eliminating round off errors on the last angle
             if (i == ranges.length - 1)
                 angle = laserScan.getAngleMax();
+
+            if (ranges[i] > MAX_RANGE)
+                ranges[i] = MAX_RANGE;
 
             // x, y, z
             x = (float) (ranges[i] * Math.cos(angle));
@@ -424,9 +452,22 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 p /= MAX_DISTANCE;
             }
 
-            if (i == 0 || i == ranges.length - 1 || (/*ranges[i] < maximumRange &&*/
-                    ((x - xp) * (x - xp) + (y - yp) * (y - yp))
-                            > (1.0f / (this.laserScanDetail * this.laserScanDetail)) * MIN_DISTANCE_SQUARED)) {
+//            pt = screenToWorld(x, y);
+//            Log.d(TAG, "(" + pt.getX() + ", " + pt.getY() + ") on (" + W + ", " + H + ")");
+//            onView = true;//pt.getX() > - W / 2 && pt.getX() < W / 2 && pt.getY() > - H / 2 && pt.getY() < H / 2;
+//            onView = ranges[i] < MAX_RANGE;
+
+            scale = ranges[i];
+
+            if (scale < 1.0)
+                scale = 1.0f;
+//            else
+//                scale = (float)Math.sqrt(scale);
+
+            draw = ((x - xp) * (x - xp) + (y - yp) * (y - yp))
+                    > (scale / (this.laserScanDetail * this.laserScanDetail)) * MIN_DISTANCE_SQUARED;
+
+            if (i == 0 || i == ranges.length - 1 || draw) {
                 vertexBackBuffer.put(x);
                 vertexBackBuffer.put(y);
                 vertexBackBuffer.put(0.0f);
@@ -511,12 +552,12 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      * Pass a non-null PointF to result to grab the converted point.
      */
     private static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
-        double rx = HUDFragment.getX();
-        double ry = HUDFragment.getY();
+        double rx = RobotController.getX();
+        double ry = RobotController.getY();
 
         // Calculations
         double dir = Utils.pointDirection(rx, ry, x, y);
-        dir = Utils.angleDifference(HUDFragment.getHeading(), dir);
+        dir = Utils.angleDifference(RobotController.getHeading(), dir);
         double len = Utils.distance(rx, ry, x, y);
 
         x = Math.cos(dir) * len;
@@ -533,11 +574,11 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      * Converts a screen point to world space.
      */
     private static Vector3 screenToWorld(double sx, double sy) {
-        double rx = HUDFragment.getX();
-        double ry = HUDFragment.getY();
+        double rx = RobotController.getX();
+        double ry = RobotController.getY();
 
-        double cos = -Math.cos(HUDFragment.getHeading());
-        double sin = -Math.sin(HUDFragment.getHeading());
+        double cos = -Math.cos(RobotController.getHeading());
+        double sin = -Math.sin(RobotController.getHeading());
 
         double xx = sx * cos - sy * sin;
         double yy = sx * sin + sy * cos;

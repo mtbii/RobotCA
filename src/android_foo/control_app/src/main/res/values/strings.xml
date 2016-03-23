@@ -7,10 +7,12 @@
     <string name="laser_scan_topic">/scan</string>
     <string name="odometry_topic">/odometry/filtered</string>
     <string name="pose_topic">/pose</string>
+    <string name="navsat_topic">/navsat/fix</string>
 
     <string name="joy_pref_title">Joystick Topic</string>
     <string name="laser_pref_title">Laser Scan Topic</string>
     <string name="camera_pref_title">Image Topic</string>
+    <string name="navsat_pref_title">GPS Topic</string>
 
     <string name="joy_pref_summary">
         Topic that the joystick widget publishes to.\nExpected message type: std_msgs/Twist
@@ -26,6 +28,10 @@
 
     <string name="odometry_pref_summary">
         Topic that the application gets odometry data from.\nExpected message type: nav_msgs/Odometry
+    </string>
+
+    <string name="navsat_pref_summary">
+        Topic that the application gets GPS data from.\nExpected message type: navsat/fix
     </string>
 
     <string name="add_robot">Add Robot</string>

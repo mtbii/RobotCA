@@ -1,7 +1,6 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.app.Fragment;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -14,12 +13,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.robotca.ControlApp.Core.RobotGPSSub;
-import com.robotca.ControlApp.Core.RobotStorage;
+import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.LocationProvider;
 import com.robotca.ControlApp.R;
-import com.robotca.ControlApp.ToolbarActionItemTarget;
 
-import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.GroundOverlay;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
@@ -27,18 +24,9 @@ import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
-import org.osmdroid.DefaultResourceProxyImpl;
-import org.osmdroid.ResourceProxy;
 
 import java.util.ArrayList;
-import java.lang.Math.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 public class MapFragment extends Fragment implements MapEventsReceiver {
@@ -80,11 +68,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
 
 
         // Use the RobotGPSSub that the HUDFragment uses
-        RobotGPSSub robotGPSNode = ((HUDFragment) getActivity().
-                getFragmentManager().findFragmentById(R.id.hud_fragment)).getRobotGPSNode();
+//        RobotGPSSub robotGPSNode = ((HUDFragment) getActivity().
+//                getFragmentManager().findFragmentById(R.id.hud_fragment)).getRobotGPSNode();
+        LocationProvider locationProvider = ((ControlApp) getActivity()).getRobotController().LOCATION_PROVIDER;
 
         // Location overlay using the robot's GPS
-        myLocationOverlay = new MyLocationNewOverlay(getActivity(), robotGPSNode, mapView);
+        myLocationOverlay = new MyLocationNewOverlay(getActivity(), locationProvider/*robotGPSNode*/, mapView);
         // Location overlay using Android's GPS
         secondMyLocationOverlay = new MyLocationNewOverlay(getActivity(), mapView);
         mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);

@@ -43,6 +43,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
 
@@ -69,7 +70,7 @@ import nav_msgs.Odometry;
  * @author munjaldesai@google.com (Munjal Desai)
  */
 public class JoystickView extends RelativeLayout implements AnimationListener,
-        MessageListener<nav_msgs.Odometry>, NodeMain {
+        MessageListener<nav_msgs.Odometry>/*, NodeMain*/ {
 
     /**
      * TAG Debug Log tag.
@@ -254,17 +255,17 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * otherwise.
      */
     private boolean holonomic;
-    /**
-     * Velocity commands are published when this is true. Not published otherwise.
-     * This is to prevent spamming velocity commands.
-     */
-    private volatile boolean publishVelocity;
-    /**
-     * Used to publish velocity commands at a specific rate.
-     */
-    private Timer publisherTimer;
-    private geometry_msgs.Twist currentVelocityCommand;
-    private String topicName;
+//    /**
+//     * Velocity commands are published when this is true. Not published otherwise.
+//     * This is to prevent spamming velocity commands.
+//     */
+//    private volatile boolean publishVelocity;
+//    /**
+//     * Used to publish velocity commands at a specific rate.
+//     */
+//    private Timer publisherTimer;
+//    private geometry_msgs.Twist currentVelocityCommand;
+//    private String topicName;
 
     /**
      * Used for tilt sensor control.
@@ -275,10 +276,10 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private float[] tiltOffset = null;
     private boolean accelContactUp;
 
-    /**
-     * Odometry subscriber
-     */
-    Subscriber<nav_msgs.Odometry> odometrySubscriber;
+//    /**
+//     * Odometry subscriber
+//     */
+//    Subscriber<nav_msgs.Odometry> odometrySubscriber;
 
     /**
      * Angles larger than this are capped.
@@ -424,7 +425,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     private void init(Context context) {
         initVirtualJoystick(context);
-        topicName = "~cmd_vel";
+
+//        topicName = "~cmd_vel";
 
         try {
             sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -432,6 +434,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         }
         catch (UnsupportedOperationException e) {
             // No accelerometer, too bad
+            Log.w(TAG, "No tilt control");
         }
     }
 
@@ -441,6 +444,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     public void controlSchemeChanged()
     {
+        Log.d(TAG, "Control Scheme Changed");
         // Register/unregister the accelerometer listener as needed
         if (accelerometer != null) {
             if (controlMode == ControlMode.Tilt) {
@@ -828,7 +832,8 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         for (ImageView tack : orientationWidget) {
             tack.setVisibility(VISIBLE);
         }
-        publishVelocity = true;
+
+//        publishVelocity = true;
     }
 
     /**
@@ -990,15 +995,15 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         pointerId = INVALID_POINTER_ID;
         // The robot should stop moving.
         publishVelocity(0, 0, 0);
-        // Stop publishing the velocity since the contact is no longer on the
-        // screen.
-        publishVelocity = false;
-        // Publish one last message to make sure the robot stops.
-        if (publisher != null) {
-            publisher.publish(currentVelocityCommand);
-        } else {
-            Log.w(TAG, "publisher is null");
-        }
+//        // Stop publishing the velocity since the contact is no longer on the
+//        // screen.
+//        publishVelocity = false;
+//        // Publish one last message to make sure the robot stops.
+//        if (publisher != null) {
+//            publisher.publish(currentVelocityCommand);
+//        } else {
+//            Log.w(TAG, "publisher is null");
+//        }
         // Turn-in-place should not be active anymore.
         endTurnInPlaceRotation();
         // Hide the orientation tacks.
@@ -1015,16 +1020,20 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     private void publishVelocity(double linearVelocityX, double linearVelocityY,
                                  double angularVelocityZ) {
-        if (currentVelocityCommand != null) {
-            currentVelocityCommand.getLinear().setX(linearVelocityX);
-            currentVelocityCommand.getLinear().setY(-linearVelocityY);
-            currentVelocityCommand.getLinear().setZ(0);
-            currentVelocityCommand.getAngular().setX(0);
-            currentVelocityCommand.getAngular().setY(0);
-            currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
-        } else {
-            Log.w(TAG, "currentVelocityCommand is null");
-        }
+//        if (currentVelocityCommand != null) {
+//            currentVelocityCommand.getLinear().setX(linearVelocityX);
+//            currentVelocityCommand.getLinear().setY(-linearVelocityY);
+//            currentVelocityCommand.getLinear().setZ(0);
+//            currentVelocityCommand.getAngular().setX(0);
+//            currentVelocityCommand.getAngular().setY(0);
+//            currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
+//        } else {
+//            Log.w(TAG, "currentVelocityCommand is null");
+//        }
+
+        ((ControlApp) getContext()).getRobotController().
+                forceVelocity(linearVelocityX, linearVelocityY, angularVelocityZ);
+//        Log.d(TAG, "publishing velocity");
     }
 
     /**
@@ -1160,68 +1169,69 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
                 * (y - contactUpLocation.y - joystickRadius)) < THUMB_DIVET_RADIUS;
     }
 
-    public void setTopicName(String topicName) {
-        this.topicName = topicName;
-    }
+//    public void setTopicName(String topicName) {
+//        this.topicName = topicName;
+//    }
 
-    @Override
-    public GraphName getDefaultNodeName() {
-        return GraphName.of("android_15/virtual_joystick_view");
-    }
-
-    @Override
-    public void onStart(ConnectedNode connectedNode)
-    {
-        publisher = connectedNode.newPublisher(topicName, geometry_msgs.Twist._TYPE);
-        currentVelocityCommand = publisher.newMessage();
-
-        odometrySubscriber = connectedNode.newSubscriber("odometry/filtered", nav_msgs.Odometry._TYPE);
-        odometrySubscriber.addMessageListener(this);
-
-        publisherTimer = new Timer();
-        publisherTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (publishVelocity) {
-                    publisher.publish(currentVelocityCommand);
-                }
-            }
-        }, 0, 80);
-    }
-
-    public boolean addOdometryListener(MessageListener<Odometry> listener)
-    {
-        if (odometrySubscriber != null && listener != null) {
-            odometrySubscriber.addMessageListener(listener);
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onShutdown(Node node) {
-    }
-
-    @Override
-    public void onShutdownComplete(Node node) {
-        publisherTimer.cancel();
-        publisherTimer.purge();
-    }
-
-    @Override
-    public void onError(Node node, Throwable throwable) {
-    }
+//    @Override
+//    public GraphName getDefaultNodeName() {
+//        return GraphName.of("android_15/virtual_joystick_view");
+//    }
+//
+//    @Override
+//    public void onStart(ConnectedNode connectedNode)
+//    {
+//        publisher = connectedNode.newPublisher(topicName, geometry_msgs.Twist._TYPE);
+//        currentVelocityCommand = publisher.newMessage();
+//
+//        odometrySubscriber = connectedNode.newSubscriber("odometry/filtered", nav_msgs.Odometry._TYPE);
+//        odometrySubscriber.addMessageListener(this);
+//
+//        publisherTimer = new Timer();
+//        publisherTimer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (publishVelocity) {
+//                    publisher.publish(currentVelocityCommand);
+//                }
+//            }
+//        }, 0, 80);
+//    }
+//
+//    @Deprecated
+//    public boolean addOdometryListener(MessageListener<Odometry> listener)
+//    {
+//        if (odometrySubscriber != null && listener != null) {
+//            odometrySubscriber.addMessageListener(listener);
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public void onShutdown(Node node) {
+//    }
+//
+//    @Override
+//    public void onShutdownComplete(Node node) {
+//        publisherTimer.cancel();
+//        publisherTimer.purge();
+//    }
+//
+//    @Override
+//    public void onError(Node node, Throwable throwable) {
+//    }
 
     public void setControlMode(ControlMode controlMode) {
 
         this.controlMode = controlMode;
-        publishVelocity = controlMode.ordinal() < ControlMode.Waypoint.ordinal();
+//        publishVelocity = controlMode.ordinal() < ControlMode.Waypoint.ordinal();
     }
-
-    public ControlMode getControlMode(){
-        return controlMode;
-    }
+//
+//    public ControlMode getControlMode(){
+//        return controlMode;
+//    }
 
     public boolean hasAccelerometer(){
         return accelerometer != null;

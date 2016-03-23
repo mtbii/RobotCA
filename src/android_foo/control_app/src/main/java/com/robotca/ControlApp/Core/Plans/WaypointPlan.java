@@ -58,15 +58,16 @@ public class WaypointPlan extends RobotPlan {
                 waitFor(1000L);
             }
 
-            currentPosition = new Vector3(HUDFragment.getX(), HUDFragment.getY(), 0);
-            currentHeading = HUDFragment.getHeading();
+            currentPosition = new Vector3(RobotController.getX(), RobotController.getY(), 0);
+            currentHeading = RobotController.getHeading();
             goalPosition = controlApp.getDestination();
 
             if (goalPosition != null) {
                 Vector3 netForce = calculateForces(scan);
                 applyForce(controller, netForce);
 
-                double dist = Utils.distance(HUDFragment.getX(), HUDFragment.getY(), goalPosition.getX(), goalPosition.getY());
+                double dist = Utils.distance(RobotController.getX(), RobotController.getY(),
+                        goalPosition.getX(), goalPosition.getY());
 
                 if (dist < MINIMUM_DISTANCE)
                     controlApp.pollDestination();

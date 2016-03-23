@@ -1,16 +1,13 @@
 package com.robotca.ControlApp.Fragments;
 
 
-import android.app.Fragment;
-
 import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 /**
  * Created by Michael Brunson on 11/8/15.
  */
-public abstract class RosFragment extends Fragment {
+public abstract class RosFragment extends SimpleFragment {
     protected NodeMainExecutor nodeMainExecutor;
     protected NodeConfiguration nodeConfiguration;
     private boolean initialized;
@@ -20,20 +17,6 @@ public abstract class RosFragment extends Fragment {
         shutdown();
 
         super.onDestroyView();
-    }
-
-    public void show(){
-        getFragmentManager()
-                .beginTransaction()
-                .show(this)
-                .commit();
-    }
-
-    public void hide(){
-        getFragmentManager()
-                .beginTransaction()
-                .hide(this)
-                .commit();
     }
 
     abstract void shutdown();

@@ -1,6 +1,7 @@
 package com.robotca.ControlApp.Fragments;
 
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -16,7 +17,7 @@ import com.robotca.ControlApp.Views.JoystickView;
  * Fragment containing the JoystickView.
  * Created by Michael Brunson on 11/7/15.
  */
-public class JoystickFragment extends RosFragment {
+public class JoystickFragment extends Fragment {
     private JoystickView virtualJoystick;
     private View view;
     private ControlMode controlMode = ControlMode.Joystick;
@@ -41,13 +42,14 @@ public class JoystickFragment extends RosFragment {
 
             // Grab the JoystickView and set its topic
             virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
-            virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
+//            virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
 
-            // Start the Joystick's subscribers
-            if (!isSetup && isInitialized()) {
-                isSetup = true;
-                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
-            }
+            // TODO
+//            // Start the Joystick's subscribers
+//            if (!isSetup && isInitialized()) {
+//                isSetup = true;
+//                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+//            }
         }
 
         return view;
@@ -61,18 +63,19 @@ public class JoystickFragment extends RosFragment {
         return virtualJoystick;
     }
 
-    /**
-     * Shuts down the JoystickView
-     */
-    @Override
-    void shutdown() {
-        if (isSetup && isInitialized()) {
-            nodeMainExecutor.shutdownNodeMain(virtualJoystick);
-        }
-
-        isSetup = false;
-        setInitialized(false);
-    }
+//    /**
+//     * Shuts down the JoystickView
+//     */
+//    @Override
+//    void shutdown() {
+//        // TODO
+////        if (isSetup && isInitialized()) {
+////            nodeMainExecutor.shutdownNodeMain(virtualJoystick);
+////        }
+//
+//        isSetup = false;
+//        setInitialized(false);
+//    }
 
     /**
      * Get the currently active ControlMode.
@@ -118,18 +121,33 @@ public class JoystickFragment extends RosFragment {
                 break;
         }
 
-        if (isInitialized()) {
-            if(!isSetup) {
-                isSetup = true;
-                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
-            }else{
+        // TODO
+//        if (isInitialized()) {
+//            if(!isSetup) {
+//                isSetup = true;
+//                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
+//            }else{
                 virtualJoystick.setControlMode(controlMode);
                 virtualJoystick.controlSchemeChanged();
-            }
-        }
+//            }
+//        }
     }
 
     public void stop() {
         virtualJoystick.stop();
+    }
+
+    public void show(){
+        getFragmentManager()
+                .beginTransaction()
+                .show(this)
+                .commit();
+    }
+
+    public void hide(){
+        getFragmentManager()
+                .beginTransaction()
+                .hide(this)
+                .commit();
     }
 }
