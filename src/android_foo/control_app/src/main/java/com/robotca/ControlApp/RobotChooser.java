@@ -1,25 +1,47 @@
 package com.robotca.ControlApp;
 
+import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.app.FragmentManager;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotInfoAdapter;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
+import com.robotca.ControlApp.Fragments.AboutFragment;
+import com.robotca.ControlApp.Fragments.CameraViewFragment;
+import com.robotca.ControlApp.Fragments.OverviewFragment;
+import com.robotca.ControlApp.Fragments.PreferencesFragment;
 
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * Created by Michael Brunson on 1/23/16.
  */
-public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener {
+public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
 
     public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
     private View mEmptyView;
@@ -40,6 +62,17 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     private ShowcaseView showcaseView;
     private boolean addedRobot;
     private Toolbar mToolbar;
+
+    private String[] mFeatureTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private int drawerIndex = 1;
+    private String mTitle;
+    private String mDrawerTitle;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    Fragment fragment;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +90,64 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         setSupportActionBar(mToolbar);
 
         RobotStorage.load(this);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_robot_chooser);
+        mFeatureTitles = getResources().getStringArray(R.array.chooser_titles); //Where you set drawer item titles
+        mDrawerList = (ListView) findViewById(R.id.left_drawer2);
+
+        //mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
+        mTitle="ROS Control";
+        mDrawerTitle=mTitle;
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+               /* R.drawable.ic_drawer,*/ R.string.drawer_open,
+                R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                //getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                //getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+//        if (savedInstanceState == null) {
+//            drawerIndex = 1;
+//        }
+
+        //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
+
+        int[] imgRes = new int[]{
+                R.drawable.ic_android_black_24dp,
+                R.drawable.ic_settings_black_24dp,
+                R.drawable.ic_info_outline_black_24dp
+        };
+
+        List<DrawerItem> drawerItems = new ArrayList<>();
+
+        for (int i = 0; i < mFeatureTitles.length; i++) {
+            drawerItems.add(new DrawerItem(mFeatureTitles[i], imgRes[i]));
+        }
+
+        NavDrawerAdapter drawerAdapter = new NavDrawerAdapter(this,
+                R.layout.nav_drawer_menu_item,
+                drawerItems);
+
+        mDrawerList.setAdapter(drawerAdapter);
+        mDrawerList.setOnItemClickListener(this);
+
 
         mAdapter = new RobotInfoAdapter(this, RobotStorage.getRobots());
 
@@ -143,6 +234,81 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         };
 
         worker.schedule(task, 1, TimeUnit.SECONDS);
+    }
+
+    private void selectItem(int position){
+        Bundle args = new Bundle();
+        FragmentManager fragmentManager = getFragmentManager();
+
+        switch (position) {
+            case 0:
+
+                mDrawerLayout.closeDrawers();
+                return;
+
+            case 1:
+                fragment = new PreferencesFragment();
+                fragment.setArguments(args);
+
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame2, fragment)
+                        .commit();
+                //fragmentsCreatedCounter = 0
+
+                break;
+
+            case 2:
+                fragment = new AboutFragment();
+                //fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                fragment.setArguments(args);
+
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame2, fragment)
+                        .commit();
+
+                break;
+
+            default:
+                break;
+        }
+
+       /* if (fragment != null) {
+            fragment.setArguments(args);
+
+            // Insert the fragment by replacing any existing fragment
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        }
+        else {
+            fragmentManager.beginTransaction().add(fragment, "").commit();
+
+        }*/
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        setTitle(mFeatureTitles[position]);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        try {
+            //noinspection ConstantConditions
+            getActionBar().setTitle(title);
+        } catch (NullPointerException e) {
+            // Ignore
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -332,5 +498,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
      */
     int getAdapterSize() {
         return mAdapter.getItemCount();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectItem(position);
     }
 }

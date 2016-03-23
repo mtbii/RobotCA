@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
+
+        <android.support.v7.widget.Toolbar
         android:id="@+id/robot_chooser_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -12,6 +14,35 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawer_layout_robot_chooser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- The main content view -->
+        <LinearLayout
+            android:id="@+id/content_frame2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+
+        <fragment
+            android:id="@+id/hud_fragment"
+            android:name="com.robotca.ControlApp.Fragments.PreferencesFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="64sp"/>
+        <!--tools:layout="@layout/fragment_hud"-->
+
+        <fragment
+            android:id="@+id/about_fragment"
+            android:name="com.robotca.ControlApp.Fragments.AboutFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_about"/>
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/robot_recycler_view"
         android:paddingTop="5dp"
@@ -28,4 +59,15 @@
         android:layout_gravity="center"
         android:visibility="gone"
         android:gravity="center" />
+
+        <ListView android:id="@+id/left_drawer2"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:background="#ddd"/>
+    </android.support.v4.widget.DrawerLayout>
+
 </LinearLayout>
