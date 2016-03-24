@@ -2,6 +2,7 @@ package com.robotca.ControlApp.Layers;
 
 import android.graphics.PointF;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -72,6 +73,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     private final Object mutex;
     private final ControlApp controlApp;
     private final ScaleGestureDetector scaleGestureDetector;
+    private final GestureDetector gestureDetector;
 
     // Controls the density of scan po;ints
     private float laserScanDetail;
@@ -124,29 +126,90 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      */
     public LaserScanLayer(GraphName topicName, float detail, ControlApp app) {
         super(topicName, sensor_msgs.LaserScan._TYPE);
-        mutex = new Object();
+
+        this.mutex = new Object();
+
         this.laserScanDetail = Math.max(detail, 1);
         this.controlApp = app;
-        this.scaleGestureDetector = new ScaleGestureDetector(controlApp, new ScaleGestureDetector.OnScaleGestureListener() {
+
+        this.scaleGestureDetector = new ScaleGestureDetector(controlApp,
+            new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                zoomLevel *= detector.getScaleFactor();
 
                 // Don't let the object get too small or too large.
-                zoomLevel = Math.max(0.1f, Math.min(zoomLevel, 5.0f));
+                zoomLevel = Math.max(0.1f, Math.min(detector.getScaleFactor(), 5.0f));
 
                 Log.d(TAG, String.format("Zoom: %f", zoomLevel));
+
+                if (view != null) {
+//                    view.getCamera().zoom(detector.getFocusX(), detector.getFocusY(), zoomLevel);
+
+                    float s = 1f / (float) view.getCamera().getZoom();
+                    int w = view.getCamera().getViewport().getWidth() / 2;
+                    int h = view.getCamera().getViewport().getHeight() / 2;
+
+                    xShift = xStart - (detector.getFocusY() - h) * s + offX;
+                    yShift = yStart + (detector.getFocusX() - w) * s + offY;
+
+                    view.getCamera().zoom(w, h, zoomLevel);
+                }
+
                 return true;
             }
 
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
-                return false;
+
+                xStart = (float) ((detector.getFocusY() - view.getCamera().getViewport().getHeight() / 2)
+                        / view.getCamera().getZoom());
+                yStart = -(float) ((detector.getFocusX() - view.getCamera().getViewport().getWidth() / 2)
+                        / view.getCamera().getZoom());
+
+                offX = xShift;
+                offY = yShift;
+
+                return true;
             }
 
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
+//                xShift = (float) (detector.getFocusX() / view.getCamera().getZoom());
+//                yShift = (float) (detector.getFocusY() / view.getCamera().getZoom());
+//                view.getCamera().
+            }
+        });
 
+        this.gestureDetector = new GestureDetector(controlApp, new GestureDetector.SimpleOnGestureListener()
+        {
+            @Override
+            public boolean onDoubleTap(MotionEvent e)
+            {
+                if (view == null)
+                    return false;
+
+                try {
+                    double s = 1.0 / view.getCamera().getZoom();
+
+                    double height = controlApp.getResources().getDisplayMetrics().heightPixels;
+                    double width = controlApp.getResources().getDisplayMetrics().widthPixels;
+
+                    double x = e.getX() + (width - view.getWidth()) - width / 2.0;
+                    double y = e.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
+
+                    x *= s;
+                    y *= s;
+
+                    //noinspection SuspiciousNameCombination
+                    x -= yShift;
+                    //noinspection SuspiciousNameCombination
+                    y += xShift;
+
+                    controlApp.addWaypointWithCheck(screenToWorld(y, x));
+                } catch (Exception ex) {
+                    // Ignore
+                }
+                return false;
             }
         });
 
@@ -173,10 +236,20 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         final float s = 1.0f / (float) view.getCamera().getZoom();
 
         scaleGestureDetector.onTouchEvent(event);
+        gestureDetector.onTouchEvent(event);
+
+        boolean r = true;
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
             case MotionEvent.ACTION_POINTER_DOWN:
                 isMoving = false;
+                Log.d(TAG, "Pointer Down");
+                r = false;
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                Log.d(TAG, "Pointer Up");
                 break;
 
             case MotionEvent.ACTION_DOWN:
@@ -191,39 +264,15 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 }
                 break;
             case MotionEvent.ACTION_UP:
+
                 if (isMoving) {
                     isMoving = false;
-                }
-
-                if (!hasMoved && !scaleGestureDetector.isInProgress()) {
-                    try {
-//                        Pose pose = controlApp.getController().getOdometry().getPose().getPose();
-//                        robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
-//                        robotHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
-
-                        double height = controlApp.getResources().getDisplayMetrics().heightPixels;
-                        double width = controlApp.getResources().getDisplayMetrics().widthPixels;
-
-                        double x = event.getX() + (width - view.getWidth()) - width / 2.0;
-                        double y = event.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
-
-                        x *= s;
-                        y *= s;
-
-                        //noinspection SuspiciousNameCombination
-                        x -= yShift;
-                        //noinspection SuspiciousNameCombination
-                        y += xShift;
-
-                        controlApp.addWaypointWithCheck(screenToWorld(y, x));
-                    } catch (Exception e) {
-                        // Ignore
-                    }
                 }
 
                 hasMoved = false;
                 break;
             case MotionEvent.ACTION_MOVE:
+
                 if (isMoving && !scaleGestureDetector.isInProgress()) {
                     xShift = xStart - event.getY() * s + offX;
                     yShift = yStart + event.getX() * s + offY;
@@ -235,7 +284,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 break;
         }
 
-        return true;
+        return r;
     }
 
     /**
@@ -250,27 +299,22 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         this.view = view;
 
         if (vertexFrontBuffer != null) {
-//            try {
-//                if (view.getCamera().getZoom() != zoomLevel) {
-//                    int x = view.getCamera().getViewport().getHeight() / 2;
-//                    int y = view.getCamera().getViewport().getWidth() / 2;
-//
-//                    double zoom = zoomLevel / view.getCamera().getZoom();
-//
-//                    view.getCamera().zoom(x, y, zoom);
-//                }
-//            }
-//            catch(Exception e){}
+
+            final float Z = (float) view.getCamera().getZoom() / 100.0f;
+            final float XS = xShift;
+            final float YS = yShift;
 
             synchronized (mutex) {
                 // Draw the shape
-                gl.glTranslatef(xShift, yShift, 0.0f);
+                gl.glTranslatef(XS, YS, 0.0f);
 
                 // Draw start position
                 drawPoint(gl, 0.0, 0.0, 32.0f, 0xFFCCCCDD, null);
 
                 // Draw the robot
+                gl.glScalef(Z, Z, 1.0f);
                 shape.draw(view, gl);
+                gl.glScalef(1f / Z, 1f / Z, 1.0f);
 
                 // Draw the scan area
                 drawPoints(gl, vertexFrontBuffer, 0.0f, true);
@@ -314,8 +358,8 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                     controlApp.collisionWarning();
                 }
 
-                gl.glTranslatef(-xShift, -yShift, 0.0f);
-                gl.glScalef(zoomLevel, zoomLevel, 1.0f);
+                gl.glTranslatef(-XS, -YS, 0.0f);
+//                gl.glScalef(zoomLevel, zoomLevel, 1.0f);
             }
         }
     }
@@ -424,9 +468,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         float p;
 
 //        boolean onView;
-        final float W = (float) (view.getWidth() / view.getCamera().getZoom()) + Math.abs(offX);
-        final float H = (float) (view.getHeight() / view.getCamera().getZoom()) + Math.abs(offY);
-        final float MAX_RANGE = (float) Math.sqrt(W * W + H * H) / 2.0f;
+        final float W = (float) (view.getWidth() / view.getCamera().getZoom()) + Math.abs(xShift);
+        final float H = (float) (view.getHeight() / view.getCamera().getZoom()) + Math.abs(yShift);
+        final float MAX_RANGE = (float) Math.sqrt(W * W + H * H);
 
         boolean draw;
         float scale;
