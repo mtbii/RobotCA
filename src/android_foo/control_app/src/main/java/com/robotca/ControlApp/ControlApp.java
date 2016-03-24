@@ -517,11 +517,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     @Override
     public void onBackPressed() {
         
-        if(fragmentsCreatedCounter >= 1) {
-            
+        if (fragmentsCreatedCounter >= 1) {
             selectItem(1);
             fragmentsCreatedCounter=0;
-
         } 
         else {
             super.onBackPressed();
@@ -555,6 +553,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /**
+     * @return the Robot's current ControlMode
+     */
     public ControlMode getControlMode() {
         return joystickFragment.getControlMode();
     }
@@ -599,43 +600,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             waypoints.addFirst(location);
         }
     }
-
-//    /**
-//     * @return The Robot's x position
-//     */
-//    public double getRobotX() {
-//        try {
-//            return controller.getPose().getPosition().getX();
-//        }
-//        catch (NullPointerException e) {
-//            return 0.0;
-//        }
-//    }
-//
-//    /**
-//     * @return The Robot's y position
-//     */
-//    public double getRobotY() {
-//        try {
-//            return controller.getPose().getPosition().getY();
-//        }
-//        catch (NullPointerException e){
-//            return 0.0;
-//        }
-//    }
-//
-//    /**
-//     * @return The Robot's heading
-//     */
-//    public double getHeading() {
-//        try {
-//            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(
-//                    controller.getPose().getOrientation()));
-//        }
-//        catch (NullPointerException e) {
-//            return 0.0;
-//        }
-//    }
 
     /**
      * Adds a waypoint.
