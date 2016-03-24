@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -39,6 +41,7 @@ import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Core.WarningSystemPlan;
 import com.robotca.ControlApp.Fragments.AboutFragment;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.HUDFragment;
@@ -77,6 +80,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
+    private WarningSystemPlan rplan;
+    private float minRange = (float) 2.0;
 
     private Fragment fragment = null;
     FragmentManager fragmentManager;
@@ -194,6 +199,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Joystick fragment
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
         controller = new RobotController(this);
+        rplan = new WarningSystemPlan(minRange);
+        controller.runPlan(rplan);
 
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
@@ -332,7 +339,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void collisionWarning()
     {
-        // TODO
+        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+        tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
     }
 
     /**
@@ -516,11 +524,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
     @Override
     public void onBackPressed() {
-        
+
         if (fragmentsCreatedCounter >= 1) {
             selectItem(1);
             fragmentsCreatedCounter=0;
-        } 
+        }
         else {
             super.onBackPressed();
         }
