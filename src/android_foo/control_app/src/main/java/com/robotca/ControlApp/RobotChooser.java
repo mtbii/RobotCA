@@ -30,6 +30,7 @@ import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Fragments.AboutFragment;
+import com.robotca.ControlApp.Fragments.HelpFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
 
 
@@ -128,7 +129,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
-                R.drawable.ic_settings_black_24dp,
+                R.drawable.ic_help_black_24dp,
                 R.drawable.ic_info_outline_black_24dp
         };
 
@@ -249,10 +250,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 return;
 
             case 1:
-                fragment = new PreferencesFragment();
+                fragment = new HelpFragment();
                 fragment.setArguments(args);
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-                mTitle = "Preferences";
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
@@ -265,7 +265,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 fragment = new AboutFragment();
                 fragment.setArguments(args);
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-                mTitle = "About";
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
