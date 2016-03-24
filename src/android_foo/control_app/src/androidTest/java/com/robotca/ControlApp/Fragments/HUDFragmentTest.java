@@ -69,7 +69,7 @@ public class HUDFragmentTest {
         strLongitude = HUDFragment.getLatLongString(strLongitude, false);
         strLatitude = HUDFragment.getLatLongString(strLatitude, true);
 
-        hudFragment.getGPSSub().setLocation(loc);
+        // hudFragment.getGPSSub().setLocation(loc);
 
         hudFragment.updateUI(100.0, 360.0);
 
