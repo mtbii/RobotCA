@@ -1,5 +1,6 @@
 package com.robotca.ControlApp;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -8,9 +9,16 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.app.Fragment;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.app.FragmentManager;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -19,10 +27,17 @@ import com.robotca.ControlApp.Core.RobotInfoAdapter;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
+import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.NavDrawerAdapter;
+import com.robotca.ControlApp.Fragments.AboutFragment;
+import com.robotca.ControlApp.Fragments.PreferencesFragment;
+
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
@@ -30,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * Created by Michael Brunson on 1/23/16.
  */
-public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener {
+public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
 
     public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
     private View mEmptyView;
@@ -40,6 +55,19 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     private ShowcaseView showcaseView;
     private boolean addedRobot;
     private Toolbar mToolbar;
+
+    private String[] mFeatureTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private int drawerIndex = 1;
+    private String mTitle;
+    private String mDrawerTitle;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    Fragment fragment = null;
+    FragmentManager fragmentManager;
+    int fragmentsCreatedCounter = 0;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +85,65 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         setSupportActionBar(mToolbar);
 
         RobotStorage.load(this);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.profileDrawer);
+        mFeatureTitles = getResources().getStringArray(R.array.chooser_titles); //Where you set drawer item titles
+        mDrawerList = (ListView) findViewById(R.id.left_drawer2);
+
+        //mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
+        //mTitle="ROS Control";
+        //mDrawerTitle=mTitle;
+
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                mToolbar, R.string.drawer_open,
+                R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                //getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                //getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to
+                // onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.syncState();
+
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
+
+        int[] imgRes = new int[]{
+                R.drawable.ic_android_black_24dp,
+                R.drawable.ic_settings_black_24dp,
+                R.drawable.ic_info_outline_black_24dp
+        };
+
+        List<DrawerItem> drawerItems = new ArrayList<>();
+
+        for (int i = 0; i < mFeatureTitles.length; i++) {
+            drawerItems.add(new DrawerItem(mFeatureTitles[i], imgRes[i]));
+        }
+
+        NavDrawerAdapter drawerAdapter = new NavDrawerAdapter(this,
+                R.layout.nav_drawer_menu_item,
+                drawerItems);
+
+        mDrawerList.setAdapter(drawerAdapter);
+        mDrawerList.setOnItemClickListener(this);
 
         mAdapter = new RobotInfoAdapter(this, RobotStorage.getRobots());
 
@@ -143,6 +230,99 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         };
 
         worker.schedule(task, 1, TimeUnit.SECONDS);
+    }
+
+    private void selectItem(int position){
+        Bundle args = new Bundle();
+        fragmentManager = getFragmentManager();
+
+        switch (position) {
+            case 0:
+                fragmentsCreatedCounter = 0;
+
+                if(fragment != null) {
+                    fragmentManager.beginTransaction().remove(fragment).commit();
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+
+                mDrawerLayout.closeDrawers();
+                return;
+
+            case 1:
+                fragment = new PreferencesFragment();
+                fragment.setArguments(args);
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                mTitle = "Preferences";
+                mRecyclerView.setVisibility(View.GONE);
+
+                // Insert the fragment by replacing any existing fragment
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame2, fragment)
+                        .commit();
+                break;
+
+            case 2:
+                fragment = new AboutFragment();
+                fragment.setArguments(args);
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                mTitle = "About";
+                mRecyclerView.setVisibility(View.GONE);
+
+                // Insert the fragment by replacing any existing fragment
+               fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame2, fragment)
+                        .commit();
+
+                break;
+
+            default:
+                break;
+        }
+
+        drawerIndex = position;
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        setTitle(mFeatureTitles[position]);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        try {
+            //noinspection ConstantConditions
+            getActionBar().setTitle(title);
+        } catch (NullPointerException e) {
+            // Ignore
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(fragmentsCreatedCounter >= 1) {
+
+            selectItem(0);
+            fragmentsCreatedCounter=0;
+
+        }
+        else {
+            super.onBackPressed();
+        }
+
     }
 
     @Override
@@ -243,6 +423,12 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         switch (item.getItemId()) {
             case R.id.action_add_robot:
 
+                // If add robot is pressed from a screen other than robot chooser, switch
+                // back to chooser
+                if(fragment != null) {
+                    fragmentManager.beginTransaction().remove(fragment).commit();
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
                 AddEditRobotDialogFragment addRobotDialogFragment = new AddEditRobotDialogFragment();
                 addRobotDialogFragment.setArguments(null);
                 addRobotDialogFragment.show(getSupportFragmentManager(), "addrobotdialog");
@@ -332,5 +518,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
      */
     int getAdapterSize() {
         return mAdapter.getItemCount();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectItem(position);
     }
 }

@@ -391,7 +391,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             controller.update();
         }
         fragmentManager = getFragmentManager();
-        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         switch (position) {
             case 0:
