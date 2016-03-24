@@ -8,7 +8,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
 
-
         <TextView
             android:id="@+id/helptxt"
             android:layout_width="fill_parent"
