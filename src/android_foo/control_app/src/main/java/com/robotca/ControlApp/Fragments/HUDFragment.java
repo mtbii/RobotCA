@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,18 +28,17 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     @SuppressWarnings("unused")
     private static final String TAG = "HUDFragment";
 
-//    private static Point startPos, currentPos;
-//    private static Quaternion rotation;
-
     private View view;
     private TextView speedView, turnrateView, /*locationView,*/ latView, longView;
     private ImageView wifiStrengthView;
 
-    private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
-    private final Updater UPDATER = new Updater();
+    private Button emergencyStopButton;
 
-//    // Node for receiving GPS events
-//    private RobotGPSSub robotGPSNode;
+    // Updates this Fragments UI on the UI Thread
+    private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
+
+    // Used for periodically querying WIFI strength and location info
+    private final Updater UPDATER = new Updater();
 
     // Used for getting connection strength info
     private WifiManager wifiManager;
@@ -47,18 +47,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     private int lastWifiImage;
 
     private static int[] wifiIcons;
-
-//    /**
-//     * MessageListener for NavSatFix messages.
-//     */
-//    public final MessageListener<NavSatFix> NAV_SAT_FIX_LISTENER = new MessageListener<NavSatFix>() {
-//        @Override
-//        public void onNewMessage(NavSatFix navSatFix) {
-//            location.setLatitude(navSatFix.getLatitude());
-//            location.setLongitude(navSatFix.getLongitude());
-//        }
-//    };
-//    private Location location;
 
     /**
      * Default Constructor.
@@ -84,10 +72,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
             updateUI(0.0, 0.0);
         }
 
-//        // Create the GPS Node
-//        if (robotGPSNode == null)
-//            robotGPSNode = new RobotGPSSub();
-
         // Get WifiManager
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
@@ -97,9 +81,24 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 R.drawable.wifi_2,
                 R.drawable.wifi_3,
                 R.drawable.wifi_4};
-
-//        // Register to the RobotController's Odometry subscriber
-//        ((ControlApp)getActivity()).getRobotController().addOdometryListener(this);
+        
+        // Find the Emergency Stop Button
+        // Emergency stop button
+        if (emergencyStopButton == null) {
+            try {
+                //noinspection ConstantConditions
+                emergencyStopButton = (Button) view.findViewById(R.id.emergency_stop_button);
+                emergencyStopButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ((ControlApp)getActivity()).stopRobot();
+                    }
+                });
+            }
+            catch(NullPointerException e){
+                // Ignore
+            }
+        }
 
         // Start the Update
         new Thread(UPDATER).start();
