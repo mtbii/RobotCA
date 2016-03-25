@@ -20,6 +20,8 @@ public class WarningSystemPlan extends RobotPlan {
     @Override
     protected void start(RobotController controller) throws Exception {
         while(!isInterrupted()) {
+            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
             LaserScan laserScan = controller.getLaserScan();
 
             float[] ranges = laserScan.getRanges();
@@ -42,7 +44,6 @@ public class WarningSystemPlan extends RobotPlan {
             }
 
             if (shortestDistance < minRange) {
-                final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
                 tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
             }
         }
