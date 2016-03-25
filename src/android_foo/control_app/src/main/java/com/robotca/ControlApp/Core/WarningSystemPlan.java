@@ -18,9 +18,9 @@ public class WarningSystemPlan extends RobotPlan {
         random = new Random();
     }
     @Override
-    protected void start(RobotController controller) throws Exception {
+    protected void start(final RobotController controller) throws Exception {
+        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
         while(!isInterrupted()) {
-            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
             tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
             LaserScan laserScan = controller.getLaserScan();
 
