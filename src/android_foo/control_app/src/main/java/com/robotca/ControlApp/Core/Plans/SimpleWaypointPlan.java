@@ -60,18 +60,18 @@ public class SimpleWaypointPlan extends RobotPlan {
 
                 // Check angle to target
                 dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
-                dir = Utils.angleDifference(RobotController.getHeading(), dir) / 2.0;
+                dir = Utils.angleDifference(RobotController.getHeading(), dir);
 
                 controller.publishVelocity(spd * Math.cos(dir), 0.0, spd * Math.sin(dir));
 
                 // Check distance to target
                 dist = Utils.distance(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
 
-            } while (dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
+            } while (!isInterrupted() && dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
 
             // Stop
             final int N = 15;
-            for (int i = N - 1; i >= 0; --i) {
+            for (int i = N - 1; i >= 0 && !isInterrupted(); --i) {
 
                 // Check angle to target
                 dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());

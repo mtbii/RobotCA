@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
@@ -61,10 +60,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *
+ * Main Activity for the App. ...
+ *
+ */
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
     private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
-    public static String NOTIFICATION_TICKER = "ROS Control";
-    public static String NOTIFICATION_TITLE = "ROS Control";
+    public static final String NOTIFICATION_TICKER = "ROS Control";
+    public static final String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
     //public static URI DEFAULT_URI = URI.create("localhost");
 
@@ -76,7 +80,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
     //creating emergency stop button
-    private Button emergencyStop;
+//    private Button emergencyStop;
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
@@ -95,7 +99,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //    private Vector3 waypoint;
 
     // List of waypoints
-    private LinkedList<Vector3> waypoints;
+    private final LinkedList<Vector3> waypoints;
 
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
     private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
@@ -205,30 +209,31 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
 
-        // Emergency stop button
-        if (emergencyStop == null) {
-            try {
-                //noinspection ConstantConditions
-                emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
-                emergencyStop.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        controller.stop();
-                        joystickFragment.stop();
-                    }
-                });
-            }
-            catch(NullPointerException e){
-                // Ignore
-            }
-        }
+//        // Emergency stop button
+//        if (emergencyStop == null) {
+//            try {
+//                //noinspection ConstantConditions
+//                emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
+//                emergencyStop.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        stopRobot();
+//                    }
+//                });
+//            }
+//            catch(NullPointerException e){
+//                // Ignore
+//            }
+//        }
 
         if (savedInstanceState != null) {
             //noinspection unchecked
             List<Vector3> list = (List<Vector3>) savedInstanceState.getSerializable(WAYPOINT_BUNDLE_ID);
 
-            if (list != null)
-                waypoints = new LinkedList<>(list);
+            if (list != null) {
+                waypoints.clear();
+                waypoints.addAll(list);
+            }
 
             int modeNumber = savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID);
             setControlMode(ControlMode.values()[modeNumber]);
@@ -271,9 +276,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-        // Waypoints
+        // Save Waypoints
         bundle.putSerializable(WAYPOINT_BUNDLE_ID, waypoints);
+        // Save Control Mode
         bundle.putInt(CONTROL_MODE_BUNDLE_ID, getControlMode().ordinal());
+        // Save current drawer
         bundle.putInt(SELECTED_VIEW_NUMBER_BUNDLE_ID, drawerIndex);
     }
 
@@ -293,8 +300,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             runOnUiThread(new Runnable() {
                               @Override
-                              public void run() {joystickFragment.invalidate();
-                              }
+                              public void run() {joystickFragment.invalidate();}
                           });
 //
 //            hudFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
@@ -341,6 +347,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     {
         final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
         tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
+    }
+
+    /**
+     * Call to stop the Robot.
+     */
+    public void stopRobot()
+    {
+        controller.stop();
+        joystickFragment.stop();
     }
 
     /**
@@ -696,12 +711,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
-     * @return The list of way points.
+     * @return The list of waypoints.
      */
     public LinkedList<Vector3> getWaypoints() {
         return waypoints;
     }
 
+    /**
+     * Clears all waypoints.
+     */
     public void clearWaypoints(){
         synchronized (waypoints){
             waypoints.clear();

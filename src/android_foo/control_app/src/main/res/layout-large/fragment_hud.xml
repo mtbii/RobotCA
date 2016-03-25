@@ -94,8 +94,8 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/emergencyStop"
-        android:layout_width="wrap_content"
+        android:id="@+id/emergency_stop_button"
+        android:layout_width="128dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -107,8 +107,8 @@
         android:id="@+id/hud_wifi_strength"
         android:src="@drawable/wifi_0"
         android:scaleType="fitCenter"
-        android:layout_toLeftOf="@id/emergencyStop"
-        android:layout_toStartOf="@id/emergencyStop"
+        android:layout_toLeftOf="@id/emergency_stop_button"
+        android:layout_toStartOf="@id/emergency_stop_button"
         android:paddingTop="9sp"
         android:paddingBottom="9sp"
         android:layout_width="wrap_content"
