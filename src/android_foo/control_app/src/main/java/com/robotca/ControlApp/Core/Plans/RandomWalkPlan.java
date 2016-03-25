@@ -1,7 +1,8 @@
 package com.robotca.ControlApp.Core.Plans;
 
 import com.robotca.ControlApp.Core.RobotController;
-
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import java.util.Random;
 import java.util.Timer;
 
@@ -22,6 +23,7 @@ public class RandomWalkPlan extends RobotPlan {
 
     @Override
     public void start(final RobotController controller) throws Exception {
+        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
         while(!isInterrupted()) {
             LaserScan laserScan = controller.getLaserScan();
 
@@ -42,6 +44,7 @@ public class RandomWalkPlan extends RobotPlan {
             }
 
             if (shortestDistance < minRange) {
+                tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
                 controller.publishVelocity(0, 0, 0);
                 waitFor(1000);
 
