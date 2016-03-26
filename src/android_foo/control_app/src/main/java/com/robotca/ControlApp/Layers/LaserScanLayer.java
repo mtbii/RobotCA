@@ -10,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
-import com.robotca.ControlApp.Fragments.HUDFragment;
 
 import org.ros.android.view.visualization.Color;
 import org.ros.android.view.visualization.Vertices;
@@ -25,7 +24,6 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.ros.rosjava_geometry.Vector3;
 
-import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -140,7 +138,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 // Don't let the object get too small or too large.
                 zoomLevel = Math.max(0.1f, Math.min(detector.getScaleFactor(), 5.0f));
 
-                Log.d(TAG, String.format("Zoom: %f", zoomLevel));
+//                Log.d(TAG, String.format("Zoom: %f", zoomLevel));
 
                 if (view != null) {
 //                    view.getCamera().zoom(detector.getFocusX(), detector.getFocusY(), zoomLevel);
@@ -170,13 +168,6 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 offY = yShift;
 
                 return true;
-            }
-
-            @Override
-            public void onScaleEnd(ScaleGestureDetector detector) {
-//                xShift = (float) (detector.getFocusX() / view.getCamera().getZoom());
-//                yShift = (float) (detector.getFocusY() / view.getCamera().getZoom());
-//                view.getCamera().
             }
         });
 

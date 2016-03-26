@@ -17,6 +17,15 @@ public class WarningSystemPlan extends RobotPlan {
         this.minRange = Math.max(minRange, 0.2f);
         random = new Random();
     }
+
+    /**
+     * @return The ControlMode for this RobotPlan
+     */
+    @Override
+    public ControlMode getControlMode() {
+        return null;
+    }
+
     @Override
     protected void start(final RobotController controller) throws Exception {
         final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);

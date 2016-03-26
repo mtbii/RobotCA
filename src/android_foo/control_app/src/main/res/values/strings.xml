@@ -44,6 +44,7 @@
     <string name="no_robots">No Robots. Add a new one!</string>
 
     <string name="stop">STOP</string>
+    <string name="start">START</string>
 
     <string-array name="feature_titles">
         <item>Select Robot</item>
@@ -83,7 +84,6 @@
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
     <string name="odometry_pref_title">Odometry Topic</string>
-    <string name="STOP">STOP</string>
     <string name="laser_scan_detail_pref_summary">Sets the detail level of the laser scan visualization. A higher number will draw more laser points</string>
     <string name="laser_scan_detail_pref_title">Laser Scan Detail</string>
     <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where the random walk algorithm will stop and turn.</string>

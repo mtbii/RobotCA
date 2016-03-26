@@ -3,6 +3,7 @@ package com.robotca.ControlApp.Core.Plans;
 import android.util.Log;
 
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Fragments.HUDFragment;
@@ -45,6 +46,14 @@ public class WaypointPlan extends RobotPlan {
 
     public WaypointPlan(ControlApp controlApp) {
         this.controlApp = controlApp;
+    }
+
+    /**
+     * @return The ControlMode for this RobotPlan
+     */
+    @Override
+    public ControlMode getControlMode() {
+        return ControlMode.Waypoint;
     }
 
     @Override

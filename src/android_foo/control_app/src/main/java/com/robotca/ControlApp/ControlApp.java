@@ -34,6 +34,7 @@ import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
+import com.robotca.ControlApp.Core.Plans.RobotPlan;
 import com.robotca.ControlApp.Core.Plans.SimpleWaypointPlan;
 import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
@@ -171,12 +172,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        if (savedInstanceState == null) {
-//            drawerIndex = 1;
-//        }
-
-        //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
-
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -200,31 +195,17 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
 
-        // Joystick fragment
+        // Find the Joystick fragment
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
+
+        // Create the RobotController
         controller = new RobotController(this);
+
         rplan = new WarningSystemPlan(minRange);
         controller.runPlan(rplan);
 
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
-
-//        // Emergency stop button
-//        if (emergencyStop == null) {
-//            try {
-//                //noinspection ConstantConditions
-//                emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
-//                emergencyStop.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        stopRobot();
-//                    }
-//                });
-//            }
-//            catch(NullPointerException e){
-//                // Ignore
-//            }
-//        }
 
         if (savedInstanceState != null) {
             //noinspection unchecked
@@ -235,9 +216,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 waypoints.addAll(list);
             }
 
-            int modeNumber = savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID);
-            setControlMode(ControlMode.values()[modeNumber]);
+            setControlMode(ControlMode.values()[savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID)]);
             drawerIndex = savedInstanceState.getInt(SELECTED_VIEW_NUMBER_BUNDLE_ID);
+
+            controller.load(savedInstanceState);
         }
     }
 
@@ -282,6 +264,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         bundle.putInt(CONTROL_MODE_BUNDLE_ID, getControlMode().ordinal());
         // Save current drawer
         bundle.putInt(SELECTED_VIEW_NUMBER_BUNDLE_ID, drawerIndex);
+
+        // Save the RobotController
+        if (controller != null)
+            controller.save(bundle);
     }
 
     @Override
@@ -345,17 +331,19 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void collisionWarning()
     {
-        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
     }
 
     /**
      * Call to stop the Robot.
+     *
+     * @return True if a resumable RobotPlan was stopped
      */
-    public void stopRobot()
+    public boolean stopRobot()
     {
-        controller.stop();
         joystickFragment.stop();
+        return controller.stop();
     }
 
     /**
@@ -411,7 +399,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         if (controller != null) {
-            controller.update();
+            controller.initialize();
         }
         fragmentManager = getFragmentManager();
 
@@ -590,24 +578,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void setControlMode(ControlMode controlMode) {
 
+        if (joystickFragment.getControlMode() == controlMode)
+            return;
+
+        // Lock the orientation for tilt controls
         lockOrientation(controlMode == ControlMode.Tilt);
+
+        // Notify the Joystick on the new ControlMode
         joystickFragment.setControlMode(controlMode);
+        hudFragment.controlModeChanged();
 
-        if (getControlMode() == ControlMode.SimpleWaypoint){
-            controller.runPlan(new SimpleWaypointPlan(this));
-        }
-        else if (getControlMode() == ControlMode.Waypoint){
-            controller.runPlan(new WaypointPlan(this));
-        }
-        else if (controlMode == ControlMode.RandomWalk) {
-
-            controller.runPlan(new RandomWalkPlan(
-                    Float.parseFloat(PreferenceManager
-                            .getDefaultSharedPreferences(this)
-                    .getString("edittext_random_walk_range_proximity", "1"))
-            ));
-        }
-        else {
+        // If the ControlMode has an associated RobotPlan, run the plan
+        RobotPlan robotPlan = ControlMode.getRobotPlan(this, controlMode);
+        if (robotPlan != null) {
+            controller.runPlan(robotPlan);
+        } else {
             controller.stop();
         }
 

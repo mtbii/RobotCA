@@ -3,6 +3,7 @@ package com.robotca.ControlApp.Core.Plans;
 import android.util.Log;
 
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Fragments.HUDFragment;
@@ -29,6 +30,14 @@ public class SimpleWaypointPlan extends RobotPlan {
      */
     public SimpleWaypointPlan (ControlApp controlApp) {
         this.controlApp = controlApp;
+    }
+
+    /**
+     * @return The ControlMode for this RobotPlan
+     */
+    @Override
+    public ControlMode getControlMode() {
+        return ControlMode.SimpleWaypoint;
     }
 
     @Override
@@ -83,7 +92,7 @@ public class SimpleWaypointPlan extends RobotPlan {
             }
 
             // Remove the way point
-            if (next.equals(controlApp.getDestination()))
+            if (!isInterrupted() && next.equals(controlApp.getDestination()))
                 controlApp.pollDestination();
         }
     }

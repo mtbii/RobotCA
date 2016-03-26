@@ -1,5 +1,6 @@
 package com.robotca.ControlApp.Core.Plans;
 
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -19,6 +20,14 @@ public class RandomWalkPlan extends RobotPlan {
     public RandomWalkPlan(float minRange) {
         this.minRange = Math.max(minRange, 0.2f);
         random = new Random();
+    }
+
+    /**
+     * @return The ControlMode for this RobotPlan
+     */
+    @Override
+    public ControlMode getControlMode() {
+        return ControlMode.RandomWalk;
     }
 
     @Override
