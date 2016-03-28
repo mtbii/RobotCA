@@ -3,21 +3,30 @@
 
   This app is the result of a Senior Project to design an Android application to control a robot.Our goal was to create an Android application (optimized for tablets) to interface with a Robot Operating System (ROS) robot, for direct drive, diagnostic, and navigation information. The application processes data from various sensors on the robot and displays the information in an understandable fashion.
 
+
   1. The Overview:
 
  The overview option in the navigation drawer shows both the view from the robots camera,and what the laser scan is seeing. In the laser scan portion of the overview, you can drop waypoints by using a long press and delete them using the same motion.
 
+
   2. The Camera view
+
+  The camera view option in the navigation drawer shows the view from the robots camera.
 
 
   3. The Robot view
 
+  The robot view option in the navigation drawer shows what the robots laser scanner is sensing in front of itself from a birds eye view. Waypoints can be dropped using a double point, and by changing the driving mode to a waypoint option, the robot will navigate itself to the point.
+
 
   4. The Map view
+
+  The map view option in the navigation drawer plots the robot's and the android device's GPS position on a map.
 
 
   5. Preferences
 
+  The preference option in the navigation drawer allows you to change things like the ROS topics you are listening to.
 
 
   Developed By:

@@ -1,23 +1,19 @@
-package com.robotca.ControlApp.Core.Plans;
-
-import com.robotca.ControlApp.Core.ControlMode;
-import com.robotca.ControlApp.Core.RobotController;
+package com.robotca.ControlApp.Core;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import com.robotca.ControlApp.Core.Plans.RobotPlan;
+import com.robotca.ControlApp.Core.RobotController;
 import java.util.Random;
-import java.util.Timer;
-
 import sensor_msgs.LaserScan;
-
 /**
- * Created by Michael Brunson on 2/13/16.
+ * Created by lightyz on 3/24/16.
  */
-public class RandomWalkPlan extends RobotPlan {
+public class WarningSystemPlan extends RobotPlan {
 
     private final Random random;
     private float minRange;
 
-    public RandomWalkPlan(float minRange) {
+    public WarningSystemPlan(float minRange) {
         this.minRange = Math.max(minRange, 0.2f);
         random = new Random();
     }
@@ -27,17 +23,21 @@ public class RandomWalkPlan extends RobotPlan {
      */
     @Override
     public ControlMode getControlMode() {
-        return ControlMode.RandomWalk;
+        return null;
     }
 
     @Override
-    public void start(final RobotController controller) throws Exception {
+    protected void start(final RobotController controller) throws Exception {
         final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
         while(!isInterrupted()) {
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
             LaserScan laserScan = controller.getLaserScan();
 
             float[] ranges = laserScan.getRanges();
             float shortestDistance = ranges[ranges.length / 2];
+            System.out.println("the original shortest distance is ... ");
+            System.out.print(shortestDistance);
+
             float shortestDistanceAngle = 0;
             float angle = laserScan.getAngleMin();
             float angleDelta = (float) Math.toRadians(30);
@@ -54,16 +54,6 @@ public class RandomWalkPlan extends RobotPlan {
 
             if (shortestDistance < minRange) {
                 tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
-                controller.publishVelocity(0, 0, 0);
-                waitFor(1000);
-
-                long delay = (long) (2000 * (1 + random.nextFloat()));
-                controller.publishVelocity(0, 0, .75);
-                waitFor(delay);
-                controller.publishVelocity(0, 0,  0);
-                waitFor(1000);
-            } else {
-                controller.publishVelocity(.75, 0, 0);
             }
         }
     }

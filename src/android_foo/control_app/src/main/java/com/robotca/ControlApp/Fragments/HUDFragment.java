@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,38 +28,25 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     @SuppressWarnings("unused")
     private static final String TAG = "HUDFragment";
 
-//    private static Point startPos, currentPos;
-//    private static Quaternion rotation;
-
     private View view;
-    private TextView speedView, turnrateView, /*locationView,*/ latView, longView;
+    private TextView speedView, turnrateView, latView, longView;
     private ImageView wifiStrengthView;
 
-    private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
-    private final Updater UPDATER = new Updater();
+    private Button emergencyStopButton;
 
-//    // Node for receiving GPS events
-//    private RobotGPSSub robotGPSNode;
+    // Updates this Fragments UI on the UI Thread
+    private final UpdateUIRunnable UPDATE_UI_RUNNABLE = new UpdateUIRunnable();
+
+    // Used for periodically querying WIFI strength and location info
+    private final Updater UPDATER = new Updater();
 
     // Used for getting connection strength info
     private WifiManager wifiManager;
 
-    private static double lastSpeed, lastTurnrate;
+    private double lastSpeed, lastTurnrate;
     private int lastWifiImage;
 
     private static int[] wifiIcons;
-
-//    /**
-//     * MessageListener for NavSatFix messages.
-//     */
-//    public final MessageListener<NavSatFix> NAV_SAT_FIX_LISTENER = new MessageListener<NavSatFix>() {
-//        @Override
-//        public void onNewMessage(NavSatFix navSatFix) {
-//            location.setLatitude(navSatFix.getLatitude());
-//            location.setLongitude(navSatFix.getLongitude());
-//        }
-//    };
-//    private Location location;
 
     /**
      * Default Constructor.
@@ -84,10 +72,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
             updateUI(0.0, 0.0);
         }
 
-//        // Create the GPS Node
-//        if (robotGPSNode == null)
-//            robotGPSNode = new RobotGPSSub();
-
         // Get WifiManager
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
 
@@ -97,9 +81,19 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 R.drawable.wifi_2,
                 R.drawable.wifi_3,
                 R.drawable.wifi_4};
-
-//        // Register to the RobotController's Odometry subscriber
-//        ((ControlApp)getActivity()).getRobotController().addOdometryListener(this);
+        
+        // Find the Emergency Stop Button
+        // Emergency stop button
+        if (emergencyStopButton == null) {
+            try {
+                //noinspection ConstantConditions
+                emergencyStopButton = (Button) view.findViewById(R.id.emergency_stop_button);
+                initEmergencyStopButton();
+            }
+            catch(NullPointerException e){
+                // Ignore
+            }
+        }
 
         // Start the Update
         new Thread(UPDATER).start();
@@ -113,56 +107,24 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
         UPDATER.kill();
     }
 
-//    @Override
-//    public void initialize(NodeMainExecutor mainExecutor, NodeConfiguration nodeConfiguration)
-//    {
-//        super.initialize(mainExecutor, nodeConfiguration);
-//
-//        if (!isSetup) {
-//            isSetup = true;
-//            nodeMainExecutor.execute(robotGPSNode, nodeConfiguration.setNodeName("android/ros_gps"));
-//        }
-//
-//        // Start the Update
-//        new Thread(UPDATER).start();
-//    }
-
-//    public RobotGPSSub getRobotGPSNode() {
-//        return robotGPSNode;
-//    }
-
     /**
      * Callback for receiving odometry messages.
      * @param message The Odometry message
      */
     @Override
     public void onNewMessage(Odometry message) {
-//            Log.d(TAG, "New Message: " + message.getTwist().getTwist().getLinear().getX());
-
-//        // Record position
-//        if (startPos == null) {
-//            startPos = message.getPose().getPose().getPosition();
-//        } else {
-//            currentPos = message.getPose().getPose().getPosition();
-//        }
-//        rotation = message.getPose().getPose().getOrientation();
 
         updateUI(message.getTwist().getTwist().getLinear().getX(),
                 message.getTwist().getTwist().getAngular().getZ());
     }
 
-//    /**
-//     * Shuts down the GPS Node
-//     */
-//    @Override
-//    public void shutdown(){
-//
-//        if (isInitialized()) {
-//            nodeMainExecutor.shutdownNodeMain(robotGPSNode);
-//        }
-//
-//        UPDATER.kill();
-//    }
+    /**
+     * Called whem the user changes the ControlMode.
+     */
+    public void controlModeChanged() {
+        emergencyStopButton.setText(R.string.stop);
+        emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
+    }
 
     /**
      * Updates this Fragment's speed and turnrate displays
@@ -177,13 +139,26 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
         }
     }
 
-//    /**
-//     * @return The Robot's GPS node
-//     */
-//    RobotGPSSub getGPSSub()
-//    {
-//        return robotGPSNode;
-//    }
+    /*
+     * Initializes the EmergencyStopButton.
+     */
+    private void initEmergencyStopButton() {
+        emergencyStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Try to resume a paused plan first
+                if (getControlApp().getRobotController().resumePlan()) {
+                    emergencyStopButton.setText(R.string.stop);
+                    emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
+                } else if (getControlApp().stopRobot()) {
+                    emergencyStopButton.setText(R.string.start);
+                    emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_green));
+                }
+
+            }
+        });
+    }
 
     /**
      * Formats a latitude/longitude String returned by Location.convert().
@@ -213,50 +188,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
         }
 
         return r;
-    }
-
-//    /**
-//     * @return The Robot's x position
-//     */
-//    public static double getX() {
-//        if (currentPos == null)
-//            return 0.0;
-//        else
-//            return currentPos.getX() - startPos.getX();
-//    }
-//
-//    /**
-//     * @return The Robot's y position
-//     */
-//    public static double getY() {
-//        if (currentPos == null)
-//            return 0.0;
-//        else
-//            return currentPos.getY() - startPos.getY();
-//    }
-//
-//    /**
-//     * @return The Robot's heading in radians
-//     */
-//    public static double getHeading() {
-//        if (rotation == null)
-//            return 0.0;
-//        else
-//            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
-//    }
-
-    /**
-     * @return The Robot's last reported speed
-     */
-    public static double getSpeed() {
-        return lastSpeed;
-    }
-
-    /**
-     * @return The Robot's last reported turn rate
-     */
-    public static double getTurnRate() {
-        return lastTurnrate;
     }
 
     /*
@@ -328,21 +259,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 if (turnrateView != null)
                     turnrateView.setText(String.format((String) getText(R.string.turnrate_string), turnrate));
 
-//                if (locationView != null) {
-//                    Location location = ((ControlApp)getActivity()).getRobotController().
-//                            LOCATION_PROVIDER.getLastKnownLocation();
-//
-//                    if (location != null) {
-//                        String strLongitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
-//                        String strLatitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
-//
-//                        strLongitude = getLatLongString(strLongitude, false);
-//                        strLatitude = getLatLongString(strLatitude, true);
-//
-//                        locationView.setText(String.format((String) getText(R.string.location_string),
-//                                strLatitude, strLongitude));
-//                    }
-//                }
                 if (latView != null) {
                     Location location = ((ControlApp)getActivity()).getRobotController().
                             LOCATION_PROVIDER.getLastKnownLocation();

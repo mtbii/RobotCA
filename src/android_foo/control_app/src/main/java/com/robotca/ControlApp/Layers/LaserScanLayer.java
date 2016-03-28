@@ -2,6 +2,7 @@ package com.robotca.ControlApp.Layers;
 
 import android.graphics.PointF;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -9,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
-import com.robotca.ControlApp.Fragments.HUDFragment;
 
 import org.ros.android.view.visualization.Color;
 import org.ros.android.view.visualization.Vertices;
@@ -24,7 +24,6 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.ros.rosjava_geometry.Vector3;
 
-import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -72,6 +71,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
     private final Object mutex;
     private final ControlApp controlApp;
     private final ScaleGestureDetector scaleGestureDetector;
+    private final GestureDetector gestureDetector;
 
     // Controls the density of scan po;ints
     private float laserScanDetail;
@@ -91,7 +91,7 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
 
     // Used for panning the view
     private boolean isMoving;
-    private boolean hasMoved;
+//    private boolean hasMoved;
     private float xStart, yStart;
     private float xShift, yShift;
     private float offX, offY;
@@ -124,29 +124,83 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      */
     public LaserScanLayer(GraphName topicName, float detail, ControlApp app) {
         super(topicName, sensor_msgs.LaserScan._TYPE);
-        mutex = new Object();
+
+        this.mutex = new Object();
+
         this.laserScanDetail = Math.max(detail, 1);
         this.controlApp = app;
-        this.scaleGestureDetector = new ScaleGestureDetector(controlApp, new ScaleGestureDetector.OnScaleGestureListener() {
+
+        this.scaleGestureDetector = new ScaleGestureDetector(controlApp,
+            new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                zoomLevel *= detector.getScaleFactor();
 
                 // Don't let the object get too small or too large.
-                zoomLevel = Math.max(0.1f, Math.min(zoomLevel, 5.0f));
+                zoomLevel = Math.max(0.1f, Math.min(detector.getScaleFactor(), 5.0f));
 
-                Log.d(TAG, String.format("Zoom: %f", zoomLevel));
+//                Log.d(TAG, String.format("Zoom: %f", zoomLevel));
+
+                if (view != null) {
+//                    view.getCamera().zoom(detector.getFocusX(), detector.getFocusY(), zoomLevel);
+
+                    float s = 1f / (float) view.getCamera().getZoom();
+                    int w = view.getCamera().getViewport().getWidth() / 2;
+                    int h = view.getCamera().getViewport().getHeight() / 2;
+
+                    xShift = xStart - (detector.getFocusY() - h) * s + offX;
+                    yShift = yStart + (detector.getFocusX() - w) * s + offY;
+
+                    view.getCamera().zoom(w, h, zoomLevel);
+                }
+
                 return true;
             }
 
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
-                return false;
+
+                xStart = (float) ((detector.getFocusY() - view.getCamera().getViewport().getHeight() / 2)
+                        / view.getCamera().getZoom());
+                yStart = -(float) ((detector.getFocusX() - view.getCamera().getViewport().getWidth() / 2)
+                        / view.getCamera().getZoom());
+
+                offX = xShift;
+                offY = yShift;
+
+                return true;
             }
+        });
 
+        this.gestureDetector = new GestureDetector(controlApp, new GestureDetector.SimpleOnGestureListener()
+        {
             @Override
-            public void onScaleEnd(ScaleGestureDetector detector) {
+            public boolean onDoubleTap(MotionEvent e)
+            {
+                if (view == null)
+                    return false;
 
+                try {
+                    double s = 1.0 / view.getCamera().getZoom();
+
+                    double height = controlApp.getResources().getDisplayMetrics().heightPixels;
+                    double width = controlApp.getResources().getDisplayMetrics().widthPixels;
+
+                    double x = e.getX() + (width - view.getWidth()) - width / 2.0;
+                    double y = e.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
+
+                    x *= s;
+                    y *= s;
+
+                    //noinspection SuspiciousNameCombination
+                    x -= yShift;
+                    //noinspection SuspiciousNameCombination
+                    y += xShift;
+
+                    controlApp.addWaypointWithCheck(screenToWorld(y, x));
+                } catch (Exception ex) {
+                    // Ignore
+                }
+                return false;
             }
         });
 
@@ -173,16 +227,26 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         final float s = 1.0f / (float) view.getCamera().getZoom();
 
         scaleGestureDetector.onTouchEvent(event);
+        gestureDetector.onTouchEvent(event);
+
+        boolean r = true;
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
             case MotionEvent.ACTION_POINTER_DOWN:
                 isMoving = false;
+                Log.d(TAG, "Pointer Down");
+                r = false;
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                Log.d(TAG, "Pointer Up");
                 break;
 
             case MotionEvent.ACTION_DOWN:
                 if (!isMoving) {
                     isMoving = true;
-                    hasMoved = false;
+//                    hasMoved = false;
                     xStart = event.getY() * s;
                     yStart = -event.getX() * s;
 
@@ -191,51 +255,27 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 }
                 break;
             case MotionEvent.ACTION_UP:
+
                 if (isMoving) {
                     isMoving = false;
                 }
 
-                if (!hasMoved && !scaleGestureDetector.isInProgress()) {
-                    try {
-//                        Pose pose = controlApp.getController().getOdometry().getPose().getPose();
-//                        robotPosition = new Vector3(pose.getPosition().getX(), pose.getPosition().getY(), 0);
-//                        robotHeading = Utils.getHeading(Quaternion.fromQuaternionMessage(pose.getOrientation()));
-
-                        double height = controlApp.getResources().getDisplayMetrics().heightPixels;
-                        double width = controlApp.getResources().getDisplayMetrics().widthPixels;
-
-                        double x = event.getX() + (width - view.getWidth()) - width / 2.0;
-                        double y = event.getY() + (height - view.getHeight()) / 2.0 - height / 2.0;
-
-                        x *= s;
-                        y *= s;
-
-                        //noinspection SuspiciousNameCombination
-                        x -= yShift;
-                        //noinspection SuspiciousNameCombination
-                        y += xShift;
-
-                        controlApp.addWaypointWithCheck(screenToWorld(y, x));
-                    } catch (Exception e) {
-                        // Ignore
-                    }
-                }
-
-                hasMoved = false;
+//                hasMoved = false;
                 break;
             case MotionEvent.ACTION_MOVE:
+
                 if (isMoving && !scaleGestureDetector.isInProgress()) {
                     xShift = xStart - event.getY() * s + offX;
                     yShift = yStart + event.getX() * s + offY;
 
-                    if (Math.abs(xStart - event.getY() * s) > 0.2f || Math.abs(yStart + event.getX() * s) > 0.2f) {
-                        hasMoved = true;
-                    }
+//                    if (Math.abs(xStart - event.getY() * s) > 0.2f || Math.abs(yStart + event.getX() * s) > 0.2f) {
+//                        hasMoved = true;
+//                    }
                 }
                 break;
         }
 
-        return true;
+        return r;
     }
 
     /**
@@ -250,27 +290,22 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         this.view = view;
 
         if (vertexFrontBuffer != null) {
-//            try {
-//                if (view.getCamera().getZoom() != zoomLevel) {
-//                    int x = view.getCamera().getViewport().getHeight() / 2;
-//                    int y = view.getCamera().getViewport().getWidth() / 2;
-//
-//                    double zoom = zoomLevel / view.getCamera().getZoom();
-//
-//                    view.getCamera().zoom(x, y, zoom);
-//                }
-//            }
-//            catch(Exception e){}
+
+            final float Z = (float) view.getCamera().getZoom() / 100.0f;
+            final float XS = xShift;
+            final float YS = yShift;
 
             synchronized (mutex) {
                 // Draw the shape
-                gl.glTranslatef(xShift, yShift, 0.0f);
+                gl.glTranslatef(XS, YS, 0.0f);
 
                 // Draw start position
                 drawPoint(gl, 0.0, 0.0, 32.0f, 0xFFCCCCDD, null);
 
                 // Draw the robot
+                gl.glScalef(Z, Z, 1.0f);
                 shape.draw(view, gl);
+                gl.glScalef(1f / Z, 1f / Z, 1.0f);
 
                 // Draw the scan area
                 drawPoints(gl, vertexFrontBuffer, 0.0f, true);
@@ -286,36 +321,35 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
                 // Draw waypoints
                 drawWayPoints(gl);
 
-                // Imminent collision detection
-                double d = Math.max(0.5, Math.pow(HUDFragment.getSpeed() * 1.25, 2.0));
-                double r = -HUDFragment.getTurnRate();
+//                // Imminent collision detection
+//                double d = Math.max(0.5, Math.pow(HUDFragment.getSpeed() * 1.25, 2.0));
+//                double r = -HUDFragment.getTurnRate();
+//
+//                d /= Math.cos(r);
+//                r /= 2.0;
+//
+//                if (HUDFragment.getSpeed() < -0.01) {
+//                    d = -d;
+//                    r = -r;
+//                }
+//
+//                // Just have to check if one of the points intersects the point fan
+//                boolean collision = false;
+//
+//                for (int i = -2; i <= 2; ++i) {
+//                    float x = (float) (Math.cos(r + i * Math.PI / (18.0 * d)) * d);
+//                    float y = (float) (Math.sin(r + i * Math.PI / (18.0 * d)) * d);
+//                    Utils.drawPoint(gl, x, y, 3.0f, 0xFFFF0000);
+//
+//                    // collision |= ...
+//                }
+//
+//                if (collision) {
+//                    controlApp.collisionWarning();
+//                }
 
-                d /= Math.cos(r);
-                r /= 2.0;
-
-                if (HUDFragment.getSpeed() < -0.01) {
-                    d = -d;
-                    r = -r;
-                }
-
-                // TODO Perform collision detection here.
-                // Just have to check if one of the points intersects the point fan
-                boolean collision = false;
-
-                for (int i = -2; i <= 2; ++i) {
-                    float x = (float) (Math.cos(r + i * Math.PI / (18.0 * d)) * d);
-                    float y = (float) (Math.sin(r + i * Math.PI / (18.0 * d)) * d);
-                    Utils.drawPoint(gl, x, y, 3.0f, 0xFFFF0000);
-
-                    // collision |= ...
-                }
-
-                if (collision) {
-                    controlApp.collisionWarning();
-                }
-
-                gl.glTranslatef(-xShift, -yShift, 0.0f);
-                gl.glScalef(zoomLevel, zoomLevel, 1.0f);
+                gl.glTranslatef(-XS, -YS, 0.0f);
+//                gl.glScalef(zoomLevel, zoomLevel, 1.0f);
             }
         }
     }
@@ -424,9 +458,9 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         float p;
 
 //        boolean onView;
-        final float W = (float) (view.getWidth() / view.getCamera().getZoom()) + Math.abs(offX);
-        final float H = (float) (view.getHeight() / view.getCamera().getZoom()) + Math.abs(offY);
-        final float MAX_RANGE = (float) Math.sqrt(W * W + H * H) / 2.0f;
+        final float W = (float) (view.getWidth() / view.getCamera().getZoom()) + Math.abs(xShift);
+        final float H = (float) (view.getHeight() / view.getCamera().getZoom()) + Math.abs(yShift);
+        final float MAX_RANGE = (float) Math.sqrt(W * W + H * H);
 
         boolean draw;
         float scale;
@@ -511,45 +545,52 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
      */
     private void drawWayPoints(GL10 gl) {
 
-        FloatBuffer b = Vertices.allocateBuffer(3 * 4 * controlApp.getWaypoints().size());
+        FloatBuffer b;
         PointF res = new PointF();
-        boolean first = true;
 
         // Draw the waypoints
+        gl.glEnable(GL10.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL10.GL_GEQUAL);
 
-        //Lock on waypoints to prevent modifications while reading
+        // Lock on waypoints to prevent modifications while reading
         synchronized (controlApp.getWaypoints()) {
+
+            b = Vertices.allocateBuffer(3 * controlApp.getWaypoints().size());
+            b.rewind();
+
             for (Vector3 pt : controlApp.getWaypoints()) {
 
-                drawPoint(gl, pt.getX(), pt.getY(), 24.0f, first ? 0xFF22CC33 : 0xFF2233CC, res);
-                first = false;
+                drawPoint(gl, pt.getX(), pt.getY(), 0.0f, 0, res);
 
-                try {
-                    b.put(res.x);
-                    b.put(res.y);
-                    b.put(0.0f);
-                }
-                catch(BufferOverflowException e){
-                    return;
-                }
+                b.put(res.x);
+                b.put(res.y);
+                b.put(0.0f);
             }
         }
 
         b.rewind();
 
         // Draw the path
-//        gl.glColor4x(0x22, 0x33, 0xCC, 0x88);
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
+        gl.glLineWidth(8.0f);
         gl.glVertexPointer(3, GL10.GL_FLOAT, 3 * 4, b);
-        gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, b.capacity() / (3 * 4));
+        gl.glDrawArrays(GL10.GL_LINE_STRIP, 0, b.capacity() / 3);
 
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+
+        gl.glDisable(GL10.GL_DEPTH_TEST);
+
+        // Draw the Waypoints
+        b.rewind();
+        for (int i = 0; i < b.limit(); i += 3) {
+            Utils.drawPoint(gl, b.get(i), b.get(i + 1), 24.0f, i == 0 ? 0xFF22CC33 : 0xFF2233CC);
+        }
     }
 
     /*
      * Draws a point specified in world space.
-     * Pass a non-null PointF to result to grab the converted point.
+     * Pass a non-null PointF to result to grab the converted point instead of drawing it.
      */
     private static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
         double rx = RobotController.getX();
@@ -563,10 +604,10 @@ public class LaserScanLayer extends SubscriberLayer<LaserScan> implements TfLaye
         x = Math.cos(dir) * len;
         y = Math.sin(dir) * len;
 
-        Utils.drawPoint(gl, (float) x, (float) y, size, color);
-
         if (result != null) {
             result.set((float) x, (float) y);
+        } else {
+            Utils.drawPoint(gl, (float) x, (float) y, size, color);
         }
     }
 

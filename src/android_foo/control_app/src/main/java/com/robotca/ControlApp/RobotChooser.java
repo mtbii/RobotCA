@@ -1,50 +1,44 @@
 package com.robotca.ControlApp;
 
-import android.app.Fragment;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import android.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.app.FragmentManager;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.robotca.ControlApp.Core.DrawerItem;
-import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotInfoAdapter;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
+import com.robotca.ControlApp.Core.DrawerItem;
+import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Fragments.AboutFragment;
-import com.robotca.ControlApp.Fragments.CameraViewFragment;
-import com.robotca.ControlApp.Fragments.OverviewFragment;
+import com.robotca.ControlApp.Fragments.HelpFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
 
-import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMainExecutor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
@@ -71,7 +65,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     private String mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    Fragment fragment;
+    Fragment fragment = null;
+    FragmentManager fragmentManager;
+    int fragmentsCreatedCounter = 0;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -91,13 +87,13 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         RobotStorage.load(this);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_robot_chooser);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.profileDrawer);
         mFeatureTitles = getResources().getStringArray(R.array.chooser_titles); //Where you set drawer item titles
         mDrawerList = (ListView) findViewById(R.id.left_drawer2);
 
         //mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
-        mTitle="ROS Control";
-        mDrawerTitle=mTitle;
+        //mTitle="ROS Control";
+        //mDrawerTitle=mTitle;
 
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,7 +101,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-               /* R.drawable.ic_drawer,*/ R.string.drawer_open,
+                mToolbar, R.string.drawer_open,
                 R.string.drawer_close) {
             public void onDrawerClosed(View view) {
                 //getActionBar().setTitle(mTitle);
@@ -119,19 +115,21 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 // onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.syncState();
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        if (savedInstanceState == null) {
-//            drawerIndex = 1;
-//        }
-
-        //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
 
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
-                R.drawable.ic_settings_black_24dp,
+                R.drawable.ic_help_black_24dp,
                 R.drawable.ic_info_outline_black_24dp
         };
 
@@ -147,7 +145,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
-
 
         mAdapter = new RobotInfoAdapter(this, RobotStorage.getRobots());
 
@@ -238,33 +235,40 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     private void selectItem(int position){
         Bundle args = new Bundle();
-        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager = getFragmentManager();
 
         switch (position) {
             case 0:
+                fragmentsCreatedCounter = 0;
+
+                if(fragment != null) {
+                    fragmentManager.beginTransaction().remove(fragment).commit();
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
 
                 mDrawerLayout.closeDrawers();
                 return;
 
             case 1:
-                fragment = new PreferencesFragment();
+                fragment = new HelpFragment();
                 fragment.setArguments(args);
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame2, fragment)
                         .commit();
-                //fragmentsCreatedCounter = 0
-
                 break;
 
             case 2:
                 fragment = new AboutFragment();
-                //fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
                 fragment.setArguments(args);
+                fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
+                mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
-                fragmentManager.beginTransaction()
+               fragmentManager.beginTransaction()
                         .replace(R.id.content_frame2, fragment)
                         .commit();
 
@@ -274,19 +278,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 break;
         }
 
-       /* if (fragment != null) {
-            fragment.setArguments(args);
-
-            // Insert the fragment by replacing any existing fragment
-
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .commit();
-        }
-        else {
-            fragmentManager.beginTransaction().add(fragment, "").commit();
-
-        }*/
+        drawerIndex = position;
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -309,6 +301,27 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(fragmentsCreatedCounter >= 1) {
+
+            selectItem(0);
+            fragmentsCreatedCounter=0;
+
+        }
+        else {
+            super.onBackPressed();
+        }
+
     }
 
     @Override
@@ -409,6 +422,12 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         switch (item.getItemId()) {
             case R.id.action_add_robot:
 
+                // If add robot is pressed from a screen other than robot chooser, switch
+                // back to chooser
+                if(fragment != null) {
+                    fragmentManager.beginTransaction().remove(fragment).commit();
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
                 AddEditRobotDialogFragment addRobotDialogFragment = new AddEditRobotDialogFragment();
                 addRobotDialogFragment.setArguments(null);
                 addRobotDialogFragment.show(getSupportFragmentManager(), "addrobotdialog");

@@ -8,7 +8,7 @@
     tools:context="com.robotca.ControlApp.Fragments.HUDFragment">
 
     <Button
-        android:id="@+id/emergencyStop"
+        android:id="@+id/emergency_stop_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
@@ -20,8 +20,8 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/emergencyStop"
-        android:layout_toStartOf="@id/emergencyStop">
+        android:layout_toLeftOf="@id/emergency_stop_button"
+        android:layout_toStartOf="@id/emergency_stop_button">
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">

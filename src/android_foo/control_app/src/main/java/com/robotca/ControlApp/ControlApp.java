@@ -8,17 +8,15 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
-import android.app.FragmentTransaction;
-import android.app.ActivityManager;
-
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,32 +24,33 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
-import android.widget.AdapterView;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
 import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
+import com.robotca.ControlApp.Core.Plans.RobotPlan;
 import com.robotca.ControlApp.Core.Plans.SimpleWaypointPlan;
 import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Core.WarningSystemPlan;
 import com.robotca.ControlApp.Fragments.AboutFragment;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.Fragments.JoystickFragment;
-import com.robotca.ControlApp.Fragments.RosFragment;
 import com.robotca.ControlApp.Fragments.LaserScanFragment;
 import com.robotca.ControlApp.Fragments.MapFragment;
 import com.robotca.ControlApp.Fragments.OverviewFragment;
 import com.robotca.ControlApp.Fragments.PreferencesFragment;
+import com.robotca.ControlApp.Fragments.RosFragment;
 
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
@@ -62,10 +61,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *
+ * Main Activity for the App. ...
+ *
+ */
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
     private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
-    public static String NOTIFICATION_TICKER = "ROS Control";
-    public static String NOTIFICATION_TITLE = "ROS Control";
+    public static final String NOTIFICATION_TICKER = "ROS Control";
+    public static final String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
     //public static URI DEFAULT_URI = URI.create("localhost");
 
@@ -77,10 +81,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
     //creating emergency stop button
-    private Button emergencyStop;
+//    private Button emergencyStop;
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
+    private WarningSystemPlan rplan;
+    private float minRange = (float) 2.0;
 
     private Fragment fragment = null;
     FragmentManager fragmentManager;
@@ -94,7 +100,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 //    private Vector3 waypoint;
 
     // List of waypoints
-    private LinkedList<Vector3> waypoints;
+    private final LinkedList<Vector3> waypoints;
 
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
     private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
@@ -166,12 +172,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        if (savedInstanceState == null) {
-//            drawerIndex = 1;
-//        }
-
-        //int[] featureIconRes = getResources().getIntArray(R.array.feature_icons);
-
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_view_quilt_black_24dp,
@@ -195,41 +195,31 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
 
-        // Joystick fragment
+        // Find the Joystick fragment
         joystickFragment = (JoystickFragment) getFragmentManager().findFragmentById(R.id.joystick_fragment);
+
+        // Create the RobotController
         controller = new RobotController(this);
+
+        rplan = new WarningSystemPlan(minRange);
+        controller.runPlan(rplan);
 
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
-
-        // Emergency stop button
-        if (emergencyStop == null) {
-            try {
-                //noinspection ConstantConditions
-                emergencyStop = (Button) hudFragment.getView().findViewById(R.id.emergencyStop);
-                emergencyStop.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        controller.stop();
-                        joystickFragment.stop();
-                    }
-                });
-            }
-            catch(NullPointerException e){
-                // Ignore
-            }
-        }
 
         if (savedInstanceState != null) {
             //noinspection unchecked
             List<Vector3> list = (List<Vector3>) savedInstanceState.getSerializable(WAYPOINT_BUNDLE_ID);
 
-            if (list != null)
-                waypoints = new LinkedList<>(list);
+            if (list != null) {
+                waypoints.clear();
+                waypoints.addAll(list);
+            }
 
-            int modeNumber = savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID);
-            setControlMode(ControlMode.values()[modeNumber]);
+            setControlMode(ControlMode.values()[savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID)]);
             drawerIndex = savedInstanceState.getInt(SELECTED_VIEW_NUMBER_BUNDLE_ID);
+
+            controller.load(savedInstanceState);
         }
     }
 
@@ -268,10 +258,16 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-        // Waypoints
+        // Save Waypoints
         bundle.putSerializable(WAYPOINT_BUNDLE_ID, waypoints);
+        // Save Control Mode
         bundle.putInt(CONTROL_MODE_BUNDLE_ID, getControlMode().ordinal());
+        // Save current drawer
         bundle.putInt(SELECTED_VIEW_NUMBER_BUNDLE_ID, drawerIndex);
+
+        // Save the RobotController
+        if (controller != null)
+            controller.save(bundle);
     }
 
     @Override
@@ -286,13 +282,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             this.nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-            joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
-            joystickFragment.invalidate();
+//            joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
 
-            hudFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
-
+            runOnUiThread(new Runnable() {
+                              @Override
+                              public void run() {joystickFragment.invalidate();}
+                          });
+//
+//            hudFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
+//
             //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
             controller.initialize(nodeMainExecutor, nodeConfiguration);
+
+            // Add the HUDFragment to the RobotController's odometry listener
+            controller.addOdometryListener(hudFragment);
+            controller.addOdometryListener(joystickFragment.getJoystickView());
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -302,25 +306,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, temp.getX(), temp.getY(), 0));
 
                     selectItem(drawerIndex);
-
-                    // Add HUD to joystick odometry subscriber
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            while (!joystickFragment.getJoystickView().addOdometryListener(hudFragment)) {
-                                Log.w(TAG, "Unable to add HUD to joystick odometry listener");
-                                try {
-                                    Thread.sleep(100L);
-                                } catch (InterruptedException e) {
-                                    Log.e(TAG, "", e);
-                                    return;
-                                }
-                            }
-                            Log.d(TAG, "Added HUD to joystick odometry listener!");
-                        }
-                    }, 100L);
-
                 }
             });
         } catch (Exception e) {
@@ -335,11 +320,30 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * @return The RobotController
+     */
+    public RobotController getRobotController() {
+        return controller;
+    }
+
+    /**
      * Called when a collision is imminent from the LaserScanLayer.
      */
     public void collisionWarning()
     {
-        // TODO
+        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+        tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
+    }
+
+    /**
+     * Call to stop the Robot.
+     *
+     * @return True if a resumable RobotPlan was stopped
+     */
+    public boolean stopRobot()
+    {
+        joystickFragment.stop();
+        return controller.stop();
     }
 
     /**
@@ -380,9 +384,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /*
-     * Swaps fragments in the main content view
+     * Swaps fragments in the main content view.
      */
-
     private void selectItem(int position) {
 
         Bundle args = new Bundle();
@@ -396,10 +399,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         if (controller != null) {
-            controller.update();
+            controller.initialize();
         }
         fragmentManager = getFragmentManager();
-        //FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
@@ -414,149 +417,38 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             case 1:
                 fragment = new OverviewFragment();
                 fragmentsCreatedCounter = 0;
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, overFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                }*/
-
-                //if(openLaunch==false) {
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Overview")
-                            .addToBackStack(null).commit();
-                }
-                //else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
-
                 break;
 
             case 2:
                 fragment = new CameraViewFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Camera")
-                            .addToBackStack(null).commit();
-                }
-                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);
-
-                // Replace whatever is in the fragment_container view with this fragment,
-                // and add the transaction to the back stack
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, cameraFragment);
-                    transaction.addToBackStack(null);
-                }
-                else {
-                    transaction.replace(R.id.content_frame, cameraFragment);
-                    transaction.addToBackStack(null);
-                }*/
-                //transaction.addToBackStack(null);
-
-                // Commit the transaction
-                //transaction.commit();*/
-
                 break;
 
             case 3:
                 fragment = new LaserScanFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-                
-                //transaction.replace(R.id.content_frame, fragment);
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, laserFragment);
-                    transaction.addToBackStack(null);
-                }
-                else {
-                    transaction.replace(R.id.content_frame, laserFragment);
-                    transaction.addToBackStack(null);
-                }
-                transaction.commit();*/
-
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Laser")
-                            .addToBackStack(null).commit();
-                }
-                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
-
                 break;
 
             case 4:
                 fragment = new MapFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-
-                //transaction.replace(R.id.content_frame, fragment);
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, mapFragment);
-                    transaction.addToBackStack(null);
-                }
-                else {
-                    transaction.replace(R.id.content_frame, mapFragment);
-                    transaction.addToBackStack(null);
-                }
-                transaction.commit();*/
-
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().add(R.id.content_frame, fragment, "Map")
-                            .addToBackStack(null).commit();
-                }
-                else fragmentManager.beginTransaction().replace(R.id.content_frame, fragment);*/
-
                 break;
 
             case 5:
-                if (hudFragment != null)
-                    hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
+                if (hudFragment != null)
+                    hudFragment.hide();
                 fragment = new PreferencesFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-
-                //transaction.replace(R.id.content_frame, fragment);
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, newHudFragment);
-                    transaction.addToBackStack(null);
-                }
-                else {
-                    transaction.replace(R.id.content_frame, newHudFragment);
-                    transaction.addToBackStack(null);
-                }
-                transaction.commit();*/
-
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "Preference")
-                            .addToBackStack(null).commit();
-                }
-                else fragmentManager.popBackStackImmediate();*/
-
                 break;
             case 6:
-                if (hudFragment != null)
-                    hudFragment.hide();
                 if (joystickFragment != null)
                     joystickFragment.hide();
+                if (hudFragment != null)
+                    hudFragment.hide();
                 fragment = new AboutFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
-
-                //transaction.replace(R.id.content_frame, fragment);
-               /* if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    transaction.add(R.id.content_frame, aboutFragment);
-                    transaction.addToBackStack(null);
-                }
-                else {
-                    transaction.replace(R.id.content_frame, aboutFragment);
-                    transaction.addToBackStack(null);
-                }
-                transaction.commit();
-
-
-                /*if(fragmentManager.getBackStackEntryCount() <= 1) {
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "About")
-                            .addToBackStack(null).commit();
-                }
-                else fragmentManager.popBackStackImmediate();*/
 
             default:
                 break;
@@ -635,37 +527,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
     @Override
     public void onBackPressed() {
-        
-        if(fragmentsCreatedCounter >= 1) {
-            
-            selectItem(1);
-            onTrimMemory(TRIM_MEMORY_BACKGROUND);
-            fragmentsCreatedCounter=0;
 
-        } 
+        if (fragmentsCreatedCounter >= 1) {
+            selectItem(1);
+            fragmentsCreatedCounter=0;
+        }
         else {
             super.onBackPressed();
-            //clearMem();
-            onTrimMemory(TRIM_MEMORY_COMPLETE);
         }
 
-    }
-
-    public void clearMem() {
-        ActivityManager amgr = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> list = amgr.getRunningAppProcesses();
-        if (list != null){
-            for (int i = 0; i < list.size(); i++) {
-                ActivityManager.RunningAppProcessInfo apinfo = list.get(i);
-
-                String[] pkgList = apinfo.pkgList;
-                if ((! apinfo.processName.startsWith("com.sec")) && ((apinfo.importance > 150))) {
-                    for (int j = 0; j < pkgList.length; j++) {
-                        amgr.killBackgroundProcesses(pkgList[j]);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -694,6 +564,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /**
+     * @return the Robot's current ControlMode
+     */
     public ControlMode getControlMode() {
         return joystickFragment.getControlMode();
     }
@@ -705,24 +578,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void setControlMode(ControlMode controlMode) {
 
+        if (joystickFragment.getControlMode() == controlMode)
+            return;
+
+        // Lock the orientation for tilt controls
         lockOrientation(controlMode == ControlMode.Tilt);
+
+        // Notify the Joystick on the new ControlMode
         joystickFragment.setControlMode(controlMode);
+        hudFragment.controlModeChanged();
 
-        if (getControlMode() == ControlMode.SimpleWaypoint){
-            controller.runPlan(new SimpleWaypointPlan(this));
-        }
-        else if (getControlMode() == ControlMode.Waypoint){
-            controller.runPlan(new WaypointPlan(this));
-        }
-        else if (controlMode == ControlMode.RandomWalk) {
-
-            controller.runPlan(new RandomWalkPlan(
-                    Float.parseFloat(PreferenceManager
-                            .getDefaultSharedPreferences(this)
-                    .getString("edittext_random_walk_range_proximity", "1"))
-            ));
-        }
-        else {
+        // If the ControlMode has an associated RobotPlan, run the plan
+        RobotPlan robotPlan = ControlMode.getRobotPlan(this, controlMode);
+        if (robotPlan != null) {
+            controller.runPlan(robotPlan);
+        } else {
             controller.stop();
         }
 
@@ -736,43 +606,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public void setDestination(Vector3 location){
         synchronized (waypoints) {
             waypoints.addFirst(location);
-        }
-    }
-
-    /**
-     * @return The Robot's x position
-     */
-    public double getRobotX() {
-        try {
-            return controller.getPose().getPosition().getX();
-        }
-        catch (NullPointerException e) {
-            return 0.0;
-        }
-    }
-
-    /**
-     * @return The Robot's y position
-     */
-    public double getRobotY() {
-        try {
-            return controller.getPose().getPosition().getY();
-        }
-        catch (NullPointerException e){
-            return 0.0;
-        }
-    }
-
-    /**
-     * @return The Robot's heading
-     */
-    public double getHeading() {
-        try {
-            return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(
-                    controller.getPose().getOrientation()));
-        }
-        catch (NullPointerException e) {
-            return 0.0;
         }
     }
 
@@ -863,12 +696,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
-     * @return The list of way points.
+     * @return The list of waypoints.
      */
     public LinkedList<Vector3> getWaypoints() {
         return waypoints;
     }
 
+    /**
+     * Clears all waypoints.
+     */
     public void clearWaypoints(){
         synchronized (waypoints){
             waypoints.clear();

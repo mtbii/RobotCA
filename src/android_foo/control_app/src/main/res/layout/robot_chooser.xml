@@ -1,73 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/profileDrawer"
+    android:layout_height="match_parent" >
 
-        <android.support.v7.widget.Toolbar
-        android:id="@+id/robot_chooser_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    <android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/drawer_layout_robot_chooser"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- The main content view -->
-        <LinearLayout
-            android:id="@+id/content_frame2"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/robot_chooser_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal" />
+            android:id="@+id/content_frame2">
 
-        <fragment
-            android:id="@+id/hud_fragment"
-            android:name="com.robotca.ControlApp.Fragments.PreferencesFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="64sp"/>
-        <!--tools:layout="@layout/fragment_hud"-->
-
-        <fragment
-            android:id="@+id/about_fragment"
-            android:name="com.robotca.ControlApp.Fragments.AboutFragment"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/robot_recycler_view"
+            android:paddingTop="5dp"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_about"/>
+            android:layout_height="match_parent"/>
 
+        <TextView
+            android:id="@+id/robot_empty_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textSize="20sp"
+            android:text="@string/no_robots"
+            android:elevation="3dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:gravity="center" />
+        </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/robot_recycler_view"
-        android:paddingTop="5dp"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <TextView
-        android:id="@+id/robot_empty_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:textSize="20sp"
-        android:text="@string/no_robots"
-        android:elevation="3dp"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:gravity="center" />
+    </LinearLayout>
 
-        <ListView android:id="@+id/left_drawer2"
-            android:layout_width="240dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:choiceMode="singleChoice"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:background="#ddd"/>
-    </android.support.v4.widget.DrawerLayout>
+    <ListView
+        android:id="@+id/left_drawer2"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#eee"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/darker_gray" />
 
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>

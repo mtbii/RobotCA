@@ -3,6 +3,7 @@ package com.robotca.ControlApp.Core.Plans;
 import android.util.Log;
 
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Fragments.HUDFragment;
@@ -29,6 +30,14 @@ public class SimpleWaypointPlan extends RobotPlan {
      */
     public SimpleWaypointPlan (ControlApp controlApp) {
         this.controlApp = controlApp;
+    }
+
+    /**
+     * @return The ControlMode for this RobotPlan
+     */
+    @Override
+    public ControlMode getControlMode() {
+        return ControlMode.SimpleWaypoint;
     }
 
     @Override
@@ -60,18 +69,18 @@ public class SimpleWaypointPlan extends RobotPlan {
 
                 // Check angle to target
                 dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
-                dir = Utils.angleDifference(RobotController.getHeading(), dir) / 2.0;
+                dir = Utils.angleDifference(RobotController.getHeading(), dir);
 
                 controller.publishVelocity(spd * Math.cos(dir), 0.0, spd * Math.sin(dir));
 
                 // Check distance to target
                 dist = Utils.distance(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
 
-            } while (dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
+            } while (!isInterrupted() && dist > MINIMUM_DISTANCE && next.equals(controlApp.getDestination()));
 
             // Stop
             final int N = 15;
-            for (int i = N - 1; i >= 0; --i) {
+            for (int i = N - 1; i >= 0 && !isInterrupted(); --i) {
 
                 // Check angle to target
                 dir = Utils.pointDirection(RobotController.getX(), RobotController.getY(), next.getX(), next.getY());
@@ -83,7 +92,7 @@ public class SimpleWaypointPlan extends RobotPlan {
             }
 
             // Remove the way point
-            if (next.equals(controlApp.getDestination()))
+            if (!isInterrupted() && next.equals(controlApp.getDestination()))
                 controlApp.pollDestination();
         }
     }

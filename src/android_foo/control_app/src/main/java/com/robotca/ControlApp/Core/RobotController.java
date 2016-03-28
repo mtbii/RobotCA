@@ -1,15 +1,15 @@
 package com.robotca.ControlApp.Core;
 
 import android.content.Context;
-import android.location.Location;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.Plans.RobotPlan;
 import com.robotca.ControlApp.R;
 
-import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
-import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
@@ -21,7 +21,6 @@ import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,39 +33,69 @@ import sensor_msgs.LaserScan;
 import sensor_msgs.NavSatFix;
 
 /**
+ * Manages receiving data from, and sending commands to, a connected Robot.
+ *
  * Created by Michael Brunson on 2/13/16.
  */
-public class RobotController implements NodeMain {
+public class RobotController implements NodeMain, Savable {
 
-    private final Context context;
+    // Logcat Tag
+    private static final String TAG = "RobotController";
+
+    // The parent Context
+    private final ControlApp context;
+
+    // Timer for periodically publishing velocity commands
     private Timer publisherTimer;
+    // Indicates when a velocity command should be published
     private boolean publishVelocity;
 
+    // Publisher for velocity commands
     private Publisher<Twist> movePublisher;
+    // Contains the current velocity plan to be published
     private Twist currentVelocityCommand;
 
+    // Subscriber to NavSatFix data
     private Subscriber<NavSatFix> navSatFixSubscriber;
+    // The most recent NavSatFix
     private NavSatFix navSatFix;
+    // Lock for synchronizing accessing and receiving the current NatSatFix
     private final Object navSatFixMutex = new Object();
 
+    // Subscriber to LaserScan data
     private Subscriber<LaserScan> laserScanSubscriber;
+    // The most recent LaserScan
     private LaserScan laserScan;
+    // Lock for synchronizing accessing and receiving the current LaserScan
     private final Object laserScanMutex = new Object();
 
+    // Subscriber to Odometry data
     private Subscriber<Odometry> odometrySubscriber;
+    // The most recent Odometry
     private Odometry odometry;
+    // Lock for synchronizing accessing and receiving the current Odometry
     private final Object odometryMutex = new Object();
 
+    // Subscriber to Pose data
     private Subscriber<Pose> poseSubscriber;
+    // The most recent Pose
     private Pose pose;
+    // Lock for synchronizing accessing and receiving the current Pose
     private final Object poseMutex = new Object();
 
+    // The currently running RobotPlan
     private RobotPlan motionPlan;
+    // The currently paused RobotPlan
+    private int pausedPlanId;
+
+    // The node connected to the Robot on which data can be sent and received
     private ConnectedNode connectedNode;
 
-    // Listeners
+    // Listener for LaserScans
     private ArrayList<MessageListener<LaserScan>> laserScanListeners;
+    // Listener for Odometry
     private ArrayList<MessageListener<Odometry>> odometryListeners;
+    // Listener for NavSatFix
     private ArrayList<MessageListener<NavSatFix>> navSatListeners;
 
     /**
@@ -74,15 +103,21 @@ public class RobotController implements NodeMain {
      */
     public final LocationProvider LOCATION_PROVIDER;
 
-    // Current Robot's Pose information
-    private static Point startPos, currentPos;
+    // The Robot's starting position
+    private static Point startPos;
+    // The Robot's last recorded position
+    private static Point currentPos;
+    // The Robot's last recorded orientation
     private static Quaternion rotation;
+
+    // Bundle ID for pausedPlan
+    private static final String PAUSED_PLAN_BUNDLE_ID = "com.robotca.ControlApp.Core.RobotController.pausedPlan";
 
     /**
      * Creates a RobotController.
      * @param context The Context the RobotController belongs to.
      */
-    public RobotController(Context context) {
+    public RobotController(ControlApp context) {
         this.context = context;
 
         this.laserScanListeners = new ArrayList<>();
@@ -117,21 +152,63 @@ public class RobotController implements NodeMain {
         laserScanListeners.add(l);
     }
 
+    /**
+     * Initializes the RobotController.
+     * @param nodeMainExecutor The NodeMainExecutor on which to execute the NodeConfiguration.
+     * @param nodeConfiguration The NodeConfiguration to execute
+     */
     public void initialize(NodeMainExecutor nodeMainExecutor, NodeConfiguration nodeConfiguration) {
         nodeMainExecutor.execute(this, nodeConfiguration.setNodeName("android/robot_controller"));
     }
 
+    /**
+     * Runs the specified RobotPlan on the Robot.
+     * @param plan The RobotPlan
+     */
     public void runPlan(RobotPlan plan) {
         stop();
 
         publishVelocity = true;
+
         motionPlan = plan;
         motionPlan.run(this);
     }
 
-    public void stop() {
+    /**
+     * Attempts to resume a stopped RobotPlan.
+     * @return True if a RobotPlan was resumed
+     */
+    public boolean resumePlan() {
+        if (pausedPlanId != -1) {
+            runPlan(ControlMode.getRobotPlan(context, ControlMode.values()[pausedPlanId]));
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return True if there is a paused RobotPlan, false otherwise
+     */
+    public boolean hasPausedPlan() {
+        return pausedPlanId != -1;
+    }
+
+    /**
+     * Stops the Robot's current motion and any RobotPlan that may be running.
+     * @return True if a resumable RobotPlan was stopped
+     */
+    public boolean stop() {
+
+        pausedPlanId = -1;
+
         if (motionPlan != null) {
             motionPlan.stop();
+
+            if (motionPlan.isResumable()) {
+                pausedPlanId = motionPlan.getControlMode() == null ? -1: motionPlan.getControlMode().ordinal();
+            }
+
             motionPlan = null;
         }
 
@@ -141,8 +218,16 @@ public class RobotController implements NodeMain {
         if(movePublisher != null){
             movePublisher.publish(currentVelocityCommand);
         }
+
+        return pausedPlanId != -1;
     }
 
+    /**
+     * Sets the next values of the next velocity to publish.
+     * @param linearVelocityX Linear velocity in the x direction
+     * @param linearVelocityY Linear velocity in the y direction
+     * @param angularVelocityZ Angular velocity about the z axis
+     */
     public void publishVelocity(double linearVelocityX, double linearVelocityY,
                                 double angularVelocityZ) {
         if (currentVelocityCommand != null) {
@@ -157,27 +242,46 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /**
+     * Same as above, but forces the velocity to be published.
+     * @param linearVelocityX Linear velocity in the x direction
+     * @param linearVelocityY Linear velocity in the y direction
+     * @param angularVelocityZ Angular velocity about the z axis
+     */
     public void forceVelocity(double linearVelocityX, double linearVelocityY,
                               double angularVelocityZ) {
         publishVelocity = true;
         publishVelocity(linearVelocityX, linearVelocityY, angularVelocityZ);
     }
 
+    /**
+     * @return The default node name for the RobotController
+     */
     @Override
     public GraphName getDefaultNodeName() {
         return GraphName.of("android/robot_controller");
     }
 
+    /**
+     * Callback for when the RobotController is connected.
+     * @param connectedNode The ConnectedNode the RobotController is connected through
+     */
     @Override
     public void onStart(ConnectedNode connectedNode) {
         this.connectedNode = connectedNode;
-        update();
+        initialize();
     }
 
-    public void update() {
+    /*
+     * Initializes the RobotController.
+     */
+    public void initialize() {
         if(this.connectedNode != null) {
+
+            // Shutdown any topics that may be running
             shutdownTopics();
 
+            // Get the correct topic names
             String moveTopic = PreferenceManager.getDefaultSharedPreferences(context)
                     .getString("edittext_joystick_topic", context.getString(R.string.joy_topic));
             String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context)
@@ -189,6 +293,7 @@ public class RobotController implements NodeMain {
             String poseTopic = PreferenceManager.getDefaultSharedPreferences(context)
                     .getString("edittext_pose_topic", context.getString(R.string.pose_topic));
 
+            // Start the move publisher
             movePublisher = connectedNode.newPublisher(moveTopic, Twist._TYPE);
             currentVelocityCommand = movePublisher.newMessage();
 
@@ -203,6 +308,7 @@ public class RobotController implements NodeMain {
             }, 0, 80);
             publishVelocity = false;
 
+            // Start the NavSatFix subscriber
             navSatFixSubscriber = connectedNode.newSubscriber(navSatTopic, NavSatFix._TYPE);
             navSatFixSubscriber.addMessageListener(new MessageListener<NavSatFix>() {
                 @Override
@@ -211,6 +317,7 @@ public class RobotController implements NodeMain {
                 }
             });
 
+            // Start the LaserScan subscriber
             laserScanSubscriber = connectedNode.newSubscriber(laserScanTopic, LaserScan._TYPE);
             laserScanSubscriber.addMessageListener(new MessageListener<LaserScan>() {
                 @Override
@@ -219,6 +326,7 @@ public class RobotController implements NodeMain {
                 }
             });
 
+            // Start the Odometry subscriber
             odometrySubscriber = connectedNode.newSubscriber(odometryTopic, Odometry._TYPE);
             odometrySubscriber.addMessageListener(new MessageListener<Odometry>() {
                 @Override
@@ -227,6 +335,7 @@ public class RobotController implements NodeMain {
                 }
             });
 
+            // Start the Pose subscriber
             poseSubscriber = connectedNode.newSubscriber(poseTopic, Pose._TYPE);
             poseSubscriber.addMessageListener(new MessageListener<Pose>() {
                 @Override
@@ -237,6 +346,9 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /*
+     * Shuts down all topics.
+     */
     private void shutdownTopics() {
         if(publisherTimer != null) {
             publisherTimer.cancel();
@@ -263,27 +375,47 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /**
+     * Callback for when the RobotController is shutdown.
+     * @param node The Node
+     */
     @Override
     public void onShutdown(Node node) {
         shutdownTopics();
     }
 
+    /**
+     * Callback for when the shutdown is complete.
+     * @param node The Node
+     */
     @Override
     public void onShutdownComplete(Node node) {
         this.connectedNode = null;
     }
 
+    /**
+     * Callback indicating an error has occurred.
+     * @param node The Node
+     * @param throwable The error
+     */
     @Override
     public void onError(Node node, Throwable throwable) {
-
+        Log.e(TAG, "", throwable);
     }
 
+    /**
+     * @return The most recently received LaserScan
+     */
     public LaserScan getLaserScan() {
         synchronized (laserScanMutex) {
             return laserScan;
         }
     }
 
+    /**
+     * Sets the current LaserScan.
+     * @param laserScan The LaserScan
+     */
     protected void setLaserScan(LaserScan laserScan) {
         synchronized (laserScanMutex) {
             this.laserScan = laserScan;
@@ -295,12 +427,19 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /**
+     * @return The most recently received NavSatFix
+     */
     public NavSatFix getNavSatFix() {
         synchronized (navSatFixMutex) {
             return navSatFix;
         }
     }
 
+    /**
+     * Sets the current NavSatFix.
+     * @param navSatFix The NavSatFix
+     */
     protected void setNavSatFix(NavSatFix navSatFix) {
         synchronized (navSatFixMutex) {
             this.navSatFix = navSatFix;
@@ -312,12 +451,19 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /**
+     * @return The most recently received Odometry.
+     */
     public Odometry getOdometry() {
         synchronized (odometryMutex) {
             return odometry;
         }
     }
 
+    /**
+     * Sets the current Odometry.
+     * @param odometry The Odometry
+     */
     protected void setOdometry(Odometry odometry) {
         synchronized (odometryMutex) {
             this.odometry = odometry;
@@ -337,12 +483,19 @@ public class RobotController implements NodeMain {
         }
     }
 
+    /**
+     * @return The most recently received Pose.
+     */
     public Pose getPose() {
         synchronized (poseMutex) {
             return pose;
         }
     }
 
+    /**
+     * Sets the current Pose.
+     * @param pose The Pose
+     */
     public void setPose(Pose pose){
         synchronized (poseMutex){
             this.pose = pose;
@@ -359,7 +512,27 @@ public class RobotController implements NodeMain {
     }
 
     /**
-     * @return The Robot's x position
+     * Load from a Bundle.
+     *
+     * @param bundle The Bundle
+     */
+    @Override
+    public void load(@NonNull Bundle bundle) {
+        pausedPlanId = bundle.getInt(PAUSED_PLAN_BUNDLE_ID, -1);
+    }
+
+    /**
+     * Save to a Bundle.
+     *
+     * @param bundle The Bundle
+     */
+    @Override
+    public void save(@NonNull Bundle bundle) {
+        bundle.putInt(PAUSED_PLAN_BUNDLE_ID, pausedPlanId);
+    }
+
+    /**
+     * @return The Robot's last reported x position
      */
     public static double getX() {
         if (currentPos == null)
@@ -369,7 +542,7 @@ public class RobotController implements NodeMain {
     }
 
     /**
-     * @return The Robot's y position
+     * @return The Robot's last reported y position
      */
     public static double getY() {
         if (currentPos == null)
@@ -379,7 +552,7 @@ public class RobotController implements NodeMain {
     }
 
     /**
-     * @return The Robot's heading in radians
+     * @return The Robot's last reported heading in radians
      */
     public static double getHeading() {
         if (rotation == null)
