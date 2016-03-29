@@ -15,10 +15,10 @@ import android.support.v4.view.GravityCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.app.Fragment;
+//import android.app.Fragment;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.app.FragmentManager;
+//import android.app.FragmentManager;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -29,9 +29,8 @@ import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
-import com.robotca.ControlApp.Fragments.AboutFragment;
+import com.robotca.ControlApp.Fragments.AboutFragmentRobotChooser;
 import com.robotca.ControlApp.Fragments.HelpFragment;
-import com.robotca.ControlApp.Fragments.PreferencesFragment;
 
 
 import java.util.concurrent.Executors;
@@ -39,6 +38,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.ArrayList;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+
 
 /**
  * Activity for choosing a Robot with which to connect. The user can connect to a previously connected
@@ -235,7 +238,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
     private void selectItem(int position){
         Bundle args = new Bundle();
-        fragmentManager = getFragmentManager();
+        fragmentManager = getSupportFragmentManager();
 
         switch (position) {
             case 0:
@@ -256,22 +259,25 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
-                fragmentManager.beginTransaction()
-                        .replace(R.id.content_frame2, fragment)
-                        .commit();
+                if(fragment != null) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.content_frame2, fragment)
+                            .commit();
+                }
                 break;
 
             case 2:
-                fragment = new AboutFragment();
+                fragment = new AboutFragmentRobotChooser();
                 fragment.setArguments(args);
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
-               fragmentManager.beginTransaction()
-                        .replace(R.id.content_frame2, fragment)
-                        .commit();
-
+                if(fragment != null) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.content_frame2, fragment)
+                            .commit();
+                }
                 break;
 
             default:
