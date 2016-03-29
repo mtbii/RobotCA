@@ -119,11 +119,18 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     }
 
     /**
-     * Called whem the user changes the ControlMode.
+     * Toggles the appearance of the emergency stop button.
+     * @param stop If true, the button will be red with STOP displayed, otherwise green with START displayed
      */
-    public void controlModeChanged() {
-        emergencyStopButton.setText(R.string.stop);
-        emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
+    @SuppressWarnings("deprecation") // the new version of getColor() is not compatible with the minimum API level
+    public void toggleEmergencyStopUI(boolean stop) {
+        if (stop) {
+            emergencyStopButton.setText(R.string.stop);
+            emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
+        } else {
+            emergencyStopButton.setText(R.string.start);
+            emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_green));
+        }
     }
 
     /**
@@ -149,11 +156,9 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
 
                 // Try to resume a paused plan first
                 if (getControlApp().getRobotController().resumePlan()) {
-                    emergencyStopButton.setText(R.string.stop);
-                    emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
+                    toggleEmergencyStopUI(true);
                 } else if (getControlApp().stopRobot()) {
-                    emergencyStopButton.setText(R.string.start);
-                    emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_green));
+                    toggleEmergencyStopUI(false);
                 }
 
             }

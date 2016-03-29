@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -296,6 +297,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             // Add the HUDFragment to the RobotController's odometry listener
             controller.addOdometryListener(hudFragment);
+            // Add the JoystickView to the RobotController's odometry listener
             controller.addOdometryListener(joystickFragment.getJoystickView());
 
             runOnUiThread(new Runnable() {
@@ -390,7 +392,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         Bundle args = new Bundle();
 
-        if(joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()){
+        if (joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()){
             joystickFragment.show();
         }
 
@@ -406,12 +408,28 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
-                int count = fragmentManager.getBackStackEntryCount();
+
                 fragmentsCreatedCounter = 0;
-                for(int i = 0; i < count; ++i) {
+
+                int count = fragmentManager.getBackStackEntryCount();
+                for (int i = 0; i < count; ++i) {
                     fragmentManager.popBackStackImmediate();
                 }
+
+                if (controller != null) {
+                    controller.shutdownTopics();
+
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            nodeMainExecutor.shutdownNodeMain(controller);
+                            return null;
+                        }
+                    }.execute();
+                }
+
                 finish();
+
                 return;
 
             case 1:
@@ -437,16 +455,28 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             case 5:
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                if (hudFragment != null)
+                if (hudFragment != null) {
                     hudFragment.hide();
+                    hudFragment.toggleEmergencyStopUI(false);
+                }
+
+                stopRobot();
+
+
                 fragment = new PreferencesFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
                 break;
+
             case 6:
                 if (joystickFragment != null)
                     joystickFragment.hide();
-                if (hudFragment != null)
+                if (hudFragment != null) {
                     hudFragment.hide();
+                    hudFragment.toggleEmergencyStopUI(false);
+                }
+
+                stopRobot();
+
                 fragment = new AboutFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
 
@@ -586,7 +616,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         // Notify the Joystick on the new ControlMode
         joystickFragment.setControlMode(controlMode);
-        hudFragment.controlModeChanged();
+        hudFragment.toggleEmergencyStopUI(true);
 
         // If the ControlMode has an associated RobotPlan, run the plan
         RobotPlan robotPlan = ControlMode.getRobotPlan(this, controlMode);

@@ -15,7 +15,7 @@
         android:layout_alignParentEnd="true"
         android:background="@android:color/holo_red_dark"
         android:text="@string/stop"
-        tools:ignore="RelativeOverlap" />
+        tools:ignore="RelativeOverlap"/>
 
     <HorizontalScrollView
         android:layout_width="match_parent"

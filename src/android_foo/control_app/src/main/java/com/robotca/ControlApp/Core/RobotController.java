@@ -1,6 +1,5 @@
 package com.robotca.ControlApp.Core;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -44,6 +43,9 @@ public class RobotController implements NodeMain, Savable {
 
     // The parent Context
     private final ControlApp context;
+
+    // Whether the RobotController has been initialized
+    private boolean initialized;
 
     // Timer for periodically publishing velocity commands
     private Timer publisherTimer;
@@ -113,12 +115,17 @@ public class RobotController implements NodeMain, Savable {
     // Bundle ID for pausedPlan
     private static final String PAUSED_PLAN_BUNDLE_ID = "com.robotca.ControlApp.Core.RobotController.pausedPlan";
 
+    // Constant for no motion plan
+    private static final int NO_PLAN = -1;
+
     /**
      * Creates a RobotController.
      * @param context The Context the RobotController belongs to.
      */
     public RobotController(ControlApp context) {
         this.context = context;
+
+        this.initialized = false;
 
         this.laserScanListeners = new ArrayList<>();
         this.odometryListeners = new ArrayList<>();
@@ -167,6 +174,7 @@ public class RobotController implements NodeMain, Savable {
      */
     public void runPlan(RobotPlan plan) {
         stop();
+        pausedPlanId = NO_PLAN;
 
         publishVelocity = true;
 
@@ -179,7 +187,7 @@ public class RobotController implements NodeMain, Savable {
      * @return True if a RobotPlan was resumed
      */
     public boolean resumePlan() {
-        if (pausedPlanId != -1) {
+        if (pausedPlanId != NO_PLAN) {
             runPlan(ControlMode.getRobotPlan(context, ControlMode.values()[pausedPlanId]));
             return true;
         }
@@ -191,7 +199,7 @@ public class RobotController implements NodeMain, Savable {
      * @return True if there is a paused RobotPlan, false otherwise
      */
     public boolean hasPausedPlan() {
-        return pausedPlanId != -1;
+        return pausedPlanId != NO_PLAN;
     }
 
     /**
@@ -200,13 +208,13 @@ public class RobotController implements NodeMain, Savable {
      */
     public boolean stop() {
 
-        pausedPlanId = -1;
+        pausedPlanId = NO_PLAN;
 
         if (motionPlan != null) {
             motionPlan.stop();
 
             if (motionPlan.isResumable()) {
-                pausedPlanId = motionPlan.getControlMode() == null ? -1: motionPlan.getControlMode().ordinal();
+                pausedPlanId = motionPlan.getControlMode() == null ? NO_PLAN: motionPlan.getControlMode().ordinal();
             }
 
             motionPlan = null;
@@ -219,7 +227,7 @@ public class RobotController implements NodeMain, Savable {
             movePublisher.publish(currentVelocityCommand);
         }
 
-        return pausedPlanId != -1;
+        return pausedPlanId != NO_PLAN;
     }
 
     /**
@@ -276,7 +284,7 @@ public class RobotController implements NodeMain, Savable {
      * Initializes the RobotController.
      */
     public void initialize() {
-        if(this.connectedNode != null) {
+        if (!initialized && connectedNode != null) {
 
             // Shutdown any topics that may be running
             shutdownTopics();
@@ -300,8 +308,7 @@ public class RobotController implements NodeMain, Savable {
             publisherTimer = new Timer();
             publisherTimer.schedule(new TimerTask() {
                 @Override
-                public void run() {
-                    if (publishVelocity) {
+                public void run() { if (publishVelocity) {
                         movePublisher.publish(currentVelocityCommand);
                     }
                 }
@@ -343,13 +350,15 @@ public class RobotController implements NodeMain, Savable {
                     setPose(pose);
                 }
             });
+
+            initialized = true;
         }
     }
 
-    /*
+    /**
      * Shuts down all topics.
      */
-    private void shutdownTopics() {
+    public void shutdownTopics() {
         if(publisherTimer != null) {
             publisherTimer.cancel();
         }
@@ -518,7 +527,7 @@ public class RobotController implements NodeMain, Savable {
      */
     @Override
     public void load(@NonNull Bundle bundle) {
-        pausedPlanId = bundle.getInt(PAUSED_PLAN_BUNDLE_ID, -1);
+        pausedPlanId = bundle.getInt(PAUSED_PLAN_BUNDLE_ID, NO_PLAN);
     }
 
     /**
