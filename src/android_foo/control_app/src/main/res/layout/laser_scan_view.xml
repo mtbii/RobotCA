@@ -4,9 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.ros.android.view.visualization.VisualizationView
-        android:id="@+id/laser_scan_fragment_viz_view"
-        android:layout_width="fill_parent"
+    <!--<org.ros.android.view.visualization.VisualizationView-->
+        <!--android:id="@+id/laser_scan_fragment_viz_view"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+    <com.robotca.ControlApp.Views.LaserScanView
+        android:id="@+id/laser_scan_renderer_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <LinearLayout
@@ -15,17 +19,20 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle">
         <Button
             android:id="@+id/recenter_laser_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/map_center_string"/>
+            android:text="@string/map_center_string"
+            style="?android:attr/buttonBarButtonStyle"/>
         <Button
             android:id="@+id/clear_waypoints"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/map_clear_string"/>
+            android:text="@string/map_clear_string"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
 </RelativeLayout>

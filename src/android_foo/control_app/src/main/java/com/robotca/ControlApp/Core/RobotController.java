@@ -94,7 +94,7 @@ public class RobotController implements NodeMain, Savable {
     private ConnectedNode connectedNode;
 
     // Listener for LaserScans
-    private ArrayList<MessageListener<LaserScan>> laserScanListeners;
+    private final ArrayList<MessageListener<LaserScan>> laserScanListeners;
     // Listener for Odometry
     private ArrayList<MessageListener<Odometry>> odometryListeners;
     // Listener for NavSatFix
@@ -152,11 +152,24 @@ public class RobotController implements NodeMain, Savable {
     }
 
     /**
-     * Adds a NavSatFix listener.
+     * Adds a LaserScan listener.
      * @param l The listener
      */
     public void addLaserScanListener(MessageListener<LaserScan> l) {
-        laserScanListeners.add(l);
+        synchronized (laserScanListeners) {
+            laserScanListeners.add(l);
+        }
+    }
+
+    /**
+     * Removes a LaserScan listener.
+     * @param l The listener
+     */
+    public void removeLaserScanListener(MessageListener<LaserScan> l) {
+
+        synchronized (laserScanListeners) {
+            laserScanListeners.remove(l);
+        }
     }
 
     /**
@@ -431,8 +444,10 @@ public class RobotController implements NodeMain, Savable {
         }
 
         // Call the listener callbacks
-        for (MessageListener<LaserScan> listener: laserScanListeners) {
-            listener.onNewMessage(laserScan);
+        synchronized (laserScanListeners) {
+            for (MessageListener<LaserScan> listener : laserScanListeners) {
+                listener.onNewMessage(laserScan);
+            }
         }
     }
 

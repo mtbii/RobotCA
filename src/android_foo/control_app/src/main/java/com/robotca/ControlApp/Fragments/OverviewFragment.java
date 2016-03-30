@@ -50,7 +50,7 @@ public class OverviewFragment extends RosFragment {
         }
 
         if (isInitialized()) {
-            laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
+//            laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
             nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/camera_view"));
         }
 

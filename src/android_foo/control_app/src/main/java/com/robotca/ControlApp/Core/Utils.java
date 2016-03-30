@@ -3,6 +3,8 @@ package com.robotca.ControlApp.Core;
 import android.graphics.Color;
 import android.location.Location;
 
+import com.google.common.base.Preconditions;
+
 import org.ros.android.view.visualization.Vertices;
 import org.ros.rosjava_geometry.Quaternion;
 import org.ros.rosjava_geometry.Vector3;
@@ -22,6 +24,17 @@ public class Utils {
 
     // Temporary float buffer
     private static final FloatBuffer fb = Vertices.allocateBuffer(3 + 4); //xyz + color (rgba)
+
+    // FloatBuffer containing arrow shape
+    private static final FloatBuffer shape;
+
+    static {
+        shape = Vertices.allocateBuffer(15);
+        shape.rewind();
+
+        shape.put( new float[]{0.2F, 0.0F, 0.0F, -0.2F, -0.15F, 0.0F, -0.05F,
+                0.0F, 0.0F, -0.2F, 0.15F, 0.0F, 0.2F, 0.0F, 0.0F});
+    }
 
     /**
      * Returns a heading from the specified Quaternion in radians.
@@ -108,6 +121,7 @@ public class Utils {
      * @param color The color in the form 0xAARRGGBB
      */
     public static void drawPoint(GL10 gl, float x, float y, float size, int color) {
+
         fb.rewind();
 
         fb.put(x); // x
@@ -136,4 +150,62 @@ public class Utils {
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
     }
+
+    /**
+     * Draws the robot indicator shape.
+     * @param gl The GL10 on which to draw
+     * @param color The color
+     */
+    public static void drawShape(GL10 gl, org.ros.android.view.visualization.Color color) {
+        shape.rewind();
+
+        gl.glPushMatrix();
+        gl.glScalef(4.0f, 4.0f, 1.0f);
+        Vertices.drawTriangleFan(gl, shape, color);
+        gl.glPopMatrix();
+    }
+
+    /**
+     * Draws the contents of the specified buffer.
+     *
+     * @param gl       GL10 object for drawing
+     * @param vertices FloatBuffer of vertices to draw
+     * @param size     Size of draw points
+     * @param fan      If true, draws the buffer as a triangle fan, otherwise draws it as a point cloud
+     */
+    public static void drawPoints(GL10 gl, FloatBuffer vertices, float size, boolean fan) {
+        vertices.mark();
+
+        if (!fan)
+            gl.glPointSize(size);
+
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+
+        gl.glVertexPointer(3, GL10.GL_FLOAT, (3 + 4) * 4, vertices);
+
+        FloatBuffer colors = vertices.duplicate();
+        colors.position(fan ? 3 : 10);
+        gl.glColorPointer(4, GL10.GL_FLOAT, (3 + 4) * 4, colors);
+
+        gl.glDrawArrays(fan ? GL10.GL_TRIANGLE_FAN : GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
+
+        if (!fan) {
+            gl.glDrawArrays(GL10.GL_POINTS, 0, countVertices(vertices, 3 + 4));
+        }
+
+        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+
+        vertices.reset();
+    }
+
+    /*
+     * Helper function to calculate the number of vertices in a FloatBuffer.
+     */
+    private static int countVertices(FloatBuffer vertices, int size) {
+        Preconditions.checkArgument(vertices.remaining() % size == 0, "Number of vertices: " + vertices.remaining());
+        return vertices.remaining() / size;
+    }
+
 }

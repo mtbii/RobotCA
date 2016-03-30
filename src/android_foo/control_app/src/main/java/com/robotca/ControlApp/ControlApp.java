@@ -652,8 +652,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     /**
      * Same as above but will remove a nearby way point if one is close instead of adding the new point.
      * @param point The point
+     * @param scale The camera scale
      */
-    public void addWaypointWithCheck(Vector3 point) {
+    public void addWaypointWithCheck(Vector3 point, float scale) {
 
         // First find the nearest point
         double minDist = Double.MAX_VALUE, dist;
@@ -670,7 +671,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             }
         }
 
-        if (near != null && minDist < MINIMUM_WAYPOINT_DISTANCE) {
+        if (near != null && minDist * scale < MINIMUM_WAYPOINT_DISTANCE) {
 
             final Vector3 remove = near;
 
