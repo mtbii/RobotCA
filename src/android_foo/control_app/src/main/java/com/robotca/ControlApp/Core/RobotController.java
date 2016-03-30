@@ -133,6 +133,10 @@ public class RobotController implements NodeMain, Savable {
 
         this.LOCATION_PROVIDER = new LocationProvider();
         this.addNavSatFixListener(this.LOCATION_PROVIDER);
+
+        startPos = null;
+        currentPos = null;
+        rotation = null;
     }
 
     /**

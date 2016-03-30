@@ -160,7 +160,7 @@ public class Utils {
         shape.rewind();
 
         gl.glPushMatrix();
-        gl.glScalef(4.0f, 4.0f, 1.0f);
+        gl.glScalef(3.0f, 3.0f, 1.0f);
         Vertices.drawTriangleFan(gl, shape, color);
         gl.glPopMatrix();
     }

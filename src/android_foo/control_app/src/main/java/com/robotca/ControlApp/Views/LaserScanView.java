@@ -21,6 +21,7 @@ public class LaserScanView extends GLSurfaceView {
 
     private static final String TAG = "LaserScanView";
 
+    // The Renderer for this View
     private LaserScanRenderer laserScanRenderer;
 
     /**
@@ -30,7 +31,8 @@ public class LaserScanView extends GLSurfaceView {
     public LaserScanView(Context context) {
         super(context);
 
-        setRenderer(laserScanRenderer = new LaserScanRenderer((ControlApp) getContext()));
+        if (!isInEditMode())
+            setRenderer(laserScanRenderer = new LaserScanRenderer((ControlApp) getContext()));
     }
 
     /**
@@ -39,7 +41,8 @@ public class LaserScanView extends GLSurfaceView {
     public LaserScanView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setRenderer(laserScanRenderer = new LaserScanRenderer((ControlApp) getContext()));
+        if (!isInEditMode())
+            setRenderer(laserScanRenderer = new LaserScanRenderer((ControlApp) getContext()));
     }
 
     /**

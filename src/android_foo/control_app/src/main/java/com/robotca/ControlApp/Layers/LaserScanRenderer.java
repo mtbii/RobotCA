@@ -59,14 +59,20 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     private int width, height;
 
     // Camera parameters
-    private float cameraZoom = 1.0f;
-    private float cameraAngle;
-    private float xShift, yShift;
+    private static float cameraZoom = 1.0f;
+    private static float cameraAngle;
+    private static boolean angleFollowsRobot;
+    private static float xShift, yShift;
+
+    // Used for rotating the view
+    private static boolean isRotating;
+    private static int pointerIndex;
+    private static float angleShift, angleStart, offAngle;
 
     // Used for panning the view
-    private boolean isMoving;
-    private float xStart, yStart;
-    private float offX, offY;
+    private static boolean isMoving;
+    private static float xStart, yStart;
+    private static float offX, offY;
 
     // Used for zooming the view
     private final ScaleGestureDetector scaleGestureDetector;
@@ -85,6 +91,10 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     // Buffer of scan points for updating
     private FloatBuffer vertexBackBuffer;
 
+    // Limits how frequently laser scans are updated
+    private long lastTime;
+    private static final long MIN_TIME = 16L;
+
     /**
      * Creates a LaserScanRenderer.
      * @param controlApp The current ControlApp
@@ -100,7 +110,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
         if (this.laserScanDetail < 1f)
             this.laserScanDetail = 1f;
 
-        setCameraAngle(90.0f);
+//        makeCameraAngleFollowRobot(true);
 
         this.scaleGestureDetector = new ScaleGestureDetector(controlApp,
                 new ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -165,6 +175,34 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
         isMoving = false;
         xShift = 0.0f;
         yShift = 0.0f;
+
+        if (!angleFollowsRobot)
+            angleShift = 90.0f - (float) Math.toDegrees(RobotController.getHeading());
+    }
+
+    /**
+     * Toggles whether the Camera matches the Robot's angle or not.
+     * @param follow True for if the camera should match the Robot's direction and false otherwise
+     */
+    public void makeCameraAngleFollowRobot(boolean follow) {
+
+        if (follow == angleFollowsRobot)
+            return;
+
+        angleFollowsRobot = follow;
+
+        if (follow) {
+            angleShift = 0.0f;
+        } else {
+            angleShift = 90.0f - (float) Math.toDegrees(RobotController.getHeading());
+        }
+    }
+
+    /**
+     * @return Whether the camera angle is locked on the Robot's heading or not
+     */
+    public boolean angleFollowsRobot() {
+        return angleFollowsRobot;
     }
 
     /**
@@ -186,11 +224,27 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
             case MotionEvent.ACTION_POINTER_DOWN:
                 isMoving = false;
                 Log.d(TAG, "Pointer Down");
+
+                if (!isRotating) {
+                    isRotating = event.getPointerCount() >= 2;
+
+                    if (isRotating) {
+                        pointerIndex = event.getPointerCount() - 1;
+                        angleStart = (float) Math.toDegrees(Utils.pointDirection(
+                                event.getX(pointerIndex), event.getY(pointerIndex),
+                                event.getX(), event.getY()));
+                        offAngle = angleShift;
+                    }
+                }
+
                 r = false;
                 break;
 
             case MotionEvent.ACTION_POINTER_UP:
                 Log.d(TAG, "Pointer Up");
+
+                if (isRotating)
+                    isRotating = event.getPointerCount() >= 2;
                 break;
 
             case MotionEvent.ACTION_DOWN:
@@ -216,6 +270,15 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                     xShift = xStart + event.getX() * s + offX;
                     yShift = yStart - event.getY() * s + offY;
                 }
+
+                if (isRotating && pointerIndex < event.getPointerCount()) {
+                    angleShift = angleStart - (float) Math.toDegrees(Utils.pointDirection(
+                        event.getX(pointerIndex), event.getY(pointerIndex),
+                            event.getX(), event.getY())) + offAngle;
+                }
+                else
+                    isRotating = false;
+
                 break;
         }
 
@@ -252,8 +315,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
     /**
      * Called to draw the current frame.
-     * @param gl the GL interface. Use <code>instanceof</code> to
-     *           test if the interface supports GL11 or higher interfaces.
+     * @param gl the GL interface.
      */
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -268,6 +330,11 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
             final float cameraX = xShift;
             final float cameraY = yShift;
 
+            if (angleFollowsRobot)
+                cameraAngle = 90.0f;
+            else
+                cameraAngle = angleShift + (float) Math.toDegrees(RobotController.getHeading());
+
             synchronized (mutex) {
 
                 gl.glPushMatrix();
@@ -280,9 +347,6 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
                 // Rotate by the camera angle
                 gl.glRotatef(cameraAngle, 0.0f, 0.0f, 1.0f);
-
-//                // Apply camera translation
-//                gl.glTranslatef(cameraX, cameraY, 0.0f);
 
                 // Draw start position
                 drawPoint(gl, 0.0, 0.0, 32.0f, 0xFFCCCCDD, null);
@@ -319,17 +383,14 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
      */
     public void onNewMessage(LaserScan laserScan) {
 
-        // TODO limit update rate
-        updateVertexBuffer(laserScan);
+        if (System.currentTimeMillis() - lastTime > MIN_TIME) {
+            lastTime = System.currentTimeMillis();
+            updateVertexBuffer(laserScan);
+        }
+//        else {
+//            Log.d(TAG, "Dropped laser scan");
+//        }
 
-    }
-
-    /**
-     * Sets the camera angle.
-     * @param cameraAngle The new angle, in degrees
-     */
-    public void setCameraAngle(float cameraAngle) {
-        this.cameraAngle = cameraAngle;
     }
 
     /**

@@ -41,6 +41,7 @@ import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
+import com.robotca.ControlApp.Core.Savable;
 import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.Core.WarningSystemPlan;
 import com.robotca.ControlApp.Fragments.AboutFragment;
@@ -72,7 +73,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public static final String NOTIFICATION_TICKER = "ROS Control";
     public static final String NOTIFICATION_TITLE = "ROS Control";
     public static RobotInfo ROBOT_INFO;
-    //public static URI DEFAULT_URI = URI.create("localhost");
 
     private String[] mFeatureTitles;
     private DrawerLayout mDrawerLayout;
@@ -81,8 +81,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private NodeMainExecutor nodeMainExecutor;
     private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
-    //creating emergency stop button
-//    private Button emergencyStop;
+
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
@@ -97,8 +96,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private String mTitle;
     private String mDrawerTitle;
 
+    // Log tag String
     private static final String TAG = "ControlApp";
-//    private Vector3 waypoint;
 
     // List of waypoints
     private final LinkedList<Vector3> waypoints;
@@ -106,6 +105,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
     private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
     private static final String CONTROL_MODE_BUNDLE_ID = "com.robotca.Views.Fragments.JoystickFragment.controlMode";
+
+    private Bundle savedInstanceState;
 
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
@@ -208,6 +209,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
 
+        this.savedInstanceState = savedInstanceState;
+
         if (savedInstanceState != null) {
             //noinspection unchecked
             List<Vector3> list = (List<Vector3>) savedInstanceState.getSerializable(WAYPOINT_BUNDLE_ID);
@@ -220,7 +223,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             setControlMode(ControlMode.values()[savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID)]);
             drawerIndex = savedInstanceState.getInt(SELECTED_VIEW_NUMBER_BUNDLE_ID);
 
+            // Load the controller
             controller.load(savedInstanceState);
+
+//            // Load the current fragment if applicable
+//            if (fragment instanceof Savable)
+//                ((Savable) fragment).load(savedInstanceState);
         }
     }
 
@@ -269,6 +277,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Save the RobotController
         if (controller != null)
             controller.save(bundle);
+
+        // Save the current fragment if applicable
+        if (fragment instanceof Savable)
+            ((Savable) fragment).save(bundle);
     }
 
     @Override
@@ -462,7 +474,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
                 stopRobot();
 
-
                 fragment = new PreferencesFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
                 break;
@@ -497,10 +508,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             fragment.setArguments(args);
 
             // Insert the fragment by replacing any existing fragment
-            //FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment)
                     .commit();
+
+            if (fragment instanceof Savable && savedInstanceState != null)
+                ((Savable) fragment).load(savedInstanceState);
         }
 
         // Highlight the selected item, update the title, and close the drawer
@@ -565,7 +578,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         else {
             super.onBackPressed();
         }
-
     }
 
     @Override
@@ -713,7 +725,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
-     * @return The next waypoint in line an removes it
+     * @return The next waypoint in line and removes it
      */
     public Vector3 pollDestination() {
 
@@ -741,7 +753,4 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             waypoints.clear();
         }
     }
-//    public RobotController getController(){
-//        return controller;
-//    }
 }
