@@ -25,7 +25,7 @@
             android:id="@+id/recenter_laser_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/map_center_string"/>
+            android:text="@string/center"/>
 
         <Button style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/clear_waypoints"

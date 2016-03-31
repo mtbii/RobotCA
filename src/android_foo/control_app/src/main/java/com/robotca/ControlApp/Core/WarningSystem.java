@@ -1,6 +1,9 @@
 package com.robotca.ControlApp.Core;
 
+import android.preference.PreferenceManager;
+
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
 
@@ -14,6 +17,7 @@ public class WarningSystem implements MessageListener<LaserScan> {
 
     private final ControlApp controlApp;
     private final float minRange;
+    private boolean enabled;
 
     private static final float ANGLE_DELTA = (float) Math.toRadians(30.0);
 
@@ -24,15 +28,30 @@ public class WarningSystem implements MessageListener<LaserScan> {
     /**
      * Creates a WarningSystem plan for the specified ControlApp.
      * @param controlApp The ControlApp
-     * @param minRange The minimum range deemed dangerous
      */
-    public WarningSystem(ControlApp controlApp, float minRange) {
+    public WarningSystem(ControlApp controlApp) {
         this.controlApp = controlApp;
-        this.minRange = Math.max(minRange, 0.2f);
+        this.enabled = true;
+
+        String val = PreferenceManager.getDefaultSharedPreferences(controlApp).getString(
+                controlApp.getString(R.string.prefs_warning_mindist_key), "2.0");
+        this.minRange = Math.max(0.2f, Float.parseFloat(val));
+    }
+
+    /**
+     * Enables/Disables the Warning System.
+     * @param enabled Whether to enable or disable the Warning System
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
     public void onNewMessage(LaserScan laserScan) {
+
+        if (!enabled)
+            return;
+
         float[] ranges = laserScan.getRanges();
         float shortestDistance = ranges[ranges.length / 2];
 

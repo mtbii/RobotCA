@@ -42,10 +42,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ffab6797-4de1-464b-bfbc-bed3b19021bd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/HUDFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/HUDFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java" afterPath="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_laser_scan.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_laser_scan.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_map.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/menu/menu_control_app.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/menu/menu_control_app.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -140,21 +143,32 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ControlApp.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ControlApp.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.53637904">
-              <caret line="172" column="31" selection-start-line="172" selection-start-column="31" selection-end-line="172" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="302" column="74" selection-start-line="302" selection-start-column="74" selection-end-line="302" selection-end-column="74" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#12463#12464#0" expanded="true" />
-                <element signature="e#12496#12497#0" expanded="true" />
+                <element signature="e#4534#4587#0" expanded="true" />
+                <element signature="e#4650#4704#0" expanded="true" />
+                <element signature="e#4764#4815#0" expanded="true" />
+                <element signature="e#4884#4930#0" expanded="true" />
+                <element signature="e#5655#5675#0" expanded="true" />
+                <element signature="e#5693#5714#0" expanded="true" />
+                <element signature="e#11908#11909#0" expanded="true" />
+                <element signature="e#11941#11942#0" expanded="true" />
+                <element signature="method#lockOrientation#0;class#ControlApp#0" expanded="false" />
+                <element signature="method#selectItem#0;class#ControlApp#0" expanded="false" />
+                <element signature="e#20781#20827#0" expanded="true" />
+                <element signature="e#21033#21034#0" expanded="true" />
+                <element signature="e#21089#21090#0" expanded="true" />
                 <element signature="method#setControlMode#0;class#ControlApp#0" expanded="false" />
                 <element signature="method#setDestination#0;class#ControlApp#0" expanded="false" />
                 <element signature="method#addWaypoint#0;class#ControlApp#0" expanded="false" />
-                <element signature="method#addWaypointWithCheck#0;class#ControlApp#0" expanded="false" />
-                <element signature="method#pollDestination#0;class#ControlApp#0" expanded="false" />
-                <element signature="method#clearWaypoints#0;class#ControlApp#0" expanded="false" />
+                <element signature="e#24235#24236#0" expanded="true" />
+                <element signature="e#24279#24280#0" expanded="true" />
+                <element signature="e#24624#24625#0" expanded="true" />
+                <element signature="e#24656#24657#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -164,25 +178,61 @@
         <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="229" column="10" selection-start-line="229" selection-start-column="10" selection-end-line="229" selection-end-column="10" />
+              <caret line="311" column="0" selection-start-line="311" selection-start-column="0" selection-end-line="311" selection-end-column="0" />
               <folding>
-                <element signature="e#4882#4883#0" expanded="true" />
-                <element signature="e#4922#4923#0" expanded="true" />
-                <element signature="e#6787#6788#0" expanded="true" />
-                <element signature="e#6833#6834#0" expanded="true" />
-                <element signature="e#6926#6927#0" expanded="true" />
-                <element signature="e#6959#6960#0" expanded="true" />
+                <element signature="e#5071#5072#0" expanded="true" />
+                <element signature="e#5109#5110#0" expanded="true" />
+                <element signature="e#6758#6759#0" expanded="true" />
+                <element signature="e#6791#6792#0" expanded="true" />
+                <element signature="e#9116#9117#0" expanded="true" />
+                <element signature="e#9179#9180#0" expanded="true" />
+                <element signature="e#10021#10082#0" expanded="true" />
+                <element signature="e#10108#10145#0" expanded="true" />
+                <element signature="e#10260#10319#0" expanded="true" />
+                <element signature="e#10345#10385#0" expanded="true" />
+                <element signature="e#10503#10565#0" expanded="true" />
+                <element signature="e#10591#10635#0" expanded="true" />
+                <element signature="e#10752#10813#0" expanded="true" />
+                <element signature="e#10839#10881#0" expanded="true" />
+                <element signature="e#10994#11051#0" expanded="true" />
+                <element signature="e#11077#11115#0" expanded="true" />
+                <element signature="e#11733#11952#0" expanded="true" />
+                <element signature="e#11951#11952#0" expanded="true" />
+                <element signature="e#12465#12666#0" expanded="true" />
+                <element signature="e#12665#12666#0" expanded="true" />
+                <element signature="e#13144#13345#0" expanded="true" />
+                <element signature="e#13344#13345#0" expanded="true" />
+                <element signature="e#13812#14008#0" expanded="true" />
+                <element signature="e#14007#14008#0" expanded="true" />
+                <element signature="e#14431#14607#0" expanded="true" />
+                <element signature="e#14606#14607#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
+      <file leaf-file-name="ControlMode.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/ControlMode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.310345">
-              <caret line="21" column="56" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="15" selection-start-line="20" selection-start-column="15" selection-end-line="20" selection-end-column="15" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PreferencesFragment.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5076142">
+              <caret line="37" column="96" selection-start-line="37" selection-start-column="96" selection-end-line="37" selection-end-column="96" />
+              <folding>
+                <element signature="e#1088#1132#0" expanded="true" />
+                <element signature="e#1158#1204#0" expanded="true" />
+                <element signature="e#1253#1642#0" expanded="true" />
+                <element signature="e#1641#1642#0" expanded="true" />
+                <element signature="e#1955#1984#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -191,37 +241,59 @@
         <entry file="file://$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="13" column="32" selection-start-line="13" selection-start-column="32" selection-end-line="13" selection-end-column="32" />
+              <caret line="57" column="23" selection-start-line="57" selection-start-column="23" selection-end-line="57" selection-end-column="23" />
               <folding>
-                <element signature="e#330#356#0" expanded="true" />
-                <element signature="e#381#409#0" expanded="true" />
-                <element signature="e#523#542#0" expanded="true" />
-                <element signature="e#569#593#0" expanded="true" />
-                <element signature="e#660#686#0" expanded="true" />
-                <element signature="e#816#842#0" expanded="true" />
-                <element signature="e#869#895#0" expanded="true" />
-                <element signature="e#962#990#0" expanded="true" />
-                <element signature="e#1116#1138#0" expanded="true" />
-                <element signature="e#1165#1192#0" expanded="true" />
-                <element signature="e#1259#1288#0" expanded="true" />
-                <element signature="e#1414#1436#0" expanded="true" />
-                <element signature="e#1463#1490#0" expanded="true" />
-                <element signature="e#1557#1586#0" expanded="true" />
-                <element signature="e#1714#1738#0" expanded="true" />
-                <element signature="e#1765#1794#0" expanded="true" />
-                <element signature="e#1861#1892#0" expanded="true" />
-                <element signature="e#2016#2036#0" expanded="true" />
-                <element signature="e#2063#2088#0" expanded="true" />
-                <element signature="e#2151#2178#0" expanded="true" />
-                <element signature="e#2308#2338#0" expanded="true" />
-                <element signature="e#2363#2395#0" expanded="true" />
-                <element signature="e#2619#2647#0" expanded="true" />
-                <element signature="e#2672#2702#0" expanded="true" />
-                <element signature="e#2897#2935#0" expanded="true" />
-                <element signature="e#2994#3034#0" expanded="true" />
-                <element signature="e#3218#3264#0" expanded="true" />
-                <element signature="e#3323#3371#0" expanded="true" />
+                <element signature="e#284#310#0" expanded="true" />
+                <element signature="e#335#363#0" expanded="true" />
+                <element signature="e#418#461#0" expanded="true" />
+                <element signature="e#495#514#0" expanded="true" />
+                <element signature="e#541#565#0" expanded="true" />
+                <element signature="e#632#658#0" expanded="true" />
+                <element signature="e#727#771#0" expanded="true" />
+                <element signature="e#805#831#0" expanded="true" />
+                <element signature="e#858#884#0" expanded="true" />
+                <element signature="e#951#979#0" expanded="true" />
+                <element signature="e#1048#1089#0" expanded="true" />
+                <element signature="e#1123#1145#0" expanded="true" />
+                <element signature="e#1172#1199#0" expanded="true" />
+                <element signature="e#1266#1295#0" expanded="true" />
+                <element signature="e#1364#1405#0" expanded="true" />
+                <element signature="e#1439#1461#0" expanded="true" />
+                <element signature="e#1488#1515#0" expanded="true" />
+                <element signature="e#1582#1611#0" expanded="true" />
+                <element signature="e#1680#1723#0" expanded="true" />
+                <element signature="e#1757#1781#0" expanded="true" />
+                <element signature="e#1808#1837#0" expanded="true" />
+                <element signature="e#1904#1935#0" expanded="true" />
+                <element signature="e#2004#2043#0" expanded="true" />
+                <element signature="e#2077#2097#0" expanded="true" />
+                <element signature="e#2124#2149#0" expanded="true" />
+                <element signature="e#2212#2239#0" expanded="true" />
+                <element signature="e#2367#2403#0" expanded="true" />
+                <element signature="e#2493#2528#0" expanded="true" />
+                <element signature="e#2556#2597#0" expanded="true" />
+                <element signature="e#2624#2664#0" expanded="true" />
+                <element signature="e#2789#2823#0" expanded="true" />
+                <element signature="e#2895#2923#0" expanded="true" />
+                <element signature="e#2948#2978#0" expanded="true" />
+                <element signature="e#3033#3068#0" expanded="true" />
+                <element signature="e#3180#3216#0" expanded="true" />
+                <element signature="e#3283#3321#0" expanded="true" />
+                <element signature="e#3517#3555#0" expanded="true" />
+                <element signature="e#3614#3654#0" expanded="true" />
+                <element signature="e#3838#3884#0" expanded="true" />
+                <element signature="e#3943#3991#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-12.413794">
+              <caret line="37" column="64" selection-start-line="37" selection-start-column="64" selection-end-line="37" selection-end-column="64" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -230,22 +302,12 @@
         <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+              <caret line="37" column="62" selection-start-line="37" selection-start-column="62" selection-end-line="37" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HUDFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/HUDFragment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="347" column="28" selection-start-line="347" selection-start-column="28" selection-end-line="347" selection-end-column="28" />
-              <folding>
-                <element signature="e#4522#4554#0" expanded="true" />
-                <element signature="method#getLatLongString#0;class#HUDFragment#0" expanded="false" />
+                <element signature="e#1116#1172#0" expanded="true" />
+                <element signature="e#1426#1427#0" expanded="true" />
+                <element signature="e#1464#1465#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2682,11 +2744,13 @@
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Layers/LaserScanRenderer.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystemPlan.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/HUDFragment.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml" />
-        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/menu/menu_control_app.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java" />
       </list>
     </option>
   </component>
@@ -3324,7 +3388,13 @@
       <option name="project" value="LOCAL" />
       <updated>1459361373298</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Fixed the beep beep warning system add made the HUDFragment flash red also.">
+      <created>1459439320966</created>
+      <option name="number" value="00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1459439320966</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TodoView">
@@ -3405,66 +3475,21 @@
     <MESSAGE value="Fixed bug with emergency stop button not working after switching between motion plans.&#10;Made the RobotController not reinitialize every time a fragment is switched out." />
     <MESSAGE value="Altered the old LaserScanLayer system so that it doesn't use any of the ROS Visualization view which removed the need for an extra node and subscriber for LaserScan data." />
     <MESSAGE value="The LaserScan view can be set so that the camera does not lock to the Robot's heading in which case the user can rotate it manually to any direction." />
-    <option name="LAST_COMMIT_MESSAGE" value="The LaserScan view can be set so that the camera does not lock to the Robot's heading in which case the user can rotate it manually to any direction." />
+    <MESSAGE value="Fixed the beep beep warning system add made the HUDFragment flash red also." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the beep beep warning system add made the HUDFragment flash red also." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="20" />
+      <option name="time" value="21" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Savable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.55837566">
-          <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.2.0/support-annotations-23.2.0-sources.jar!/android/support/annotation/NonNull.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32994923">
-          <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Android/Sdk/platforms/android-23/data/res/values/colors_holo.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="65" column="17" selection-start-line="65" selection-start-column="17" selection-end-line="65" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/colors.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="25" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Android/Sdk/sources/android-23/android/content/res/Resources.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334">
           <caret line="934" column="15" selection-start-line="934" selection-start-column="15" selection-end-line="934" selection-end-column="15" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Plans/SimpleWaypointPlan.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.87309647">
-          <caret line="88" column="28" selection-start-line="88" selection-start-column="28" selection-end-line="88" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/ControlMode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16243654">
-          <caret line="20" column="15" selection-start-line="20" selection-start-column="15" selection-end-line="20" selection-end-column="15" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3649,8 +3674,8 @@
         <state vertical-scroll-proportion="0.7589286">
           <caret line="37" column="37" selection-start-line="37" selection-start-column="37" selection-end-line="37" selection-end-column="37" />
           <folding>
-            <element signature="e#1215#1242#0" expanded="true" />
-            <element signature="e#1473#1499#0" expanded="true" />
+            <element signature="e#1215#1231#0" expanded="false" />
+            <element signature="e#1462#1488#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3796,68 +3821,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.310345">
-          <caret line="21" column="56" selection-start-line="21" selection-start-column="56" selection-end-line="21" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/JoystickFragment.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.44162437">
           <caret line="135" column="16" selection-start-line="135" selection-start-column="16" selection-end-line="135" selection-end-column="16" />
           <folding>
-            <element signature="e#3841#3842#0" expanded="true" />
-            <element signature="e#3879#3880#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="13" column="32" selection-start-line="13" selection-start-column="32" selection-end-line="13" selection-end-column="32" />
-          <folding>
-            <element signature="e#330#356#0" expanded="true" />
-            <element signature="e#381#409#0" expanded="true" />
-            <element signature="e#523#542#0" expanded="true" />
-            <element signature="e#569#593#0" expanded="true" />
-            <element signature="e#660#686#0" expanded="true" />
-            <element signature="e#816#842#0" expanded="true" />
-            <element signature="e#869#895#0" expanded="true" />
-            <element signature="e#962#990#0" expanded="true" />
-            <element signature="e#1116#1138#0" expanded="true" />
-            <element signature="e#1165#1192#0" expanded="true" />
-            <element signature="e#1259#1288#0" expanded="true" />
-            <element signature="e#1414#1436#0" expanded="true" />
-            <element signature="e#1463#1490#0" expanded="true" />
-            <element signature="e#1557#1586#0" expanded="true" />
-            <element signature="e#1714#1738#0" expanded="true" />
-            <element signature="e#1765#1794#0" expanded="true" />
-            <element signature="e#1861#1892#0" expanded="true" />
-            <element signature="e#2016#2036#0" expanded="true" />
-            <element signature="e#2063#2088#0" expanded="true" />
-            <element signature="e#2151#2178#0" expanded="true" />
-            <element signature="e#2308#2338#0" expanded="true" />
-            <element signature="e#2363#2395#0" expanded="true" />
-            <element signature="e#2619#2647#0" expanded="true" />
-            <element signature="e#2672#2702#0" expanded="true" />
-            <element signature="e#2897#2935#0" expanded="true" />
-            <element signature="e#2994#3034#0" expanded="true" />
-            <element signature="e#3218#3264#0" expanded="true" />
-            <element signature="e#3323#3371#0" expanded="true" />
+            <element signature="e#3841#3842#0" expanded="false" />
+            <element signature="e#3879#3880#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -3870,35 +3840,193 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java">
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/menu/menu_control_app.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="229" column="10" selection-start-line="229" selection-start-column="10" selection-end-line="229" selection-end-column="10" />
+        <state vertical-scroll-proportion="0.5076142">
+          <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ros.rosjava_core/rosjava/0.2.1/68face01dcd34ac0dd82fc3745afd764d330b427/rosjava-0.2.1.jar!/org/ros/namespace/GraphName.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.2953737">
+          <caret line="111" column="18" selection-start-line="111" selection-start-column="18" selection-end-line="111" selection-end-column="18" />
           <folding>
-            <element signature="e#4882#4883#0" expanded="true" />
-            <element signature="e#4922#4923#0" expanded="true" />
-            <element signature="e#6787#6788#0" expanded="true" />
-            <element signature="e#6833#6834#0" expanded="true" />
-            <element signature="e#6926#6927#0" expanded="true" />
-            <element signature="e#6959#6960#0" expanded="true" />
+            <element signature="e#3465#3466#0" expanded="true" />
+            <element signature="e#3497#3498#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Plans/SimpleWaypointPlan.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.64467007">
+          <caret line="88" column="28" selection-start-line="88" selection-start-column="28" selection-end-line="88" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/Plans/RandomWalkPlan.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.83756346">
+          <caret line="42" column="46" selection-start-line="42" selection-start-column="46" selection-end-line="42" selection-end-column="46" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/ControlApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53637904">
-          <caret line="172" column="31" selection-start-line="172" selection-start-column="31" selection-end-line="172" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="302" column="74" selection-start-line="302" selection-start-column="74" selection-end-line="302" selection-end-column="74" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#12463#12464#0" expanded="true" />
-            <element signature="e#12496#12497#0" expanded="true" />
+            <element signature="e#4534#4587#0" expanded="true" />
+            <element signature="e#4650#4704#0" expanded="true" />
+            <element signature="e#4764#4815#0" expanded="true" />
+            <element signature="e#4884#4930#0" expanded="true" />
+            <element signature="e#5655#5675#0" expanded="true" />
+            <element signature="e#5693#5714#0" expanded="true" />
+            <element signature="e#11908#11909#0" expanded="true" />
+            <element signature="e#11941#11942#0" expanded="true" />
+            <element signature="method#lockOrientation#0;class#ControlApp#0" expanded="false" />
+            <element signature="method#selectItem#0;class#ControlApp#0" expanded="false" />
+            <element signature="e#20781#20827#0" expanded="true" />
+            <element signature="e#21033#21034#0" expanded="true" />
+            <element signature="e#21089#21090#0" expanded="true" />
             <element signature="method#setControlMode#0;class#ControlApp#0" expanded="false" />
             <element signature="method#setDestination#0;class#ControlApp#0" expanded="false" />
             <element signature="method#addWaypoint#0;class#ControlApp#0" expanded="false" />
-            <element signature="method#addWaypointWithCheck#0;class#ControlApp#0" expanded="false" />
-            <element signature="method#pollDestination#0;class#ControlApp#0" expanded="false" />
-            <element signature="method#clearWaypoints#0;class#ControlApp#0" expanded="false" />
+            <element signature="e#24235#24236#0" expanded="true" />
+            <element signature="e#24279#24280#0" expanded="true" />
+            <element signature="e#24624#24625#0" expanded="true" />
+            <element signature="e#24656#24657#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="311" column="0" selection-start-line="311" selection-start-column="0" selection-end-line="311" selection-end-column="0" />
+          <folding>
+            <element signature="e#5071#5072#0" expanded="true" />
+            <element signature="e#5109#5110#0" expanded="true" />
+            <element signature="e#6758#6759#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
+            <element signature="e#9116#9117#0" expanded="true" />
+            <element signature="e#9179#9180#0" expanded="true" />
+            <element signature="e#10021#10082#0" expanded="true" />
+            <element signature="e#10108#10145#0" expanded="true" />
+            <element signature="e#10260#10319#0" expanded="true" />
+            <element signature="e#10345#10385#0" expanded="true" />
+            <element signature="e#10503#10565#0" expanded="true" />
+            <element signature="e#10591#10635#0" expanded="true" />
+            <element signature="e#10752#10813#0" expanded="true" />
+            <element signature="e#10839#10881#0" expanded="true" />
+            <element signature="e#10994#11051#0" expanded="true" />
+            <element signature="e#11077#11115#0" expanded="true" />
+            <element signature="e#11733#11952#0" expanded="true" />
+            <element signature="e#11951#11952#0" expanded="true" />
+            <element signature="e#12465#12666#0" expanded="true" />
+            <element signature="e#12665#12666#0" expanded="true" />
+            <element signature="e#13144#13345#0" expanded="true" />
+            <element signature="e#13344#13345#0" expanded="true" />
+            <element signature="e#13812#14008#0" expanded="true" />
+            <element signature="e#14007#14008#0" expanded="true" />
+            <element signature="e#14431#14607#0" expanded="true" />
+            <element signature="e#14606#14607#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/ControlMode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="15" selection-start-line="20" selection-start-column="15" selection-end-line="20" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/WarningSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="62" selection-start-line="37" selection-start-column="62" selection-end-line="37" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1116#1172#0" expanded="true" />
+            <element signature="e#1426#1427#0" expanded="true" />
+            <element signature="e#1464#1465#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.413794">
+          <caret line="37" column="64" selection-start-line="37" selection-start-column="64" selection-end-line="37" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/xml/prefs.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="57" column="23" selection-start-line="57" selection-start-column="23" selection-end-line="57" selection-end-column="23" />
+          <folding>
+            <element signature="e#284#310#0" expanded="true" />
+            <element signature="e#335#363#0" expanded="true" />
+            <element signature="e#418#461#0" expanded="true" />
+            <element signature="e#495#514#0" expanded="true" />
+            <element signature="e#541#565#0" expanded="true" />
+            <element signature="e#632#658#0" expanded="true" />
+            <element signature="e#727#771#0" expanded="true" />
+            <element signature="e#805#831#0" expanded="true" />
+            <element signature="e#858#884#0" expanded="true" />
+            <element signature="e#951#979#0" expanded="true" />
+            <element signature="e#1048#1089#0" expanded="true" />
+            <element signature="e#1123#1145#0" expanded="true" />
+            <element signature="e#1172#1199#0" expanded="true" />
+            <element signature="e#1266#1295#0" expanded="true" />
+            <element signature="e#1364#1405#0" expanded="true" />
+            <element signature="e#1439#1461#0" expanded="true" />
+            <element signature="e#1488#1515#0" expanded="true" />
+            <element signature="e#1582#1611#0" expanded="true" />
+            <element signature="e#1680#1723#0" expanded="true" />
+            <element signature="e#1757#1781#0" expanded="true" />
+            <element signature="e#1808#1837#0" expanded="true" />
+            <element signature="e#1904#1935#0" expanded="true" />
+            <element signature="e#2004#2043#0" expanded="true" />
+            <element signature="e#2077#2097#0" expanded="true" />
+            <element signature="e#2124#2149#0" expanded="true" />
+            <element signature="e#2212#2239#0" expanded="true" />
+            <element signature="e#2367#2403#0" expanded="true" />
+            <element signature="e#2493#2528#0" expanded="true" />
+            <element signature="e#2556#2597#0" expanded="true" />
+            <element signature="e#2624#2664#0" expanded="true" />
+            <element signature="e#2789#2823#0" expanded="true" />
+            <element signature="e#2895#2923#0" expanded="true" />
+            <element signature="e#2948#2978#0" expanded="true" />
+            <element signature="e#3033#3068#0" expanded="true" />
+            <element signature="e#3180#3216#0" expanded="true" />
+            <element signature="e#3283#3321#0" expanded="true" />
+            <element signature="e#3517#3555#0" expanded="true" />
+            <element signature="e#3614#3654#0" expanded="true" />
+            <element signature="e#3838#3884#0" expanded="true" />
+            <element signature="e#3943#3991#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Fragments/PreferencesFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5076142">
+          <caret line="37" column="96" selection-start-line="37" selection-start-column="96" selection-end-line="37" selection-end-column="96" />
+          <folding>
+            <element signature="e#1088#1132#0" expanded="true" />
+            <element signature="e#1158#1204#0" expanded="true" />
+            <element signature="e#1253#1642#0" expanded="true" />
+            <element signature="e#1641#1642#0" expanded="true" />
+            <element signature="e#1955#1984#0" expanded="true" />
           </folding>
         </state>
       </provider>

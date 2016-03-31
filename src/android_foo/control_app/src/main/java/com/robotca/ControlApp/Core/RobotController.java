@@ -217,13 +217,6 @@ public class RobotController implements NodeMain, Savable {
     }
 
     /**
-     * @return True if there is a paused RobotPlan, false otherwise
-     */
-    public boolean hasPausedPlan() {
-        return pausedPlanId != NO_PLAN;
-    }
-
-    /**
      * @return The current RobotPlan
      */
     public RobotPlan getMotionPlan() {
@@ -314,20 +307,50 @@ public class RobotController implements NodeMain, Savable {
     public void initialize() {
         if (!initialized && connectedNode != null) {
 
-            // Shutdown any topics that may be running
-            shutdownTopics();
+            // Start the topics
+            refreshTopics();
 
-            // Get the correct topic names
-            String moveTopic = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString("edittext_joystick_topic", context.getString(R.string.joy_topic));
-            String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString("edittext_navsat_topic", context.getString(R.string.navsat_topic));
-            String laserScanTopic = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString("edittext_laser_scan_topic", context.getString(R.string.laser_scan_topic));
-            String odometryTopic = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString("edittext_odometry_topic", context.getString(R.string.odometry_topic));
-            String poseTopic = PreferenceManager.getDefaultSharedPreferences(context)
-                    .getString("edittext_pose_topic", context.getString(R.string.pose_topic));
+            initialized = true;
+        }
+    }
+
+    /**
+     * Refreshes all topics, recreating them if there topic names have been changed.
+     */
+    public void refreshTopics() {
+
+        // Get the correct topic names
+        String moveTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_joystick_topic_edittext_key),
+                        context.getString(R.string.joy_topic));
+
+        String navSatTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_navsat_topic_edittext_key),
+                        context.getString(R.string.navsat_topic));
+
+        String laserScanTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_laserscan_topic_edittext_key),
+                        context.getString(R.string.laser_scan_topic));
+
+        String odometryTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_odometry_topic_edittext_key),
+                        context.getString(R.string.odometry_topic));
+
+        String poseTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_pose_topic_edittext_key),
+                        context.getString(R.string.pose_topic));
+
+        // Refresh the Move Publisher
+        if (movePublisher == null
+                || !moveTopic.equals(movePublisher.getTopicName().toString())) {
+
+            if (publisherTimer != null) {
+                publisherTimer.cancel();
+            }
+
+            if (movePublisher != null) {
+                movePublisher.shutdown();
+            }
 
             // Start the move publisher
             movePublisher = connectedNode.newPublisher(moveTopic, Twist._TYPE);
@@ -337,11 +360,19 @@ public class RobotController implements NodeMain, Savable {
             publisherTimer.schedule(new TimerTask() {
                 @Override
                 public void run() { if (publishVelocity) {
-                        movePublisher.publish(currentVelocityCommand);
-                    }
+                    movePublisher.publish(currentVelocityCommand);
+                }
                 }
             }, 0, 80);
             publishVelocity = false;
+        }
+
+        // Refresh the NavSat Subscriber
+        if (navSatFixSubscriber == null
+                || !navSatTopic.equals(navSatFixSubscriber.getTopicName().toString())) {
+
+            if (navSatFixSubscriber != null)
+                navSatFixSubscriber.shutdown();
 
             // Start the NavSatFix subscriber
             navSatFixSubscriber = connectedNode.newSubscriber(navSatTopic, NavSatFix._TYPE);
@@ -351,6 +382,14 @@ public class RobotController implements NodeMain, Savable {
                     setNavSatFix(navSatFix);
                 }
             });
+        }
+
+        // Refresh the LaserScan Subscriber
+        if (laserScanSubscriber == null
+                || !laserScanTopic.equals(laserScanSubscriber.getTopicName().toString())) {
+
+            if (laserScanSubscriber != null)
+                laserScanSubscriber.shutdown();
 
             // Start the LaserScan subscriber
             laserScanSubscriber = connectedNode.newSubscriber(laserScanTopic, LaserScan._TYPE);
@@ -360,6 +399,14 @@ public class RobotController implements NodeMain, Savable {
                     setLaserScan(laserScan);
                 }
             });
+        }
+
+        // Refresh the Odometry Subscriber
+        if (odometrySubscriber == null
+                || !odometryTopic.equals(odometrySubscriber.getTopicName().toString())) {
+
+            if (odometrySubscriber != null)
+                odometrySubscriber.shutdown();
 
             // Start the Odometry subscriber
             odometrySubscriber = connectedNode.newSubscriber(odometryTopic, Odometry._TYPE);
@@ -369,6 +416,14 @@ public class RobotController implements NodeMain, Savable {
                     setOdometry(odometry);
                 }
             });
+        }
+
+        // Refresh the Pose Subscriber
+        if (poseSubscriber == null
+                || !poseTopic.equals(poseSubscriber.getTopicName().toString())) {
+
+            if (poseSubscriber != null)
+                poseSubscriber.shutdown();
 
             // Start the Pose subscriber
             poseSubscriber = connectedNode.newSubscriber(poseTopic, Pose._TYPE);
@@ -378,8 +433,6 @@ public class RobotController implements NodeMain, Savable {
                     setPose(pose);
                 }
             });
-
-            initialized = true;
         }
     }
 

@@ -4,13 +4,12 @@
 
     <!-- Separate screen for topics -->
     <PreferenceScreen
-        android:key="topic_preference_screen"
         android:icon="@drawable/ic_action_labels"
         android:title="@string/topic_pref_title"
         android:summary="@string/topic_pref_summary">
 
         <EditTextPreference
-            android:key="edittext_joystick_topic"
+            android:key="@string/prefs_joystick_topic_edittext_key"
             android:defaultValue="@string/joy_topic"
             android:title="@string/joy_pref_title"
             android:singleLine="true"
@@ -18,7 +17,7 @@
             />
 
         <EditTextPreference
-            android:key="edittext_laser_scan_topic"
+            android:key="@string/prefs_laserscan_topic_edittext_key"
             android:defaultValue="@string/laser_scan_topic"
             android:title="@string/laser_pref_title"
             android:singleLine="true"
@@ -26,7 +25,7 @@
             />
 
         <EditTextPreference
-            android:key="edittext_camera_topic"
+            android:key="@string/prefs_camera_topic_edittext_key"
             android:defaultValue="@string/camera_topic"
             android:title="@string/camera_pref_title"
             android:singleLine="true"
@@ -34,7 +33,7 @@
             />
 
         <EditTextPreference
-            android:key="edittext_navsat_topic"
+            android:key="@string/prefs_navsat_topic_edittext_key"
             android:defaultValue="@string/navsat_topic"
             android:title="@string/navsat_pref_title"
             android:singleLine="true"
@@ -42,7 +41,7 @@
             />
 
         <EditTextPreference
-            android:key="edittext_odometry_topic"
+            android:key="@string/prefs_odometry_topic_edittext_key"
             android:defaultValue="@string/odometry_topic"
             android:title="@string/odometry_pref_title"
             android:singleLine="true"
@@ -50,7 +49,7 @@
             />
 
         <EditTextPreference
-            android:key="edittext_pose_topic"
+            android:key="@string/prefs_pose_topic_edittext_key"
             android:defaultValue="@string/pose_topic"
             android:title="@string/pose_pref_title"
             android:singleLine="true"
@@ -60,16 +59,28 @@
 
     <!-- For enabling/disabling the warning system -->
     <CheckBoxPreference
-        android:title="@string/warning_enable_title"
-        android:summary="@string/warning_enable_summary"
+        android:key="@string/prefs_warning_checkbox_key"
+        android:checked="true"
+        android:defaultValue="true"
+        android:title="@string/warning_enable_pref_title"
+        android:summaryOff="@string/warning_enable_pref_summary_off"
+        android:summaryOn="@string/warning_enable_pref_summary_on"
         />
 
     <!-- Separate screen for warning system TODO find better icon -->
     <PreferenceScreen
-        android:key="warning_preference_screen"
+        android:key="@string/prefs_warning_system_key"
         android:icon="@drawable/ic_action_cloud"
         android:title="@string/warning_pref_title"
         android:summary="@string/warning_pref_summary">
+
+        <EditTextPreference
+            android:key="@string/prefs_warning_mindist_key"
+            android:inputType="numberDecimal"
+            android:defaultValue="2.0"
+            android:title="@string/warning_mindist_pref_title"
+            android:singleLine="true"
+            android:summary="@string/warning_mindist_pref_summary"/>
 
         </PreferenceScreen>
 

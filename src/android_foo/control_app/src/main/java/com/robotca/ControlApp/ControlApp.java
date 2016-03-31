@@ -79,6 +79,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
+    private WarningSystem warningSystem;
 //    private WarningSystemPlan rplan;
 //    private float minRange = (float) 2.0;
 
@@ -119,26 +120,22 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+
+        // Set default preference values
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+
         if(ROBOT_INFO != null) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = prefs.edit();
-
-            editor.putString("edittext_joystick_topic", ROBOT_INFO.getJoystickTopic());
-            editor.putString("edittext_laser_scan_topic", ROBOT_INFO.getLaserTopic());
-            editor.putString("edittext_camera_topic", ROBOT_INFO.getCameraTopic());
-
-            editor.apply();
+            editor.putString(getString(R.string.prefs_joystick_topic_edittext_key), ROBOT_INFO.getJoystickTopic());
+            editor.putString(getString(R.string.prefs_laserscan_topic_edittext_key), ROBOT_INFO.getLaserTopic());
+            editor.putString(getString(R.string.prefs_camera_topic_edittext_key), ROBOT_INFO.getCameraTopic());
         }
 
-//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-//        float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-//
-//        if (dpWidth >= 550) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        } else {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        }
+        editor.putBoolean(getString(R.string.prefs_warning_checkbox_key), true);
+
+        editor.apply();
+
+        // Set the main content view
         setContentView(R.layout.main);
 
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles); //Where you set drawer item titles
@@ -223,10 +220,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             // Load the controller
             controller.load(savedInstanceState);
-
-//            // Load the current fragment if applicable
-//            if (fragment instanceof Savable)
-//                ((Savable) fragment).load(savedInstanceState);
         }
     }
 
@@ -293,15 +286,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             this.nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-//            joystickFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
 
             runOnUiThread(new Runnable() {
                               @Override
                               public void run() {joystickFragment.invalidate();}
                           });
-//
-//            hudFragment.initialize(this.nodeMainExecutor, this.nodeConfiguration);
-//
+
             //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
             controller.initialize(nodeMainExecutor, nodeConfiguration);
 
@@ -310,7 +300,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             // Add the JoystickView to the RobotController's odometry listener
             controller.addOdometryListener(joystickFragment.getJoystickView());
             // Create and add a WarningSystem
-            controller.addLaserScanListener(new WarningSystem(this, 2.0f)); // TODO magic number
+            controller.addLaserScanListener(warningSystem = new WarningSystem(this));
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -345,11 +335,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void collisionWarning()
     {
-        Log.d(TAG, "Collision Warning!");
+//        Log.d(TAG, "Collision Warning!");
 
         hudFragment.warn();
-//        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-//        tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
     }
 
     /**
@@ -611,6 +599,20 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    /**
+     * Called when the preferences may have changed.
+     * @param prefs The SharedPrefences object
+     */
+    public void onPreferencesChanged(SharedPreferences prefs) {
+
+        // Warning System
+        warningSystem.setEnabled(prefs.getBoolean(getString(R.string.prefs_warning_checkbox_key), true));
+
+        // Refresh topic subscribers/publishers
+        controller.refreshTopics();
+
     }
 
     /**

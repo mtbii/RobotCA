@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <group android:checkableBehavior="single">
-        <item android:id="@+id/action_joystick_control" android:title="@string/joystick_control" />
-        <item android:id="@+id/action_motion_control" android:title="@string/motion_control" />
-        <item android:id="@+id/action_simple_waypoint_control" android:title="@string/simple_waypoint_control"/>
-        <item android:id="@+id/action_waypoint_control" android:title="@string/waypoint_control" />
-        <item android:id="@+id/action_random_walk_control" android:title="@string/random_walk"/>
+
+        <item android:id="@+id/action_joystick_control"
+              android:title="@string/joystick_control" />
+
+        <item android:id="@+id/action_motion_control"
+              android:title="@string/motion_control" />
+
+        <item android:id="@+id/action_simple_waypoint_control"
+              android:title="@string/simple_waypoint_control"/>
+
+        <item android:id="@+id/action_waypoint_control"
+              android:title="@string/waypoint_control" />
+
+        <item android:id="@+id/action_random_walk_control"
+              android:title="@string/random_walk"/>
     </group>
+
 </menu>
