@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -27,23 +25,19 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
 import com.robotca.ControlApp.Core.IWaypointProvider;
 import com.robotca.ControlApp.Core.NavDrawerAdapter;
-import com.robotca.ControlApp.Core.Plans.RandomWalkPlan;
 import com.robotca.ControlApp.Core.Plans.RobotPlan;
-import com.robotca.ControlApp.Core.Plans.SimpleWaypointPlan;
-import com.robotca.ControlApp.Core.Plans.WaypointPlan;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.RobotInfo;
 import com.robotca.ControlApp.Core.RobotStorage;
 import com.robotca.ControlApp.Core.Savable;
 import com.robotca.ControlApp.Core.Utils;
-import com.robotca.ControlApp.Core.WarningSystemPlan;
+import com.robotca.ControlApp.Core.WarningSystem;
 import com.robotca.ControlApp.Fragments.AboutFragment;
 import com.robotca.ControlApp.Fragments.CameraViewFragment;
 import com.robotca.ControlApp.Fragments.HUDFragment;
@@ -85,16 +79,16 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private JoystickFragment joystickFragment;
     private HUDFragment hudFragment;
     private RobotController controller;
-    private WarningSystemPlan rplan;
-    private float minRange = (float) 2.0;
+//    private WarningSystemPlan rplan;
+//    private float minRange = (float) 2.0;
 
     private Fragment fragment = null;
     FragmentManager fragmentManager;
     int fragmentsCreatedCounter = 0;
 
     private int drawerIndex = 1;
-    private String mTitle;
-    private String mDrawerTitle;
+//    private String mTitle;
+//    private String mDrawerTitle;
 
     // Log tag String
     private static final String TAG = "ControlApp";
@@ -108,6 +102,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     private Bundle savedInstanceState;
 
+    /**
+     * Default Constructor.
+     */
     public ControlApp() {
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
 
@@ -148,7 +145,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
+//        mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
 
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -172,6 +169,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         };
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        //noinspection deprecation
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         int[] imgRes = new int[]{
@@ -203,8 +201,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Create the RobotController
         controller = new RobotController(this);
 
-        rplan = new WarningSystemPlan(minRange);
-        controller.runPlan(rplan);
+//        rplan = new WarningSystemPlan(minRange);
+//        controller.runPlan(rplan);
 
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
@@ -311,6 +309,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             controller.addOdometryListener(hudFragment);
             // Add the JoystickView to the RobotController's odometry listener
             controller.addOdometryListener(joystickFragment.getJoystickView());
+            // Create and add a WarningSystem
+            controller.addLaserScanListener(new WarningSystem(this, 2.0f)); // TODO magic number
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -345,8 +345,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
      */
     public void collisionWarning()
     {
-        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-        tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
+        Log.d(TAG, "Collision Warning!");
+
+        hudFragment.warn();
+//        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+//        tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
     }
 
     /**
@@ -469,7 +472,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     joystickFragment.hide();
                 if (hudFragment != null) {
                     hudFragment.hide();
-                    hudFragment.toggleEmergencyStopUI(false);
+
+                    boolean stop = controller.getMotionPlan() == null || !controller.getMotionPlan().isResumable();
+                    hudFragment.toggleEmergencyStopUI(stop);
                 }
 
                 stopRobot();
@@ -483,7 +488,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     joystickFragment.hide();
                 if (hudFragment != null) {
                     hudFragment.hide();
-                    hudFragment.toggleEmergencyStopUI(false);
+
+                    boolean stop = controller.getMotionPlan() == null || !controller.getMotionPlan().isResumable();
+                    hudFragment.toggleEmergencyStopUI(stop);
                 }
 
                 stopRobot();

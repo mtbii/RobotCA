@@ -1,7 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,13 +49,37 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     private double lastSpeed, lastTurnrate;
     private int lastWifiImage;
 
-    private static int[] wifiIcons;
+    // Used for warning the user of collision
+    private float warnAmount;
+    private long lastWarn;
+    private static final long WARN_DELAY = 100L;
+    private static final float WARN_AMOUNT_INCR = 0.02f;
+    private static final float WARN_AMOUNT_ATTEN = 0.75f;
+
+    private long lastWarnTime;
+    private static final long WARN_RATE = 10L;
+
+    private final ToneGenerator toneGenerator;
+    private long lastToneTime;
+    private static final long TONE_DELAY = 300L;
+
+    // Icons for indicating WIFI signal strength
+    private static final int[] WIFI_ICONS;
+
+    static {
+        WIFI_ICONS = new int[] {
+                R.drawable.wifi_0,
+                R.drawable.wifi_1,
+                R.drawable.wifi_2,
+                R.drawable.wifi_3,
+                R.drawable.wifi_4};
+    }
 
     /**
      * Default Constructor.
      */
     public HUDFragment() {
-//        location = new Location("ros");
+        toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
     }
 
     @Override
@@ -74,13 +101,6 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
 
         // Get WifiManager
         wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-
-        wifiIcons = new int[] {
-                R.drawable.wifi_0,
-                R.drawable.wifi_1,
-                R.drawable.wifi_2,
-                R.drawable.wifi_3,
-                R.drawable.wifi_4};
         
         // Find the Emergency Stop Button
         // Emergency stop button
@@ -90,7 +110,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 emergencyStopButton = (Button) view.findViewById(R.id.emergency_stop_button);
                 initEmergencyStopButton();
             }
-            catch(NullPointerException e){
+            catch (NullPointerException e){
                 // Ignore
             }
         }
@@ -104,7 +124,11 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         UPDATER.kill();
+
+        toneGenerator.stopTone();
+        toneGenerator.release();
     }
 
     /**
@@ -134,7 +158,27 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     }
 
     /**
-     * Updates this Fragment's speed and turnrate displays
+     * 'Warns' the user, where multiple warnings will cause the HUD to turn red in appearance and flash.
+     */
+    public void warn()
+    {
+        if (System.currentTimeMillis() - lastWarnTime > WARN_RATE) {
+            lastWarnTime = System.currentTimeMillis();
+
+            warnAmount = Math.min(1.0f, warnAmount + WARN_AMOUNT_INCR);
+            lastWarn = System.currentTimeMillis();
+
+            if (warnAmount > 0.4f && lastWarn - lastToneTime > TONE_DELAY) {
+                lastToneTime = lastWarn;
+
+                toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, (int) TONE_DELAY / 2);
+            }
+        }
+    }
+
+
+    /**
+     * Updates this Fragment's speed and turnrate displays.
      */
     void updateUI(final double speed, final double turnrate)
     {
@@ -244,9 +288,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     private class UpdateUIRunnable implements Runnable
     {
         /**
-         * Starts executing the active part of the class' code. This method is
-         * called when a thread is started that has been created with a class which
-         * implements {@code Runnable}.
+         * Starts executing the active part of the class' code.
          */
         @Override
         public void run() {
@@ -258,12 +300,15 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 double speed = (int) (lastSpeed * 100.0) / 100.0;
                 double turnrate = (int) (lastTurnrate * 100.0) / 100.0;
 
+                // Update speed
                 if (speedView != null)
                     speedView.setText(String.format((String) getText(R.string.speed_string), speed));
 
+                // Update turn rate
                 if (turnrateView != null)
                     turnrateView.setText(String.format((String) getText(R.string.turnrate_string), turnrate));
 
+                // Update latitude display
                 if (latView != null) {
                     Location location = ((ControlApp)getActivity()).getRobotController().
                             LOCATION_PROVIDER.getLastKnownLocation();
@@ -274,6 +319,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                         latView.setText(strLatitude);
                     }
                 }
+                // Update longitude display
                 if (longView != null) {
                     Location location = ((ControlApp)getActivity()).getRobotController().
                             LOCATION_PROVIDER.getLastKnownLocation();
@@ -285,13 +331,38 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                     }
                 }
 
+                // Update WIFI icons
                 if (wifiStrengthView != null) {
-                    wifiStrengthView.setImageResource(wifiIcons[lastWifiImage]);
+                    wifiStrengthView.setImageResource(WIFI_ICONS[lastWifiImage]);
+                }
+
+                // Update warnings
+                if (warnAmount > 0.0f)
+                {
+                    view.setBackgroundColor(getBackgroundColor());
+
+                    if (System.currentTimeMillis() - lastWarn > WARN_DELAY) {
+                        warnAmount *= WARN_AMOUNT_ATTEN;
+
+                        if (warnAmount < 0.05f)
+                            warnAmount = 0.0f;
+                    }
                 }
 
             } catch (IllegalStateException e) {
                 // Ignore
             }
         }
+    }
+
+    /**
+     * @return The background color based on the warning amount
+     */
+    private int getBackgroundColor()
+    {
+        final float p = (((System.currentTimeMillis() >> 7) & 1) == 0) ? warnAmount: 0.0f;
+        final float q = 1.0f - p;
+
+        return Color.argb(0xFF, (int)(p * 0xFF + q * 0xA0), (int)(q * 0xA0), (int)(q * 0xA0));
     }
 }

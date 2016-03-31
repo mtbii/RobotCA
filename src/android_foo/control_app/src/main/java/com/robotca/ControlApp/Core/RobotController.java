@@ -111,6 +111,10 @@ public class RobotController implements NodeMain, Savable {
     private static Point currentPos;
     // The Robot's last recorded orientation
     private static Quaternion rotation;
+    // The Robot's last recorded speed
+    private static double speed;
+    // The Robot's last recorded turn rate
+    private static double turnRate;
 
     // Bundle ID for pausedPlan
     private static final String PAUSED_PLAN_BUNDLE_ID = "com.robotca.ControlApp.Core.RobotController.pausedPlan";
@@ -217,6 +221,13 @@ public class RobotController implements NodeMain, Savable {
      */
     public boolean hasPausedPlan() {
         return pausedPlanId != NO_PLAN;
+    }
+
+    /**
+     * @return The current RobotPlan
+     */
+    public RobotPlan getMotionPlan() {
+        return motionPlan;
     }
 
     /**
@@ -508,6 +519,10 @@ public class RobotController implements NodeMain, Savable {
                 currentPos = odometry.getPose().getPose().getPosition();
             }
             rotation = odometry.getPose().getPose().getOrientation();
+
+            // Record speed and turnrate
+            speed = odometry.getTwist().getTwist().getLinear().getX();
+            turnRate = odometry.getTwist().getTwist().getAngular().getZ();
         }
     }
 
@@ -587,5 +602,19 @@ public class RobotController implements NodeMain, Savable {
             return 0.0;
         else
             return Utils.getHeading(org.ros.rosjava_geometry.Quaternion.fromQuaternionMessage(rotation));
+    }
+
+    /**
+     * @return The Robot's last reported speed in the range [-1, 1].
+     */
+    public static double getSpeed() {
+        return speed;
+    }
+
+    /**
+     * @return The Robot's last reported turn rate in the range[-1, 1].
+     */
+    public static double getTurnRate() {
+        return turnRate;
     }
 }
