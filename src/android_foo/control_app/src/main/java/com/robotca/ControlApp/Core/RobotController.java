@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.Plans.RobotPlan;
+import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -194,7 +195,7 @@ public class RobotController implements NodeMain, Savable {
      * @param plan The RobotPlan
      */
     public void runPlan(RobotPlan plan) {
-        stop();
+        stop(true);
         pausedPlanId = NO_PLAN;
 
         publishVelocity = true;
@@ -209,6 +210,7 @@ public class RobotController implements NodeMain, Savable {
      */
     public boolean resumePlan() {
         if (pausedPlanId != NO_PLAN) {
+            Log.d(TAG, "Resuming paused plan");
             runPlan(ControlMode.getRobotPlan(context, ControlMode.values()[pausedPlanId]));
             return true;
         }
@@ -225,30 +227,44 @@ public class RobotController implements NodeMain, Savable {
 
     /**
      * Stops the Robot's current motion and any RobotPlan that may be running.
-     * @return True if a resumable RobotPlan was stopped
+     *
+     * @return True if a resumable RobotPlan was cancelled
      */
     public boolean stop() {
+        return stop(true);
+    }
 
-        pausedPlanId = NO_PLAN;
+    /**
+     * Stops the Robot's current motion and optionally any RobotPlan that may be running.
+     *
+     * @param cancelMotionPlan Whether to cancel the current motion plan
+     *
+     * @return True if a resumable RobotPlan was cancelled
+     */
+    public boolean stop(boolean cancelMotionPlan) {
 
-        if (motionPlan != null) {
-            motionPlan.stop();
+        if (cancelMotionPlan || pausedPlanId == NO_PLAN) {
+            pausedPlanId = NO_PLAN;
 
-            if (motionPlan.isResumable()) {
-                pausedPlanId = motionPlan.getControlMode() == null ? NO_PLAN: motionPlan.getControlMode().ordinal();
+            if (motionPlan != null) {
+                motionPlan.stop();
+
+                if (motionPlan.isResumable()) {
+                    pausedPlanId = motionPlan.getControlMode() == null ? NO_PLAN : motionPlan.getControlMode().ordinal();
+                }
+
+                motionPlan = null;
             }
-
-            motionPlan = null;
         }
 
         publishVelocity = false;
-        publishVelocity(0, 0, 0);
+        publishVelocity(0.0, 0.0, 0.0);
 
-        if(movePublisher != null){
+        if (movePublisher != null){
             movePublisher.publish(currentVelocityCommand);
         }
 
-        return pausedPlanId != NO_PLAN;
+        return pausedPlanId != NO_PLAN && cancelMotionPlan;
     }
 
     /**
@@ -257,14 +273,22 @@ public class RobotController implements NodeMain, Savable {
      * @param linearVelocityY Linear velocity in the y direction
      * @param angularVelocityZ Angular velocity about the z axis
      */
-    public void publishVelocity(double linearVelocityX, double linearVelocityY,
-                                double angularVelocityZ) {
+    public void publishVelocity(double linearVelocityX, double linearVelocityY, double angularVelocityZ) {
         if (currentVelocityCommand != null) {
-            currentVelocityCommand.getLinear().setX(linearVelocityX);
-            currentVelocityCommand.getLinear().setY(-linearVelocityY);
-            currentVelocityCommand.getLinear().setZ(0);
-            currentVelocityCommand.getAngular().setX(0);
-            currentVelocityCommand.getAngular().setY(0);
+
+            float scale = 1.0f;
+
+            // Safe Mode
+            if (context.getWarningSystem().isSafemodeEnabled() && linearVelocityX >= 0.0)
+            {
+                scale = (float) Math.pow(1.0f - context.getHUDFragment().getWarnAmount(), 2.0);
+            }
+
+            currentVelocityCommand.getLinear().setX(linearVelocityX * scale);
+            currentVelocityCommand.getLinear().setY(-linearVelocityY * scale);
+            currentVelocityCommand.getLinear().setZ(0.0);
+            currentVelocityCommand.getAngular().setX(0.0);
+            currentVelocityCommand.getAngular().setY(0.0);
             currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
         } else {
             Log.w("Emergency Stop", "currentVelocityCommand is null");

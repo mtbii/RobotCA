@@ -132,6 +132,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         editor.putBoolean(getString(R.string.prefs_warning_checkbox_key), true);
+        editor.putBoolean(getString(R.string.prefs_warning_safemode_key), true);
+        editor.putBoolean(getString(R.string.prefs_warning_beep_key), true);
 
         editor.apply();
 
@@ -331,6 +333,20 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * @return The HUDFragment
+     */
+    public HUDFragment getHUDFragment() {
+        return hudFragment;
+    }
+
+    /**
+     * @return The WarningSystem
+     */
+    public WarningSystem getWarningSystem() {
+        return warningSystem;
+    }
+
+    /**
      * Called when a collision is imminent from the LaserScanLayer.
      */
     public void collisionWarning()
@@ -342,13 +358,24 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Call to stop the Robot.
+     * @param cancelMotionPlan Whether to cancel the current motion plan
      *
+     * @return True if a resumable RobotPlan was stopped
+     */
+    public boolean stopRobot(boolean cancelMotionPlan)
+    {
+        Log.d(TAG, "Stopping Robot");
+        joystickFragment.stop();
+        return controller.stop(cancelMotionPlan);
+    }
+
+    /**
+     * Call to stop the Robot.
      * @return True if a resumable RobotPlan was stopped
      */
     public boolean stopRobot()
     {
-        joystickFragment.stop();
-        return controller.stop();
+        return stopRobot(true);
     }
 
     /**
@@ -609,6 +636,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         // Warning System
         warningSystem.setEnabled(prefs.getBoolean(getString(R.string.prefs_warning_checkbox_key), true));
+        warningSystem.enableSafemode(prefs.getBoolean(getString(R.string.prefs_warning_safemode_key), true));
+
+        // Beep beep
+        hudFragment.setBeepsEnabled(prefs.getBoolean(getString(R.string.prefs_warning_beep_key), true));
 
         // Refresh topic subscribers/publishers
         controller.refreshTopics();

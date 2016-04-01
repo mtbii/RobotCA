@@ -1,8 +1,10 @@
 package com.robotca.ControlApp.Core;
 
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -16,8 +18,10 @@ import sensor_msgs.LaserScan;
 public class WarningSystem implements MessageListener<LaserScan> {
 
     private final ControlApp controlApp;
+
     private final float minRange;
     private boolean enabled;
+    private boolean safemode;
 
     private static final float ANGLE_DELTA = (float) Math.toRadians(30.0);
 
@@ -31,10 +35,13 @@ public class WarningSystem implements MessageListener<LaserScan> {
      */
     public WarningSystem(ControlApp controlApp) {
         this.controlApp = controlApp;
-        this.enabled = true;
 
-        String val = PreferenceManager.getDefaultSharedPreferences(controlApp).getString(
-                controlApp.getString(R.string.prefs_warning_mindist_key), "2.0");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(controlApp);
+
+        this.enabled = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_system_key), true);
+        this.safemode = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_safemode_key), true);
+
+        String val = prefs.getString(controlApp.getString(R.string.prefs_warning_mindist_key), "2.0");
         this.minRange = Math.max(0.2f, Float.parseFloat(val));
     }
 
@@ -44,6 +51,21 @@ public class WarningSystem implements MessageListener<LaserScan> {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * Enables/Disables safe mode.
+     * @param enable Whether to enable or disable safe mode
+     */
+    public void enableSafemode(boolean enable) {
+        safemode = enable;
+    }
+
+    /**
+     * @return Whether safe mode is enable
+     */
+    public boolean isSafemodeEnabled() {
+        return safemode;
     }
 
     @Override
@@ -60,7 +82,7 @@ public class WarningSystem implements MessageListener<LaserScan> {
         float angle = laserScan.getAngleMin();
 
         // Correct for the Robot's turn rate
-        angle += (float) RobotController.getTurnRate() * 0.5f;
+        angle += (float) RobotController.getTurnRate();
 
         float angleIncrement = laserScan.getAngleIncrement();
 
@@ -75,7 +97,22 @@ public class WarningSystem implements MessageListener<LaserScan> {
         // Warn the ControlApp if necessary
         if (RobotController.getSpeed() > -0.1 &&
                 shortestDistance < minRange * Math.max(0.4, RobotController.getSpeed())) {
+
             controlApp.collisionWarning();
+
+//            // Safe Mode
+//            if (safemode && RobotController.getSpeed() > 0.0
+//                    && controlApp.getHUDFragment().getWarnAmount() > HUDFragment.DANGER_WARN_AMOUNT) {
+//
+//                final boolean res = controlApp.stopRobot(false);
+//
+//                controlApp.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        controlApp.getHUDFragment().toggleEmergencyStopUI(res);
+//                    }
+//                });
+//            }
         }
     }
 }

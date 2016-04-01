@@ -1,12 +1,14 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -59,9 +62,13 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     private long lastWarnTime;
     private static final long WARN_RATE = 10L;
 
+    private boolean beepsEnabled;
     private final ToneGenerator toneGenerator;
     private long lastToneTime;
     private static final long TONE_DELAY = 300L;
+
+    /** Warn amounts higher than this are considered dangerous */
+    public static final float DANGER_WARN_AMOUNT = 0.4f;
 
     // Icons for indicating WIFI signal strength
     private static final int[] WIFI_ICONS;
@@ -114,6 +121,9 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 // Ignore
             }
         }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getControlApp());
+        beepsEnabled = prefs.getBoolean(getString(R.string.prefs_warning_beep_key), true);
 
         // Start the Update
         new Thread(UPDATER).start();
@@ -168,7 +178,8 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
             warnAmount = Math.min(1.0f, warnAmount + WARN_AMOUNT_INCR);
             lastWarn = System.currentTimeMillis();
 
-            if (warnAmount > 0.4f && lastWarn - lastToneTime > TONE_DELAY) {
+            if (beepsEnabled && warnAmount > DANGER_WARN_AMOUNT && lastWarn - lastToneTime > TONE_DELAY
+                    && RobotController.getSpeed() > 0.01) {
                 lastToneTime = lastWarn;
 
                 toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, (int) TONE_DELAY / 2);
@@ -176,6 +187,20 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
         }
     }
 
+    /**
+     * @return The warning 'amount,' in the range [0, 1] where higher numbers indicate higher warning levels
+     */
+    public float getWarnAmount() {
+        return warnAmount;
+    }
+
+    /**
+     * Enable/Disable warning beeps.
+     * @param enabled Whether to enable or disable warning beeps
+     */
+    public void setBeepsEnabled(boolean enabled) {
+        this.beepsEnabled = enabled;
+    }
 
     /**
      * Updates this Fragment's speed and turnrate displays.
@@ -201,7 +226,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 // Try to resume a paused plan first
                 if (getControlApp().getRobotController().resumePlan()) {
                     toggleEmergencyStopUI(true);
-                } else if (getControlApp().stopRobot()) {
+                } else if (getControlApp().stopRobot(true)) {
                     toggleEmergencyStopUI(false);
                 }
 

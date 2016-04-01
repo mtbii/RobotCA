@@ -2,11 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Preferences">
 
+    <!--<Preference-->
+        <!--android:title="Topic Settings"-->
+        <!--android:enabled="false"-->
+        <!--android:selectable="false"/>-->
+
     <!-- Separate screen for topics -->
     <PreferenceScreen
         android:icon="@drawable/ic_action_labels"
         android:title="@string/topic_pref_title"
         android:summary="@string/topic_pref_summary">
+
+        <!--<Preference-->
+            <!--android:title="Topic Names"-->
+            <!--android:enabled="false"-->
+            <!--android:selectable="false"/>-->
 
         <EditTextPreference
             android:key="@string/prefs_joystick_topic_edittext_key"
@@ -57,8 +67,13 @@
 
     </PreferenceScreen>
 
+    <!--<Preference-->
+        <!--android:title="Warning System Settings"-->
+        <!--android:enabled="false"-->
+        <!--android:selectable="false"/>-->
+
     <!-- For enabling/disabling the warning system -->
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="@string/prefs_warning_checkbox_key"
         android:checked="true"
         android:defaultValue="true"
@@ -69,10 +84,37 @@
 
     <!-- Separate screen for warning system TODO find better icon -->
     <PreferenceScreen
+        android:dependency="@string/prefs_warning_checkbox_key"
         android:key="@string/prefs_warning_system_key"
         android:icon="@drawable/ic_action_cloud"
         android:title="@string/warning_pref_title"
         android:summary="@string/warning_pref_summary">
+
+        <!--<Preference-->
+            <!--android:title="Options"-->
+            <!--android:enabled="false"-->
+            <!--android:selectable="false"/>-->
+
+        <SwitchPreference
+            android:key="@string/prefs_warning_safemode_key"
+            android:title="@string/warning_safemode_pref_title"
+            android:summaryOff="@string/warning_safemode_pref_summary_off"
+            android:summaryOn="@string/warning_safemode_pref_summary_on"
+            android:defaultValue="true"
+            android:checked="true" />
+
+        <SwitchPreference
+            android:key="@string/prefs_warning_beep_key"
+            android:title="@string/warning_beep_pref_title"
+            android:summaryOff="@string/warning_beep_pref_summary_off"
+            android:summaryOn="@string/warning_beep_pref_summary_on"
+            android:defaultValue="true"
+            android:checked="true" />
+
+        <!--<Preference-->
+            <!--android:title="Settings"-->
+            <!--android:enabled="false"-->
+            <!--android:selectable="false"/>-->
 
         <EditTextPreference
             android:key="@string/prefs_warning_mindist_key"
@@ -83,6 +125,11 @@
             android:summary="@string/warning_mindist_pref_summary"/>
 
         </PreferenceScreen>
+
+    <!--<Preference-->
+        <!--android:title="Other Settings"-->
+        <!--android:enabled="false"-->
+        <!--android:selectable="false"/>-->
 
     <EditTextPreference
         android:key="edittext_laser_scan_detail"
@@ -95,7 +142,7 @@
     <EditTextPreference
         android:key="edittext_random_walk_range_proximity"
         android:inputType="numberDecimal"
-        android:defaultValue="2"
+        android:defaultValue="2.0"
         android:title="@string/random_walk_range_minimum_pref_title"
         android:singleLine="true"
         android:summary="@string/random_walk_range_minimum_pref_summary"/>
