@@ -15,16 +15,21 @@ import android.widget.TextView;
 import com.robotca.ControlApp.R;
 
 /**
+ * Simple AboutFragment showing about info for the app.
+ *
  * Created by Kenneth Spear on 3/15/16.
  */
 public class AboutFragment extends Fragment {
 
+    /**
+     * Default Constructor.
+     */
     public AboutFragment() {
 
     }
 
     /**
-     * Called when the activity is  created.
+     * Called when the activity is created.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,10 +40,11 @@ public class AboutFragment extends Fragment {
         aboutTxt.setText(readTxt());
 
         return view;
+    }
 
-
-}
-
+    /*
+     * Reads the about text.
+     */
     private String readTxt() {
 
         InputStream inputStream = getResources().openRawResource(R.raw.about);

@@ -1,7 +1,6 @@
 package com.robotca.ControlApp.Core;
 
 import android.graphics.Color;
-import android.location.Location;
 
 import com.google.common.base.Preconditions;
 
@@ -12,8 +11,6 @@ import org.ros.rosjava_geometry.Vector3;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-
-import sensor_msgs.NavSatFix;
 
 /**
  * Various useful functions.
@@ -50,20 +47,20 @@ public class Utils {
         return (double) (float)Math.atan2(rotatedAxis.getY(), rotatedAxis.getX());
     }
 
-    public static Location navSatToLocation(NavSatFix navSatFix){
-        Location location = new Location(navSatFix.getHeader().getFrameId());
-
-        location.setLatitude(navSatFix.getLatitude());
-        location.setLongitude(navSatFix.getLongitude());
-        location.setAltitude(navSatFix.getAltitude());
-
-        return location;
-    }
-
-    public static Vector3 rotateVector(Vector3 originalVector, double radians){
-        return new Vector3(originalVector.getX()*Math.cos(radians)-originalVector.getY()*Math.sin(radians),
-                originalVector.getX()*Math.sin(radians)+originalVector.getY()*Math.cos(radians), 0);
-    }
+//    public static Location navSatToLocation(NavSatFix navSatFix){
+//        Location location = new Location(navSatFix.getHeader().getFrameId());
+//
+//        location.setLatitude(navSatFix.getLatitude());
+//        location.setLongitude(navSatFix.getLongitude());
+//        location.setAltitude(navSatFix.getAltitude());
+//
+//        return location;
+//    }
+//
+//    public static Vector3 rotateVector(Vector3 originalVector, double radians){
+//        return new Vector3(originalVector.getX()*Math.cos(radians)-originalVector.getY()*Math.sin(radians),
+//                originalVector.getX()*Math.sin(radians)+originalVector.getY()*Math.cos(radians), 0);
+//    }
 
     /**
      * Calculates the difference between two angles, in radians.
@@ -112,6 +109,43 @@ public class Utils {
     public static double distanceSquared(double x1, double y1, double x2, double y2) {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
+
+    /**
+     * Calculates the nearest distance from the point (x, y) to the line between pt1 and pt2.
+     * @param x The x position of the point
+     * @param y The y position of the point
+     * @param pt1 The first point of the line
+     * @param pt2 The second point of the line
+     * @return The nearest distance from (x, y) to the line
+     */
+    public static double distanceToLine(double x, double y, Vector3 pt1, Vector3 pt2) {
+
+//        double dist = Math.abs((pt2.getY() - pt1.getY()) * x - (pt2.getX() - pt1.getX()) * y
+//                + pt2.getX() * pt1.getY() - pt2.getY() * pt1.getX());
+//
+//        return dist / distance(pt1.getX(), pt1.getY(), pt2.getX(), pt2.getY());
+
+        final double A, B, C, D;
+        A = pt1.getX();
+        B = pt2.getX();
+        C = pt1.getY();
+        D = pt2.getY();
+
+        double t = (A * (A - B) + C * (C - D) + x * (B - A) + y * (D - C)) / ((A - B) * (A - B) + (C - D) * (C - D));
+
+        if (t < 0.0 || t > 1.0)
+            return Double.MAX_VALUE;
+
+        double c1 = B - A;
+        double c2 = D - C;
+
+        c1 = A + t * c1;
+        c2 = C + t * c2;
+
+        return distance(x, y, c1, c2);
+    }
+
+
 
     /**
      * Draws a point.

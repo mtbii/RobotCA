@@ -73,6 +73,7 @@ public class LaserScanFragment extends SimpleFragment implements Savable {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        laserScanView.getLaserScanRenderer().stopMovingWaypoint();
                         ((ControlApp) getActivity()).clearWaypoints();
                     }
                 });

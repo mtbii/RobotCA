@@ -322,8 +322,10 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
                 return;
 
             try {
+                // Basic experimentation has led me to conclude that speed values from the robot
+                // are in m/s and turn rates in rad/s
                 double speed = (int) (lastSpeed * 100.0) / 100.0;
-                double turnrate = (int) (lastTurnrate * 100.0) / 100.0;
+                double turnrate = (int) (Math.toDegrees(lastTurnrate) * 100.0) / 100.0;
 
                 // Update speed
                 if (speedView != null)

@@ -201,7 +201,8 @@ public class RobotController implements NodeMain, Savable {
         publishVelocity = true;
 
         motionPlan = plan;
-        motionPlan.run(this);
+        if (motionPlan != null)
+            motionPlan.run(this);
     }
 
     /**

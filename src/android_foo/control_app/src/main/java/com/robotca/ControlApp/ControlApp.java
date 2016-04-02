@@ -702,6 +702,35 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * Attempts to find a Waypoint at the specified position.
+     * @param point The position
+     * @return The index of the Waypoint in the Waypoint list or -1 if no Waypoint was found at the point
+     */
+    public int findWaypointAt(Vector3 point, float scale) {
+        // First find the nearest point
+        double minDist = Double.MAX_VALUE, dist;
+        Vector3 pt, near = null;
+        int idx = -1;
+
+        for (int i = 0; i < waypoints.size(); ++i) {
+
+            pt = waypoints.get(i);
+            dist = Utils.distanceSquared(point.getX(), point.getY(), pt.getX(), pt.getY());
+
+            if (dist < minDist) {
+                minDist = dist;
+                near = pt;
+                idx = i;
+            }
+        }
+
+        if (near == null || minDist * scale >= MINIMUM_WAYPOINT_DISTANCE)
+            idx = -1;
+
+        return idx;
+    }
+
+    /**
      * Same as above but will remove a nearby way point if one is close instead of adding the new point.
      * @param point The point
      * @param scale The camera scale
@@ -752,7 +781,28 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             alert.show();
 
         } else {
-            addWaypoint(point);
+
+            minDist = Double.MAX_VALUE;
+            int j = -1;
+
+            // See if the waypoint is on an existing line segment and if so insert it
+            for (int i = 0; i < waypoints.size() - 1; ++i) {
+                dist = Utils.distanceToLine(point.getX(), point.getY(), waypoints.get(i), waypoints.get(i + 1));
+
+                if (dist < minDist) {
+                    minDist = dist;
+                    j = i;
+                }
+            }
+
+            // Insert the waypoint if it is between two other waypoints
+            if (minDist * scale < MINIMUM_WAYPOINT_DISTANCE) {
+                synchronized (waypoints) {
+                    waypoints.add(j + 1, point);
+                }
+            } else {
+                addWaypoint(point);
+            }
         }
     }
 

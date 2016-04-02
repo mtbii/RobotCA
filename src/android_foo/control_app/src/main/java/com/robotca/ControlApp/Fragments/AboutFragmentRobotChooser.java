@@ -1,22 +1,17 @@
 package com.robotca.ControlApp.Fragments;
 
-/**
- * Created by kennethspear on 3/28/16.
- */
-//import android.app.Fragment;
-import android.support.v4.app.Fragment;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.robotca.ControlApp.R;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Kenneth Spear on 3/15/16.

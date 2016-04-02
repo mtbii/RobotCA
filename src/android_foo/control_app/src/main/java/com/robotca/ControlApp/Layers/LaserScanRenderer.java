@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.ViewConfiguration;
 
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.RobotController;
@@ -79,6 +80,12 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     // Used for detecting taps for placing waypoints
     private final GestureDetector gestureDetector;
 
+    // Used for moving waypoints
+    // Index of the currently moving Waypoint (-1 for none)
+    private static int movePtIdx = -1;
+    private static Vector3 movePt;
+    private static float mpXStart, mpYStart;
+
     // Controls the density of scan points
     private float laserScanDetail;
 
@@ -99,13 +106,13 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
      * Creates a LaserScanRenderer.
      * @param controlApp The current ControlApp
      */
-    public LaserScanRenderer(ControlApp controlApp) {
+    public LaserScanRenderer(final ControlApp controlApp) {
         this.controlApp = controlApp;
         this.mutex = new Object();
 
         this.laserScanDetail = Float.parseFloat(PreferenceManager
                         .getDefaultSharedPreferences(controlApp)
-                        .getString("edittext_laser_scan_detail", "1"));
+                        .getString("edittext_laser_scan_detail", "1.0"));
 
         if (this.laserScanDetail < 1f)
             this.laserScanDetail = 1f;
@@ -134,8 +141,8 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                     @Override
                     public boolean onScaleBegin(ScaleGestureDetector detector) {
 
-                        xStart = -2 * (detector.getFocusX() - width / 2) / (cameraZoom * BASE_ZOOM);
-                        yStart = 2 * (detector.getFocusY() - height / 2) / (cameraZoom * BASE_ZOOM);
+                        xStart = -2.0f * (detector.getFocusX() - width / 2) / (cameraZoom * BASE_ZOOM);
+                        yStart = 2.0f * (detector.getFocusY() - height / 2) / (cameraZoom * BASE_ZOOM);
 
                         offX = xShift;
                         offY = yShift;
@@ -164,6 +171,30 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                     // Ignore
                 }
                 return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Log.d(TAG, "Long Press");
+
+                movePtIdx = controlApp.findWaypointAt(screenToWorld2(e.getX(), e.getY()), cameraZoom);
+
+
+                if (movePtIdx != -1)
+                {
+                    // Disable editing the View
+                    isRotating = false;
+                    isMoving = false;
+
+                    // Grab the point
+                    movePt = controlApp.getWaypoints().get(movePtIdx);
+
+                    PointF pos = new PointF();
+                    drawPoint(null, movePt.getX(), movePt.getY(), 0.0f, 0, pos);
+
+                    mpXStart = pos.x;// - e.getX()*0 + width / 2;
+                    mpYStart = pos.y;// - e.getY()*0 + height / 2;
+                }
             }
         });
     }
@@ -206,6 +237,14 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     }
 
     /**
+     * Aborts the current movement of a Waypoint.
+     */
+    public void stopMovingWaypoint() {
+        movePt = null;
+        movePtIdx = -1;
+    }
+
+    /**
      * Callback for touch events to this Layer.
      *
      * @param event The touch MotionEvent
@@ -214,8 +253,10 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     public boolean onTouchEvent(MotionEvent event) {
         final float s = 2f / (cameraZoom * BASE_ZOOM);
 
-        scaleGestureDetector.onTouchEvent(event);
-        gestureDetector.onTouchEvent(event);
+        if (movePtIdx == -1) {
+            scaleGestureDetector.onTouchEvent(event);
+            gestureDetector.onTouchEvent(event);
+        }
 
         boolean r = true;
 
@@ -225,7 +266,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                 isMoving = false;
                 Log.d(TAG, "Pointer Down");
 
-                if (!isRotating) {
+                if (movePtIdx == -1 && !isRotating) {
                     isRotating = event.getPointerCount() >= 2;
 
                     if (isRotating) {
@@ -263,6 +304,9 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                     isMoving = false;
                 }
 
+                movePtIdx = -1;
+                movePt = null;
+
                 break;
             case MotionEvent.ACTION_MOVE:
 
@@ -278,6 +322,19 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                 }
                 else
                     isRotating = false;
+
+                // Moving Waypoints
+                if (movePt != null) {
+                    float mpXShift = mpXStart + event.getX();
+                    float mpYShift = mpYStart + event.getY();
+
+                    Vector3 pt = screenToWorld2(mpXShift, mpYShift);
+
+                    synchronized (controlApp.getWaypoints()) {
+                        controlApp.getWaypoints().remove(movePtIdx);
+                        controlApp.getWaypoints().add(movePtIdx, pt);
+                    }
+                }
 
                 break;
         }
@@ -534,7 +591,13 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
         // Draw the Waypoints
         b.rewind();
         for (int i = 0; i < b.limit(); i += 3) {
-            Utils.drawPoint(gl, b.get(i), b.get(i + 1), 24.0f, i == 0 ? 0xFF22CC33 : 0xFF2233CC);
+            Utils.drawPoint(gl, b.get(i), b.get(i + 1), 24.0f,
+                    i / 3 == movePtIdx ? 0xFFFFFF00: (i == 0 ? 0xFF22CC33 : 0xFF2233CC));
+
+            if (i / 3 == movePtIdx)
+            {
+                Utils.drawPoint(gl, b.get(i), b.get(i + 1), 200.0f, 0x88FFFF00);
+            }
         }
     }
 
@@ -580,5 +643,24 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
         sy = ry + yy;
 
         return new Vector3(sx, sy, 0.0);
+    }
+
+    /**
+     * Converts a touch MotionEvent to a point in Robot world space.
+     * @param ex The x position
+     * @param ey The y position
+     * @return The converted point
+     */
+    private Vector3 screenToWorld2(float ex, float ey) {
+        float x = ex - width / 2;
+        float y = ey - height / 2;
+
+        x = 2 * x / (cameraZoom * BASE_ZOOM);
+        y = 2 * y / (cameraZoom * BASE_ZOOM);
+
+        x -= xShift;
+        y += yShift;
+
+        return screenToWorld(x, y);
     }
 }

@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.robotca.ControlApp.ControlApp;
-import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -23,7 +22,7 @@ public class WarningSystem implements MessageListener<LaserScan> {
     private boolean enabled;
     private boolean safemode;
 
-    private static final float ANGLE_DELTA = (float) Math.toRadians(30.0);
+    private static final float ANGLE_DELTA = (float) Math.toRadians(40.0);
 
     // Log tag String
     @SuppressWarnings("unused")
@@ -96,7 +95,7 @@ public class WarningSystem implements MessageListener<LaserScan> {
 
         // Warn the ControlApp if necessary
         if (RobotController.getSpeed() > -0.1 &&
-                shortestDistance < minRange * Math.max(0.4, RobotController.getSpeed())) {
+                shortestDistance < minRange * Math.max(0.5, RobotController.getSpeed())) {
 
             controlApp.collisionWarning();
 
