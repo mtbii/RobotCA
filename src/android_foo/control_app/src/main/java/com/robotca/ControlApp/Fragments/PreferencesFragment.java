@@ -1,17 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.R;
@@ -41,20 +34,6 @@ public class PreferencesFragment extends PreferenceFragment {
         // Add the preferences
         addPreferencesFromResource(R.xml.prefs);
     }
-
-//    @Override
-//    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle)
-//    {
-//        View view = super.onCreateView(layoutInflater, viewGroup, bundle);
-//
-//        if (view != null) {
-//            ListView list = (ListView) view.findViewById(android.R.id.list);
-//            list.setDivider(null);
-//        }
-//
-//        return view;
-//    }
-
 
     @Override
     public void onPause() {

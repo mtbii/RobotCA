@@ -29,7 +29,7 @@ public class RobotInfo implements Comparable<RobotInfo> {
     /**
      * Default Constructor.
      */
-    public RobotInfo(){
+    public RobotInfo() {
         //id = UUID.randomUUID();
         name = "Robot" + robotCount++;
         masterUriString = "http://localhost:11311";
@@ -52,7 +52,8 @@ public class RobotInfo implements Comparable<RobotInfo> {
      * @param laserTopic LaserTopic name for this RobotInfo
      * @param cameraTopic CameraTopic name for this RobotInfo
      */
-    public RobotInfo(UUID id, String name, String masterUriString, String joystickTopic, String laserTopic, String cameraTopic) {
+    public RobotInfo(UUID id, String name, String masterUriString, String joystickTopic,
+                     String laserTopic, String cameraTopic) {
         this.id = id;
         this.name = name;
         this.masterUriString = masterUriString;
@@ -174,7 +175,7 @@ public class RobotInfo implements Comparable<RobotInfo> {
     }
 
     /**
-     * Determines the correct value for robotCount which
+     * Determines the correct value for robotCount.
      * @param list The list of loaded RobotInfos
      */
     static void resolveRobotCount(List<RobotInfo> list)

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,6 +129,8 @@ public class HelpFragment extends Fragment
         public Fragment getItem(int position)
         {
             TabInfo info = mTabs.get(position);
+
+            Log.d("HelpFragment", "Creating Fragment " + position);
 
             return Fragment.instantiate(mContext, info.clss.getName(), info.args);
 

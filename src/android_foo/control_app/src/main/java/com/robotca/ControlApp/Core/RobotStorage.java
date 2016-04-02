@@ -54,6 +54,7 @@ public class RobotStorage {
      * @param robot The RobotInfo to remove
      * @return True if the specified RobotInfo was removed, false otherwise
      */
+    @SuppressWarnings("unused")
     public static synchronized boolean remove(Activity activity, RobotInfo robot){
         boolean removed = g_cRobotInfos.remove(robot);
         save(activity);

@@ -3,7 +3,6 @@ package com.robotca.ControlApp.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +14,13 @@ import com.robotca.ControlApp.Views.JoystickView;
 
 /**
  * Fragment containing the JoystickView.
+ *
  * Created by Michael Brunson on 11/7/15.
  */
 public class JoystickFragment extends Fragment {
     private JoystickView virtualJoystick;
     private View view;
     private ControlMode controlMode = ControlMode.Joystick;
-    private boolean isSetup;
 
     /**
      * Default Constructor.
@@ -42,14 +41,6 @@ public class JoystickFragment extends Fragment {
 
             // Grab the JoystickView and set its topic
             virtualJoystick = (JoystickView) view.findViewById(R.id.joystick_view);
-//            virtualJoystick.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
-
-            // TODO
-//            // Start the Joystick's subscribers
-//            if (!isSetup && isInitialized()) {
-//                isSetup = true;
-//                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
-//            }
         }
 
         return view;
@@ -62,20 +53,6 @@ public class JoystickFragment extends Fragment {
     public JoystickView getJoystickView() {
         return virtualJoystick;
     }
-
-//    /**
-//     * Shuts down the JoystickView
-//     */
-//    @Override
-//    void shutdown() {
-//        // TODO
-////        if (isSetup && isInitialized()) {
-////            nodeMainExecutor.shutdownNodeMain(virtualJoystick);
-////        }
-//
-//        isSetup = false;
-//        setInitialized(false);
-//    }
 
     /**
      * Get the currently active ControlMode.
@@ -107,6 +84,7 @@ public class JoystickFragment extends Fragment {
      * and initializing the Joystick subscribers if not already done.
      */
     public void invalidate() {
+
         switch (controlMode) {
             case Joystick:
                 show();
@@ -121,16 +99,8 @@ public class JoystickFragment extends Fragment {
                 break;
         }
 
-        // TODO
-//        if (isInitialized()) {
-//            if(!isSetup) {
-//                isSetup = true;
-//                nodeMainExecutor.execute(virtualJoystick, nodeConfiguration.setNodeName("android/virtual_joystick"));
-//            }else{
-                virtualJoystick.setControlMode(controlMode);
-                virtualJoystick.controlSchemeChanged();
-//            }
-//        }
+        virtualJoystick.setControlMode(controlMode);
+        virtualJoystick.controlSchemeChanged();
     }
 
     public void stop() {

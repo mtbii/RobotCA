@@ -52,20 +52,20 @@ import android.support.v4.app.FragmentManager;
 public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
 
     public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
-    private View mEmptyView;
+//    private View mEmptyView;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
     private ShowcaseView showcaseView;
-    private boolean addedRobot;
+//    private boolean addedRobot;
     private Toolbar mToolbar;
 
     private String[] mFeatureTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private int drawerIndex = 1;
-    private String mTitle;
-    private String mDrawerTitle;
+//    private int drawerIndex = 1;
+//    private String mTitle;
+//    private String mDrawerTitle;
     private ActionBarDrawerToggle mDrawerToggle;
 
     Fragment fragment = null;
@@ -78,7 +78,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
         this.setContentView(R.layout.robot_chooser);
 
-        mEmptyView = findViewById(R.id.robot_empty_view);
+//        mEmptyView = findViewById(R.id.robot_empty_view);
         mRecyclerView = (RecyclerView) findViewById(R.id.robot_recycler_view);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -93,10 +93,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mDrawerLayout = (DrawerLayout) findViewById(R.id.profileDrawer);
         mFeatureTitles = getResources().getStringArray(R.array.chooser_titles); //Where you set drawer item titles
         mDrawerList = (ListView) findViewById(R.id.left_drawer2);
-
-        //mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
-        //mTitle="ROS Control";
-        //mDrawerTitle=mTitle;
 
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -121,6 +117,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mDrawerToggle.syncState();
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        //noinspection deprecation
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         mDrawerLayout.post(new Runnable() {
@@ -223,11 +220,11 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                                 setupNextTutorialMessage();
 
 
-                            } else {
-                                addedRobot = true;
                             }
-                        } catch (Exception e) {
-                        }
+//                            else {
+//                                addedRobot = true;
+//                            }
+                        } catch (Exception ignore) {}
                     }
                 });
             }
@@ -284,7 +281,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 break;
         }
 
-        drawerIndex = position;
+//        drawerIndex = position;
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -381,7 +378,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                                     .setContentText("To connect to this robot, tap it's name.")
                                     .build();
 
-                            addedRobot = true;
+//                            addedRobot = true;
 
                             PreferenceManager
                                     .getDefaultSharedPreferences(RobotChooser.this)
@@ -521,6 +518,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     /**
      * @return mAdapter item count.
      */
+    @SuppressWarnings("unused")
     int getAdapterSize() {
         return mAdapter.getItemCount();
     }

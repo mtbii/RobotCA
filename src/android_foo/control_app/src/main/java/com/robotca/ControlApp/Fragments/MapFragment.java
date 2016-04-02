@@ -1,9 +1,10 @@
 package com.robotca.ControlApp.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,7 +13,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.LocationProvider;
 import com.robotca.ControlApp.R;
@@ -28,21 +28,24 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 
-
+/**
+ * Fragment containing the Map screen showing the real-world position of the Robot.
+ *
+ */
 public class MapFragment extends Fragment implements MapEventsReceiver {
 
-    Button robotRecenterButton;
-    Button tabletRecenterButton;
-    MyLocationNewOverlay myLocationOverlay;
-    MyLocationNewOverlay secondMyLocationOverlay;
-    MapView mapView;
-    MapEventsOverlay mapEventsOverlay;
-    IMapController mapViewController;
-    private ShowcaseView showcaseView;
-    private Toolbar mToolbar;
+    // Log tag String
+    private static final String TAG = "MapFragment";
+
+    private MyLocationNewOverlay myLocationOverlay;
+    private MyLocationNewOverlay secondMyLocationOverlay;
+    private MapView mapView;
 
     ArrayList<GeoPoint> waypoints = new ArrayList<>();
 
+    /**
+     * Default Constructor.
+     */
     public MapFragment() {
     }
 
@@ -50,15 +53,11 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
-        View view = inflater.inflate(R.layout.fragment_map, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.fragment_map, null);
         mapView = (MapView) view.findViewById(R.id.mapview);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        robotRecenterButton = (Button) view.findViewById(R.id.recenter);
-        //robotRecenterButton.setOnClickListener(robotRecenterListener);
-        //tabletRecenterButton = (Button) view.findViewById(R.id.tabletRecenter);
-        //tabletRecenterButton.setOnClickListener(tabletRecenterListener);
+        Button robotRecenterButton = (Button) view.findViewById(R.id.recenter);
 
         mapView.setClickable(true);
         mapView.setBuiltInZoomControls(true);
@@ -66,17 +65,13 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         mapView.setUseDataConnection(true);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
 
-
-        // Use the RobotGPSSub that the HUDFragment uses
-//        RobotGPSSub robotGPSNode = ((HUDFragment) getActivity().
-//                getFragmentManager().findFragmentById(R.id.hud_fragment)).getRobotGPSNode();
         LocationProvider locationProvider = ((ControlApp) getActivity()).getRobotController().LOCATION_PROVIDER;
 
         // Location overlay using the robot's GPS
         myLocationOverlay = new MyLocationNewOverlay(getActivity(), locationProvider/*robotGPSNode*/, mapView);
         // Location overlay using Android's GPS
         secondMyLocationOverlay = new MyLocationNewOverlay(getActivity(), mapView);
-        mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);
 
         // Allow GPS updates
         myLocationOverlay.enableMyLocation();
@@ -119,61 +114,18 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
             }
         });
 
-        mapViewController = mapView.getController();
+        IMapController mapViewController = mapView.getController();
         mapViewController.setZoom(18);
 
         return view;
-
-        /*ScheduledExecutorService worker = Executors.newSingleThreadExecutor();
-        Runnable task1 = new Runnable() {
-            public void run() {
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try {
-                            if (RobotStorage.getRobots().size() == 0) {
-                                //Show initial tutorial message
-                                showcaseView = new ShowcaseView.Builder(getActivity())
-                                        .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.recenter))
-                                        .setStyle(R.style.CustomShowcaseTheme3)
-                                        .hideOnTouchOutside()
-                                        .blockAllTouches()
-                                                //.singleShot(0) Can use this instead of manually saving in preferences
-                                        .setContentTitle("Switch the focus")
-                                        .setContentText("You can switch the focus between you and the robot by using this button. Try it!")
-                                        .build();
-
-                                //Get ready to show tutorial message when user adds a robot
-                                //setupNextTutorialMessage();
-
-
-                            }
-                        } catch (Exception e) {
-                        }
-                    }
-                });
-            }
-        };
-
-        worker.schedule(task1, 1, TimeUnit.SECONDS);
-*/
     }
 
-
+    /**
+     * Tell the user the coordinates of a tapped point on the map.
+     * @param geoPoint The tapped point
+     * @return True
+     */
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if(showcaseView != null){
-            showcaseView.hide();
-        }
-    }
-
-
-    @Override
-    // Tell the user the coordinates of a tapped point on the map
     public boolean singleTapConfirmedHelper(GeoPoint geoPoint) {
         Toast.makeText(mapView.getContext(), "Tapped on (" + geoPoint.getLatitude() + "," +
                 geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
@@ -181,18 +133,28 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         return true;
     }
 
+    /**
+     * Place a marker using a long press.
+     * @param geoPoint The point to place the marker
+     * @return True
+     */
     @Override
-    // Place a marker using a long press
     public boolean longPressHelper(GeoPoint geoPoint) {
 
         GroundOverlay myGroundOverlay = new GroundOverlay(getActivity());
         myGroundOverlay.setPosition(geoPoint);
-        myGroundOverlay.setImage(getResources().getDrawable(R.drawable.ic_flag_black_24dp).mutate());
+        try {
+            //noinspection ConstantConditions,deprecation
+            myGroundOverlay.setImage(getResources().getDrawable(R.drawable.ic_flag_black_24dp).mutate());
+        }
+        catch (NullPointerException e) {
+            Log.e(TAG, "", e);
+        }
         myGroundOverlay.setDimensions(25.0f);
         mapView.getOverlays().add(myGroundOverlay);
         mapView.postInvalidate();
 
-        //keep storage of markers and current location
+        // keep storage of markers and current location
         waypoints.add(myLocationOverlay.getMyLocation());
         waypoints.add(geoPoint);
 
@@ -204,6 +166,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
 
 
     // Function to compute distance between 2 points as well as the angle (bearing) between them
+    @SuppressWarnings("unused")
     private static void computeDistanceAndBearing(double lat1, double lon1,
                                                   double lat2, double lon2, float[] results) {
         // Based on http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf
@@ -304,6 +267,5 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
             }
         }
     }
-
 }
 

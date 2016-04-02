@@ -80,16 +80,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     private HUDFragment hudFragment;
     private RobotController controller;
     private WarningSystem warningSystem;
-//    private WarningSystemPlan rplan;
-//    private float minRange = (float) 2.0;
 
     private Fragment fragment = null;
     FragmentManager fragmentManager;
     int fragmentsCreatedCounter = 0;
 
     private int drawerIndex = 1;
-//    private String mTitle;
-//    private String mDrawerTitle;
 
     // Log tag String
     private static final String TAG = "ControlApp";
@@ -143,8 +139,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mFeatureTitles = getResources().getStringArray(R.array.feature_titles); //Where you set drawer item titles
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-//        mTitle = mDrawerTitle = ROBOT_INFO.getName(); //getTitle().toString();
 
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,9 +194,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Create the RobotController
         controller = new RobotController(this);
 
-//        rplan = new WarningSystemPlan(minRange);
-//        controller.runPlan(rplan);
-
         // Hud fragment
         hudFragment = (HUDFragment) getFragmentManager().findFragmentById(R.id.hud_fragment);
 
@@ -255,7 +246,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         onTrimMemory(TRIM_MEMORY_BACKGROUND);
         onTrimMemory(TRIM_MEMORY_COMPLETE);
-        //this.nodeMainExecutorService.forceShutdown();
     }
 
     @Override

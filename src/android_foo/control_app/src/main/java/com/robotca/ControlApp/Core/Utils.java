@@ -47,21 +47,6 @@ public class Utils {
         return (double) (float)Math.atan2(rotatedAxis.getY(), rotatedAxis.getX());
     }
 
-//    public static Location navSatToLocation(NavSatFix navSatFix){
-//        Location location = new Location(navSatFix.getHeader().getFrameId());
-//
-//        location.setLatitude(navSatFix.getLatitude());
-//        location.setLongitude(navSatFix.getLongitude());
-//        location.setAltitude(navSatFix.getAltitude());
-//
-//        return location;
-//    }
-//
-//    public static Vector3 rotateVector(Vector3 originalVector, double radians){
-//        return new Vector3(originalVector.getX()*Math.cos(radians)-originalVector.getY()*Math.sin(radians),
-//                originalVector.getX()*Math.sin(radians)+originalVector.getY()*Math.cos(radians), 0);
-//    }
-
     /**
      * Calculates the difference between two angles, in radians.
      * @param angle1 The first angle
@@ -119,11 +104,6 @@ public class Utils {
      * @return The nearest distance from (x, y) to the line
      */
     public static double distanceToLine(double x, double y, Vector3 pt1, Vector3 pt2) {
-
-//        double dist = Math.abs((pt2.getY() - pt1.getY()) * x - (pt2.getX() - pt1.getX()) * y
-//                + pt2.getX() * pt1.getY() - pt2.getY() * pt1.getX());
-//
-//        return dist / distance(pt1.getX(), pt1.getY(), pt2.getX(), pt2.getY());
 
         final double A, B, C, D;
         A = pt1.getX();

@@ -10,6 +10,8 @@ import java.util.Timer;
 import sensor_msgs.LaserScan;
 
 /**
+ * Simple bump and turn motion plan.
+ *
  * Created by Michael Brunson on 2/13/16.
  */
 public class RandomWalkPlan extends RobotPlan {
@@ -17,6 +19,10 @@ public class RandomWalkPlan extends RobotPlan {
     private final Random random;
     private float minRange;
 
+    /**
+     * Creates a RandomWalkPlan with the specified minimum range.
+     * @param minRange The minimum range
+     */
     public RandomWalkPlan(float minRange) {
         this.minRange = Math.max(minRange, 0.2f);
         random = new Random();
@@ -32,28 +38,34 @@ public class RandomWalkPlan extends RobotPlan {
 
     @Override
     public void start(final RobotController controller) throws Exception {
-        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+//        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
+
+        // Laser scan data
+        float[] ranges;
+        // Temporary variables
+        float shortestDistance, angle, angleDelta, angleIncrement;
+
         while(!isInterrupted()) {
             LaserScan laserScan = controller.getLaserScan();
 
-            float[] ranges = laserScan.getRanges();
-            float shortestDistance = ranges[ranges.length / 2];
-            float shortestDistanceAngle = 0;
-            float angle = laserScan.getAngleMin();
-            float angleDelta = (float) Math.toRadians(30);
-            float angleIncrement = laserScan.getAngleIncrement();
+            ranges = laserScan.getRanges();
+            shortestDistance = ranges[ranges.length / 2];
+            angle = laserScan.getAngleMin();
+            angleDelta = (float) Math.toRadians(30);
+            angleIncrement = laserScan.getAngleIncrement();
 
+            // Find the shortest range
             for (int i = 0; i < laserScan.getRanges().length; i++) {
                 if (ranges[i] < shortestDistance && angle > -angleDelta && angle < angleDelta) {
                     shortestDistance = ranges[i];
-                    shortestDistanceAngle = angle;
                 }
 
                 angle += angleIncrement;
             }
 
+            // If a wall is close, stop, turn a random amount, and continue moving
             if (shortestDistance < minRange) {
-                tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
+//                tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
                 controller.publishVelocity(0, 0, 0);
                 waitFor(1000);
 

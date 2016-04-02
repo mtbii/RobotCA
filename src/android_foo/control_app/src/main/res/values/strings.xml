@@ -139,4 +139,7 @@
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
 
+    <!-- Default Preferences -->
+    <string name="default_warning_mindist">3.0</string>
+
 </resources>

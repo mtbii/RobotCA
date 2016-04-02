@@ -119,7 +119,7 @@
         <EditTextPreference
             android:key="@string/prefs_warning_mindist_key"
             android:inputType="numberDecimal"
-            android:defaultValue="2.0"
+            android:defaultValue="@string/default_warning_mindist"
             android:title="@string/warning_mindist_pref_title"
             android:singleLine="true"
             android:summary="@string/warning_mindist_pref_summary"/>

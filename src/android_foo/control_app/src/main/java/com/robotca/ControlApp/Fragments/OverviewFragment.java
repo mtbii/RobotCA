@@ -15,13 +15,13 @@ import org.ros.android.view.RosImageView;
 import sensor_msgs.CompressedImage;
 
 /**
+ * Fragment containing a CameraView and a LaserScanView.
  *
  * Created by Michael Brunson on 11/7/15.
  */
 public class OverviewFragment extends RosFragment {
 
     private View view;
-    private LaserScanFragment laserScanFragment;
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
 
 
@@ -38,7 +38,7 @@ public class OverviewFragment extends RosFragment {
         {
             view = inflater.inflate(R.layout.fragment_overview, container, false);
 
-            laserScanFragment = new LaserScanFragment();
+            LaserScanFragment laserScanFragment = new LaserScanFragment();
             getFragmentManager().beginTransaction().replace(
                     R.id.laser_scan_placeholder, laserScanFragment).commit();
 
@@ -50,7 +50,6 @@ public class OverviewFragment extends RosFragment {
         }
 
         if (isInitialized()) {
-//            laserScanFragment.initialize(nodeMainExecutor, nodeConfiguration);
             nodeMainExecutor.execute(cameraView, nodeConfiguration.setNodeName("android/camera_view"));
         }
 

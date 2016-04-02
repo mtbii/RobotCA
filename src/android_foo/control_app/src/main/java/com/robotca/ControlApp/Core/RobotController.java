@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.Plans.RobotPlan;
-import com.robotca.ControlApp.Fragments.HUDFragment;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
@@ -547,6 +546,7 @@ public class RobotController implements NodeMain, Savable {
     /**
      * @return The most recently received NavSatFix
      */
+    @SuppressWarnings("unused")
     public NavSatFix getNavSatFix() {
         synchronized (navSatFixMutex) {
             return navSatFix;
@@ -571,6 +571,7 @@ public class RobotController implements NodeMain, Savable {
     /**
      * @return The most recently received Odometry.
      */
+    @SuppressWarnings("unused")
     public Odometry getOdometry() {
         synchronized (odometryMutex) {
             return odometry;
@@ -607,6 +608,7 @@ public class RobotController implements NodeMain, Savable {
     /**
      * @return The most recently received Pose.
      */
+    @SuppressWarnings("unused")
     public Pose getPose() {
         synchronized (poseMutex) {
             return pose;

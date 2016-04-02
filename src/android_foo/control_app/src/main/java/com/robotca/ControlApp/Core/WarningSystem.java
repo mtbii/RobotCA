@@ -40,7 +40,7 @@ public class WarningSystem implements MessageListener<LaserScan> {
         this.enabled = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_system_key), true);
         this.safemode = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_safemode_key), true);
 
-        String val = prefs.getString(controlApp.getString(R.string.prefs_warning_mindist_key), "2.0");
+        String val = prefs.getString(controlApp.getString(R.string.prefs_warning_mindist_key), controlApp.getString(R.string.default_warning_mindist));
         this.minRange = Math.max(0.2f, Float.parseFloat(val));
     }
 
@@ -98,20 +98,6 @@ public class WarningSystem implements MessageListener<LaserScan> {
                 shortestDistance < minRange * Math.max(0.5, RobotController.getSpeed())) {
 
             controlApp.collisionWarning();
-
-//            // Safe Mode
-//            if (safemode && RobotController.getSpeed() > 0.0
-//                    && controlApp.getHUDFragment().getWarnAmount() > HUDFragment.DANGER_WARN_AMOUNT) {
-//
-//                final boolean res = controlApp.stopRobot(false);
-//
-//                controlApp.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        controlApp.getHUDFragment().toggleEmergencyStopUI(res);
-//                    }
-//                });
-//            }
         }
     }
 }

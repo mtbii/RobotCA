@@ -1,9 +1,11 @@
 package com.robotca.ControlApp.Dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -18,17 +20,28 @@ import com.robotca.ControlApp.R;
 import java.util.UUID;
 
 /**
+ * Dialog for adding or editing a Robot.
+ *
  * Created by Michael Brunson on 1/23/16.
  */
 public class AddEditRobotDialogFragment extends DialogFragment {
+
+    /** Bundle key for UUID */
     public static final String UUID_KEY = "UUID_KEY";
+    /** Bundle key for robot name */
     public static final String ROBOT_NAME_KEY = "ROBOT_NAME_KEY";
+    /** Bundle key for master URI */
     public static final String MASTER_URI_KEY = "MASTER_URI_KEY";
+    /** Bundle key for position */
     public static final String POSITION_KEY = "POSITION_KEY";
+    /** Bundle key for joystick topic */
     public static final String JOYSTICK_TOPIC_KEY = "JOYSTICK_TOPIC_KEY";
+    /** Bundle key for laser scan topic */
     public static final String LASER_SCAN_TOPIC_KEY = "LASER_SCAN_TOPIC_KEY";
+    /** Bundle key for camera topic */
     public static final String CAMERA_TOPIC_KEY = "CAMERA_TOPIC_KEY";
 
+    // Temporary RobotInfo
     private RobotInfo mInfo = new RobotInfo();
 
     // Use this instance of the interface to deliver action events
@@ -36,7 +49,6 @@ public class AddEditRobotDialogFragment extends DialogFragment {
 
     private EditText mNameEditTextView;
     private EditText mMasterUriEditTextView;
-    private CheckBox mAdvancedOptionsCheckbox;
     private View mAdvancedOptionsView;
     private EditText mJoystickTopicEditTextView;
     private EditText mLaserScanTopicEditTextView;
@@ -74,16 +86,17 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_add_robot, null);
+        @SuppressLint("InflateParams") View v = inflater.inflate(R.layout.dialog_add_robot, null);
         mNameEditTextView = (EditText) v.findViewById(R.id.robot_name_edit_text);
         mMasterUriEditTextView = (EditText) v.findViewById(R.id.master_uri_edit_view);
 
-        mAdvancedOptionsCheckbox = (CheckBox) v.findViewById(R.id.advanced_options_checkbox_view);
+        CheckBox mAdvancedOptionsCheckbox = (CheckBox) v.findViewById(R.id.advanced_options_checkbox_view);
         mAdvancedOptionsView = v.findViewById(R.id.advanved_options_view);
         mJoystickTopicEditTextView = (EditText) v.findViewById(R.id.joystick_topic_edit_text);
         mLaserScanTopicEditTextView = (EditText) v.findViewById(R.id.laser_scan_edit_view);
@@ -123,7 +136,7 @@ public class AddEditRobotDialogFragment extends DialogFragment {
                             Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
                         } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")) {
                             Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
-                        } else if (name != null && name != "") {
+                        } else if (!name.equals("")) {
                             mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name, masterUri, joystickTopic, laserScanTopic, cameraTopic), mPosition);
                             dialog.dismiss();
                         } else {
@@ -143,8 +156,8 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     }
 
     public interface DialogListener {
-        public void onAddEditDialogPositiveClick(RobotInfo info, int position);
-        public void onAddEditDialogNegativeClick(DialogFragment dialog);
+        void onAddEditDialogPositiveClick(RobotInfo info, int position);
+        void onAddEditDialogNegativeClick(DialogFragment dialog);
     }
 
 }
