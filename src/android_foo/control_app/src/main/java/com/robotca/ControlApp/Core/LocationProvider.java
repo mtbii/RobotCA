@@ -35,9 +35,7 @@ public class LocationProvider implements IMyLocationProvider, MessageListener<Na
     @Override
     public boolean startLocationProvider(IMyLocationConsumer myLocationConsumer) {
 
-        consumers.add(myLocationConsumer);
-
-        return true;
+        return consumers.add(myLocationConsumer);
     }
 
     @Override

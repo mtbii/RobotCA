@@ -207,6 +207,7 @@ public class RobotInfo implements Comparable<RobotInfo> {
     /**
      * @return The robot count.
      */
+    @SuppressWarnings("unused")
     static int getRobotCount()
     {
         return robotCount;

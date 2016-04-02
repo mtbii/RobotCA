@@ -68,7 +68,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
     private static final long TONE_DELAY = 300L;
 
     /** Warn amounts higher than this are considered dangerous */
-    public static final float DANGER_WARN_AMOUNT = 0.4f;
+    public static final float DANGER_WARN_AMOUNT = 0.3f;
 
     // Icons for indicating WIFI signal strength
     private static final int[] WIFI_ICONS;

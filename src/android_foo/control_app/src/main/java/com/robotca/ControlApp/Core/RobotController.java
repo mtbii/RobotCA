@@ -146,37 +146,41 @@ public class RobotController implements NodeMain, Savable {
     /**
      * Adds an Odometry listener.
      * @param l The listener
+     * @return True on success
      */
-    public void addOdometryListener(MessageListener<Odometry> l) {
-        odometryListeners.add(l);
+    public boolean addOdometryListener(MessageListener<Odometry> l) {
+        return odometryListeners.add(l);
     }
 
     /**
      * Adds a NavSatFix listener.
      * @param l The listener
+     * @return True on success
      */
-    public void addNavSatFixListener(MessageListener<NavSatFix> l) {
-        navSatListeners.add(l);
+    public boolean addNavSatFixListener(MessageListener<NavSatFix> l) {
+       return navSatListeners.add(l);
     }
 
     /**
      * Adds a LaserScan listener.
      * @param l The listener
+     * @return True on success
      */
-    public void addLaserScanListener(MessageListener<LaserScan> l) {
+    public boolean addLaserScanListener(MessageListener<LaserScan> l) {
         synchronized (laserScanListeners) {
-            laserScanListeners.add(l);
+            return laserScanListeners.add(l);
         }
     }
 
     /**
      * Removes a LaserScan listener.
      * @param l The listener
+     * @return True if the listener was removed
      */
-    public void removeLaserScanListener(MessageListener<LaserScan> l) {
+    public boolean removeLaserScanListener(MessageListener<LaserScan> l) {
 
         synchronized (laserScanListeners) {
-            laserScanListeners.remove(l);
+            return laserScanListeners.remove(l);
         }
     }
 

@@ -75,6 +75,8 @@ public abstract class RobotPlan {
             } catch (Exception e) {
                 Log.e(TAG, "", e);
             }
+        } else {
+            Log.d(TAG, "No Thread to Stop");
         }
     }
 

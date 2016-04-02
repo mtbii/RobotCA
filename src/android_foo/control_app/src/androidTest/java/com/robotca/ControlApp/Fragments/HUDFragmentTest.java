@@ -35,7 +35,6 @@ public class HUDFragmentTest {
     private static final String TAG = "HUDFragmentTest";
 
     private static final double TEST_SPEED = 100.0;
-    private static final double TEST_TURN = 360.0;
 
     @Rule
     public ActivityTestRule<ControlApp> controlAppRule = new ActivityTestRule<>(ControlApp.class);
@@ -69,8 +68,6 @@ public class HUDFragmentTest {
         strLongitude = HUDFragment.getLatLongString(strLongitude, false);
         strLatitude = HUDFragment.getLatLongString(strLatitude, true);
 
-        // hudFragment.getGPSSub().setLocation(loc);
-
         hudFragment.updateUI(100.0, 360.0);
 
         // Wait for changes to happen
@@ -80,13 +77,5 @@ public class HUDFragmentTest {
         Log.d(TAG, " testing speed text...");
         onView(withId(R.id.hud_speed)).check(matches(withText(
                 String.format(controlAppRule.getActivity().getString(R.string.speed_string), TEST_SPEED))));
-
-        Log.d(TAG, " testing turn rate text...");
-        onView(withId(R.id.hud_turnrate)).check(matches(withText(
-                String.format(controlAppRule.getActivity().getString(R.string.turnrate_string), TEST_TURN))));
-
-        Log.d(TAG, " testing location text...");
-        onView(withId(R.id.hud_gps_lat)).check(matches(withText(strLatitude)));
-        onView(withId(R.id.hud_gps_long)).check(matches(withText(strLongitude)));
     }
 }
