@@ -19,7 +19,7 @@ import com.robotca.ControlApp.R;
 
 public class HelpFragment extends Fragment
 {
-
+    private static View view;
     private TabHost mTabHost;
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -37,21 +37,24 @@ public class HelpFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_help, container, false);
 
-        mTabHost = (TabHost) v.findViewById(android.R.id.tabhost);
-        mTabHost.setup();
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_help, container, false);
 
-        mViewPager = (ViewPager) v.findViewById(R.id.pager);
-        mTabsAdapter = new TabsAdapter(getActivity(), mTabHost, mViewPager);
+            mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
+            mTabHost.setup();
 
-        // Here we load the content for each tab. 
-        mTabsAdapter.addTab(mTabHost.newTabSpec("one").setIndicator("Setup"), PageOneFragment.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("two").setIndicator("Using"), PageTwoFragment.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("three").setIndicator("FAQ"), PageThreeFragment.class, null);
+            mViewPager = (ViewPager) view.findViewById(R.id.pager);
+            mTabsAdapter = new TabsAdapter(getActivity(), mTabHost, mViewPager);
+
+            // Here we load the content for each tab.
+            mTabsAdapter.addTab(mTabHost.newTabSpec("one").setIndicator("Setup"), PageOneFragment.class, null);
+            mTabsAdapter.addTab(mTabHost.newTabSpec("two").setIndicator("Using"), PageTwoFragment.class, null);
+            mTabsAdapter.addTab(mTabHost.newTabSpec("three").setIndicator("FAQ"), PageThreeFragment.class, null);
+        }
 
 
-        return v;
+        return view;
     }
 
     public static class TabsAdapter extends FragmentPagerAdapter implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener
