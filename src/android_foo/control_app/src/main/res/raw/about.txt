@@ -1,39 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
 
-  About ROS Control
+<h1><font color="#000044">About ROS Control</font></h1>
 
-  This app is the result of a Senior Project to design an Android application to control a robot.Our goal was to create an Android application (optimized for tablets) to interface with a Robot Operating System (ROS) robot, for direct drive, diagnostic, and navigation information. The application processes data from various sensors on the robot and displays the information in an understandable fashion.
+<p>This app is the result of a Senior Project to design an Android application to control a robot. Our goal was to create an Android application (optimized for tablets) to interface with a Robot Operating System (ROS) robot for direct drive, diagnostic, and navigation information. The application processes data from various sensors on the robot and displays the information in an understandable fashion.</p>
 
+<hr>
 
-  1. The Overview:
+<h3><font color="#000044">Controlling the Robot</font></h3>
+<p>Several control schemes exist for moving the robot and can be selected by clicking the three dots on the top right of the screen on the menu bar.</p>
 
- The overview option in the navigation drawer shows both the view from the robots camera,and what the laser scan is seeing. In the laser scan portion of the overview, you can drop waypoints by using a long press and delete them using the same motion.
+<h5><font color="#000044">Random Walk</font></h5>
+<p>In this mode, the robot drives until nearing an obstacle and then turns a random amount and continues driving.</p>
 
+<h5><font color="#000044">Joystick Control</font></h5>
+<p>In this mode the robot can be controlled with the joystick on the bottom left of the screen.</p>
 
-  2. The Camera view
+<h5><font color="#000044">Tilt Control</font></h5>
+<p>In this mode, on devices with accelerometers, the robot can be controlled by tilting the android device. Tilt forward or backwards to move, and left or right to turn. Tapping the joystick will recalibrate the titl sensor.</p>
 
-  The camera view option in the navigation drawer shows the view from the robots camera.
+<h5><font color="#000044">Simple Waypoint Control</font></h5>
+<p>In this mode, the robot will follow the trail layed out by the placed Waypoints. See the <b>LaserScan view</b> for placing and viewing Waypoints.</p>
 
+<h5><font color="#000044">Waypoint Control</font></h5>
+<p>Similar to <b>Simple Waypoint Control</b>, in this mode the robot uses a potential field calculated from it's laser scanner to navigate around obstacles.</p>
 
-  3. The Robot view
+<hr>
 
-  The robot view option in the navigation drawer shows what the robots laser scanner is sensing in front of itself from a birds eye view. Waypoints can be dropped using a double point, and by changing the driving mode to a waypoint option, the robot will navigate itself to the point.
+<h3><font color="#000044">Navigation Drawer Views</font></h3>
+<p>Once connected to the robot, the navigation drawer on the left can be opened to choose from the following views:</p>
+<h5><font color="#000044">The Overview view</font></h5>
 
+<p>The <b>Overview view</b> contains both the <b>Camera view</b> and the <b>LaserScan view</b>.</p>
 
-  4. The Map view
+<h5><font color="#000044">The Camera view</font></h5>
 
-  The map view option in the navigation drawer plots the robot's and the android device's GPS position on a map.
+<p>The <b>Camera view</b> shows the view from the robot's camera.</p>
 
+<h5><font color="#000044">The LaserScan view</font></h5>
 
-  5. Preferences
+<p>The <b>LaserScan view</b> option shows obstacles sensed by the robot's laser scanner. The blue arrow indicates the robot's current direction in relation to the scan data.</p>
+<p>This view also shows the current Waypoint trail used by the various Waypoint control modes. Waypoints can be dropped or deleted with a double tap and moved by selecting them via a long press. Dropping a Waypoint on the existing trail will insert it into the trail.</p>
 
-  The preference option in the navigation drawer allows you to change things like the ROS topics you are listening to.
+<h5><font color="#000044">The Map view</font></h5>
 
+<p>The <b>Map view</b> shows both the robot's and android device's GPS position on the map.</p>
 
-  Developed By:
+<h5><font color="#000044">Preferences</font></h5>
 
-    Michael Brunson
-    Kenneth Spear
-    Nathaniel Stone
-    Cam Stewart
-    Zipporah Lighty
+<p>The <b>Preferences view</b> allows you to edit a variety of settings including the ROS topics you are connected to and warning options.</p>
+<hr>
+<h5><font color="#000044">Developed By:</font></h5>
+<i>
+&emsp;Michael Brunson<br>
+&emsp;Kenneth Spear<br>
+&emsp;Nathaniel Stone<br>
+&emsp;Cam Stewart<br>
+&emsp;Zipporah Lighty<br>
+</i>
 
+</body>
+</html>

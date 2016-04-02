@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class AboutFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_about, null);
 
         TextView aboutTxt = (TextView) view.findViewById(R.id.abouttxt);
-        aboutTxt.setText(readTxt());
+        aboutTxt.setText(Html.fromHtml(readTxt()));
 
         return view;
     }

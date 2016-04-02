@@ -48,17 +48,10 @@ import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
-import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
-import org.ros.node.topic.Subscriber;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-import nav_msgs.Odometry;
 
 //import org.ros.android.android_15.R;
 
@@ -118,7 +111,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     private static final float POST_LOCK_MAGNET_THETA = 20.0f;
     private static final int INVALID_POINTER_ID = -1;
-    private Publisher<geometry_msgs.Twist> publisher;
     /**
      * mainLayout The parent layout that contains all the elements of the virtual
      * joystick.
@@ -276,11 +268,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     private float[] tiltOffset = null;
     private boolean accelContactUp;
 
-//    /**
-//     * Odometry subscriber
-//     */
-//    Subscriber<nav_msgs.Odometry> odometrySubscriber;
-
     /**
      * Angles larger than this are capped.
      */
@@ -328,19 +315,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
                 vals[0] = -vals[0];
                 vals[1] = -vals[1];
             }
-
-//            switch (rotation)
-//            {
-//                case Surface.ROTATION_90:
-//                    Log.d(TAG, "ROT_90");
-//                    break;
-//                case Surface.ROTATION_180:
-//                    Log.d(TAG, "ROT_180");
-//                    break;
-//                case Surface.ROTATION_270:
-//                    Log.d(TAG, "ROT_270");
-//                    break;
-//            }
 
             // Normalize the values
             for (int i = 0; i < vals.length; ++i)
@@ -431,8 +405,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         try {
             sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        }
-        catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             // No accelerometer, too bad
             Log.w(TAG, "No tilt control");
         }

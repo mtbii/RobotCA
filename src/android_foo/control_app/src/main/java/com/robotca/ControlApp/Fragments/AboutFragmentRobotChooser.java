@@ -2,6 +2,7 @@ package com.robotca.ControlApp.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class AboutFragmentRobotChooser extends Fragment {
         View view = inflater.inflate(R.layout.fragment_about, null);
 
         TextView aboutTxt = (TextView) view.findViewById(R.id.abouttxt);
-        aboutTxt.setText(readTxt());
+        aboutTxt.setText(Html.fromHtml(readTxt()));
 
         return view;
 

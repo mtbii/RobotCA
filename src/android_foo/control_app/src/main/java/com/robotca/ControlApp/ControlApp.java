@@ -58,9 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * Main Activity for the App. ...
- *
  */
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
     private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
@@ -121,7 +119,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
 
-        if(ROBOT_INFO != null) {
+        if (ROBOT_INFO != null) {
             editor.putString(getString(R.string.prefs_joystick_topic_edittext_key), ROBOT_INFO.getJoystickTopic());
             editor.putString(getString(R.string.prefs_laserscan_topic_edittext_key), ROBOT_INFO.getLaserTopic());
             editor.putString(getString(R.string.prefs_camera_topic_edittext_key), ROBOT_INFO.getCameraTopic());
@@ -222,10 +220,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         Log.d(TAG, "onStop()");
 
-        if(controller != null)
+        if (controller != null)
             controller.stop();
 
-        if(joystickFragment != null)
+        if (joystickFragment != null)
             joystickFragment.stop();
         onTrimMemory(TRIM_MEMORY_BACKGROUND);
         super.onStop();
@@ -238,10 +236,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         Log.d(TAG, "onDestroy()");
 
-        if(controller != null)
+        if (controller != null)
             controller.stop();
 
-        if(joystickFragment != null)
+        if (joystickFragment != null)
             joystickFragment.stop();
 
         onTrimMemory(TRIM_MEMORY_BACKGROUND);
@@ -280,9 +278,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
 
             runOnUiThread(new Runnable() {
-                              @Override
-                              public void run() {joystickFragment.invalidate();}
-                          });
+                @Override
+                public void run() {
+                    joystickFragment.invalidate();
+                }
+            });
 
             //controller.setTopicName(PreferenceManager.getDefaultSharedPreferences(this).getString("edittext_joystick_topic", getString(R.string.joy_topic)));
             controller.initialize(nodeMainExecutor, nodeConfiguration);
@@ -337,10 +337,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
-     * Called when a collision is imminent from the LaserScanLayer.
+     * Called when a collision is imminent from the WarningSystem.
      */
-    public void collisionWarning()
-    {
+    public void collisionWarning() {
 //        Log.d(TAG, "Collision Warning!");
 
         hudFragment.warn();
@@ -348,12 +347,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Call to stop the Robot.
-     * @param cancelMotionPlan Whether to cancel the current motion plan
      *
+     * @param cancelMotionPlan Whether to cancel the current motion plan
      * @return True if a resumable RobotPlan was stopped
      */
-    public boolean stopRobot(boolean cancelMotionPlan)
-    {
+    public boolean stopRobot(boolean cancelMotionPlan) {
         Log.d(TAG, "Stopping Robot");
         joystickFragment.stop();
         return controller.stop(cancelMotionPlan);
@@ -361,16 +359,17 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Call to stop the Robot.
+     *
      * @return True if a resumable RobotPlan was stopped
      */
-    public boolean stopRobot()
-    {
+    public boolean stopRobot() {
         return stopRobot(true);
     }
 
     /**
      * Locks/unlocks the screen orientation.
      * Adapted from an answer on StackOverflow by jp36
+     *
      * @param lock Whether to lock the orientation
      */
     public void lockOrientation(boolean lock) {
@@ -399,8 +398,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             //noinspection ResourceType
             setRequestedOrientation(orientation);
-        }
-        else {
+        } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         }
     }
@@ -412,7 +410,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
         Bundle args = new Bundle();
 
-        if (joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()){
+        if (joystickFragment != null && getControlMode().ordinal() <= ControlMode.Tilt.ordinal()) {
             joystickFragment.show();
         }
 
@@ -555,7 +553,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_joystick_control:
                 setControlMode(ControlMode.Joystick);
                 return true;
@@ -580,21 +578,21 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 return mDrawerToggle.onOptionsItemSelected(item);
         }
     }
+
     @Override
     public void onBackPressed() {
 
         if (fragmentsCreatedCounter >= 1) {
             selectItem(1);
-            fragmentsCreatedCounter=0;
-        }
-        else {
+            fragmentsCreatedCounter = 0;
+        } else {
             super.onBackPressed();
         }
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        for(int i = 0; i < menu.size(); i++){
+        for (int i = 0; i < menu.size(); i++) {
             menu.getItem(i).setChecked(false);
         }
 
@@ -620,6 +618,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Called when the preferences may have changed.
+     *
      * @param prefs The SharedPrefences object
      */
     public void onPreferencesChanged(SharedPreferences prefs) {
@@ -673,9 +672,10 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Sets the destination point.
+     *
      * @param location The point
      */
-    public void setDestination(Vector3 location){
+    public void setDestination(Vector3 location) {
         synchronized (waypoints) {
             waypoints.addFirst(location);
         }
@@ -683,6 +683,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Adds a waypoint.
+     *
      * @param point The point
      */
     public void addWaypoint(Vector3 point) {
@@ -693,6 +694,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Attempts to find a Waypoint at the specified position.
+     *
      * @param point The position
      * @return The index of the Waypoint in the Waypoint list or -1 if no Waypoint was found at the point
      */
@@ -722,6 +724,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     /**
      * Same as above but will remove a nearby way point if one is close instead of adding the new point.
+     *
      * @param point The point
      * @param scale The camera scale
      */
@@ -732,7 +735,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         Vector3 near = null;
 
         synchronized (waypoints) {
-            for (Vector3 pt: waypoints) {
+            for (Vector3 pt : waypoints) {
                 dist = Utils.distanceSquared(point.getX(), point.getY(), pt.getX(), pt.getY());
 
                 if (dist < minDist) {
@@ -828,8 +831,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     /**
      * Clears all waypoints.
      */
-    public void clearWaypoints(){
-        synchronized (waypoints){
+    public void clearWaypoints() {
+        synchronized (waypoints) {
             waypoints.clear();
         }
     }
