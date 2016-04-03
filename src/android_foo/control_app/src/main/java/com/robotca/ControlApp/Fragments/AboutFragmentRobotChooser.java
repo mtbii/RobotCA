@@ -6,6 +6,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.robotca.ControlApp.R;
@@ -31,8 +32,10 @@ public class AboutFragmentRobotChooser extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_about, null);
 
-        TextView aboutTxt = (TextView) view.findViewById(R.id.abouttxt);
-        aboutTxt.setText(Html.fromHtml(readTxt()));
+//        TextView aboutTxt = (TextView) view.findViewById(R.id.abouttxt);
+//        aboutTxt.setText(Html.fromHtml(readTxt()));
+        WebView webView = (WebView) view.findViewById(R.id.abouttxt);
+        webView.loadData(readTxt(), "text/html", null);
 
         return view;
 

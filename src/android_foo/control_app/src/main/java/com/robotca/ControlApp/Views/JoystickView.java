@@ -581,7 +581,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // Call the parent's onLayout to setup the views.
+        // Call the parent's onLayout to using the views.
         super.onLayout(changed, l, t, r, b);
         // The parent container must be a square. A square container simplifies the
         // code. A non-square container does not provide any benefit over a

@@ -58,31 +58,46 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Main Activity for the App. ...
+ * Main Activity for the App. The RobotController manages the connection with the Robot while this
+ * class handles the UI.
  */
 public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
-    private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
+
+    /** Notification ticker for the App */
     public static final String NOTIFICATION_TICKER = "ROS Control";
+    /** Notification title for the App */
     public static final String NOTIFICATION_TITLE = "ROS Control";
+
+    /** The RobotInfo of the connected Robot */
     public static RobotInfo ROBOT_INFO;
 
+    // Variables for managing the DrawerLayout
     private String[] mFeatureTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-
-    private NodeMainExecutor nodeMainExecutor;
-    private NodeConfiguration nodeConfiguration;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    // NodeMainExecutor encapsulating the Robot's connection
+    private NodeMainExecutor nodeMainExecutor;
+    // The NodeConfiguration for the connection
+    private NodeConfiguration nodeConfiguration;
+
+    // Fragment for the Joystick
     private JoystickFragment joystickFragment;
+    // Fragment for the HUD
     private HUDFragment hudFragment;
+
+    // The RobotController for managing the connection to the Robot
     private RobotController controller;
+    // The WarningSystem used for detecting imminent collisions
     private WarningSystem warningSystem;
 
+    // Stuff for managing the current fragment
     private Fragment fragment = null;
     FragmentManager fragmentManager;
     int fragmentsCreatedCounter = 0;
 
+    // The index of the currently visible drawer
     private int drawerIndex = 1;
 
     // Log tag String
@@ -90,11 +105,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     // List of waypoints
     private final LinkedList<Vector3> waypoints;
+    // Specifies how close waypoints need to be to be considered touching
+    private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
 
+    // Bundle keys
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
     private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
     private static final String CONTROL_MODE_BUNDLE_ID = "com.robotca.Views.Fragments.JoystickFragment.controlMode";
 
+    // The saved instance state
     private Bundle savedInstanceState;
 
     /**

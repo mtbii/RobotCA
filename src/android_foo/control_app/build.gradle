@@ -36,10 +36,9 @@ repositories {
 
 
 dependencies {
-//    compile project(':control_app_lib')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //    compile project(':control_app_lib')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     ///////////////
-
     compile 'org.ros.android_core:android_10:[0.2,0.3)'
     compile 'org.ros.android_core:android_15:[0.2,0.3)'
     compile 'com.github.rosjava.android_extras:gingerbread:[0.2,0.3)'
@@ -54,6 +53,7 @@ dependencies {
     compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7'
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.github.amlcurran.showcaseview:library:5.4.1'
+    compile project(':control_app_lib')
 }
 
 apply plugin: 'com.android.application'

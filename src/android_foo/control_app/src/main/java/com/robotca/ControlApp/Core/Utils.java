@@ -1,13 +1,19 @@
 package com.robotca.ControlApp.Core;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Color;
 
 import com.google.common.base.Preconditions;
+import com.robotca.ControlApp.R;
 
 import org.ros.android.view.visualization.Vertices;
 import org.ros.rosjava_geometry.Quaternion;
 import org.ros.rosjava_geometry.Vector3;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -212,6 +218,34 @@ public class Utils {
         gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 
         vertices.reset();
+    }
+
+    /**
+     * Reads a text file with the specified resource id.
+     * @param context The parent Context
+     * @param resId The resource id of the text file
+     */
+    public static String readText(Context context, int resId) {
+
+        InputStream inputStream = context.getResources().openRawResource(resId);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        int i;
+        try {
+            i = inputStream.read();
+            while (i != -1) {
+                byteArrayOutputStream.write(i);
+                i = inputStream.read();
+            }
+            inputStream.close();
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        return byteArrayOutputStream.toString();
     }
 
     /*

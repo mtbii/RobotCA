@@ -11,8 +11,10 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.robotca.ControlApp.Core.Utils;
 import com.robotca.ControlApp.R;
 
 /**
@@ -25,9 +27,7 @@ public class AboutFragment extends Fragment {
     /**
      * Default Constructor.
      */
-    public AboutFragment() {
-
-    }
+    public AboutFragment() {}
 
     /**
      * Called when the activity is created.
@@ -37,37 +37,10 @@ public class AboutFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_about, null);
 
-        TextView aboutTxt = (TextView) view.findViewById(R.id.abouttxt);
-        aboutTxt.setText(Html.fromHtml(readTxt()));
+        WebView webView = (WebView) view.findViewById(R.id.abouttxt);
+        webView.loadData(Utils.readText(getActivity(), R.raw.about), "text/html", null);
 
         return view;
-    }
-
-    /*
-     * Reads the about text.
-     */
-    private String readTxt() {
-
-        InputStream inputStream = getResources().openRawResource(R.raw.about);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        int i;
-        try {
-            i = inputStream.read();
-            while (i != -1) {
-                byteArrayOutputStream.write(i);
-                i = inputStream.read();
-            }
-            inputStream.close();
-        }
-        catch (IOException e) {
-
-            e.printStackTrace();
-        }
-
-        return byteArrayOutputStream.toString();
-
     }
 }
 
