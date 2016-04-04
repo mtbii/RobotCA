@@ -38,8 +38,6 @@ public class RandomWalkPlan extends RobotPlan {
 
     @Override
     public void start(final RobotController controller) throws Exception {
-//        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION,100);
-
         // Laser scan data
         float[] ranges;
         // Temporary variables
@@ -65,7 +63,6 @@ public class RandomWalkPlan extends RobotPlan {
 
             // If a wall is close, stop, turn a random amount, and continue moving
             if (shortestDistance < minRange) {
-//                tg.startTone(ToneGenerator.TONE_PROP_BEEP2,5000);
                 controller.publishVelocity(0, 0, 0);
                 waitFor(1000);
 
