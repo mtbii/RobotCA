@@ -27,18 +27,19 @@
             android:layout_height="wrap_content"
             android:text="@string/center"/>
 
-        <Button style="?android:attr/buttonBarButtonStyle"
-            android:id="@+id/clear_waypoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/map_clear_string"/>
-
         <CheckBox style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/lock_camera_checkbox"
             android:text="@string/map_lock_camera_string"
             android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <Button style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/clear_waypoints_button"
+            android:enabled="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_clear_string"/>
     </LinearLayout>
 
 </RelativeLayout>

@@ -69,7 +69,7 @@ public class LaserScanFragment extends SimpleFragment implements Savable {
                     public void onClick(View v) {laserScanView.getLaserScanRenderer().recenter();}
                 });
 
-        (view.findViewById(R.id.clear_waypoints)).setOnClickListener(
+        (view.findViewById(R.id.clear_waypoints_button)).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

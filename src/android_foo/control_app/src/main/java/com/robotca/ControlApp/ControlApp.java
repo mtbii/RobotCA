@@ -97,6 +97,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     FragmentManager fragmentManager;
     int fragmentsCreatedCounter = 0;
 
+    // For enabling/disabling the action menu
+    private boolean actionMenuEnabled = true;
+
     // The index of the currently visible drawer
     private int drawerIndex = 1;
 
@@ -223,6 +226,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             if (list != null) {
                 waypoints.clear();
                 waypoints.addAll(list);
+                waypointsChanged();
             }
 
             setControlMode(ControlMode.values()[savedInstanceState.getInt(CONTROL_MODE_BUNDLE_ID)]);
@@ -231,6 +235,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             // Load the controller
             controller.load(savedInstanceState);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Refresh the Clear Waypoints button
+        waypointsChanged();
     }
 
     @Override
@@ -386,6 +398,16 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     }
 
     /**
+     * Enables/disables the action bar menu.
+     * @param enabled Whether to enable or disable the menu
+     */
+    public void setActionMenuEnabled(boolean enabled)
+    {
+        actionMenuEnabled = enabled;
+        invalidateOptionsMenu();
+    }
+
+    /**
      * Locks/unlocks the screen orientation.
      * Adapted from an answer on StackOverflow by jp36
      *
@@ -442,6 +464,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
         fragmentManager = getFragmentManager();
 
+        setActionMenuEnabled(true);
+
         switch (position) {
             case 0:
                 Log.d(TAG, "Drawer item 0 selected, finishing");
@@ -496,10 +520,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
 
                     boolean stop = controller.getMotionPlan() == null || !controller.getMotionPlan().isResumable();
+                    stop &= !controller.hasPausedPlan();
                     hudFragment.toggleEmergencyStopUI(stop);
                 }
 
-                stopRobot();
+                setActionMenuEnabled(false);
+                stopRobot(false);
 
                 fragment = new PreferencesFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
@@ -512,10 +538,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     hudFragment.hide();
 
                     boolean stop = controller.getMotionPlan() == null || !controller.getMotionPlan().isResumable();
+                    stop &= !controller.hasPausedPlan();
                     hudFragment.toggleEmergencyStopUI(stop);
                 }
 
-                stopRobot();
+                setActionMenuEnabled(false);
+                stopRobot(false);
 
                 fragment = new AboutFragment();
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
@@ -549,6 +577,18 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
         setTitle(mFeatureTitles[position]);
+
+        // Refresh waypoints
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    Thread.sleep(100L);
+                } catch (InterruptedException ignore) {}
+                waypointsChanged();
+                return null;
+            }
+        }.execute();
     }
 
     @Override
@@ -611,12 +651,18 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
         for (int i = 0; i < menu.size(); i++) {
             menu.getItem(i).setChecked(false);
+
+            if (i == 1)
+                menu.getItem(1).setEnabled(actionMenuEnabled && joystickFragment.hasAccelerometer());
+            else
+                menu.getItem(i).setEnabled(actionMenuEnabled);
         }
 
-        menu.getItem(1).setEnabled(joystickFragment.hasAccelerometer());
         menu.getItem(getControlMode().ordinal()).setChecked(true);
+
         return true;
     }
 
@@ -698,6 +744,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         synchronized (waypoints) {
             waypoints.addFirst(location);
         }
+        waypointsChanged();
     }
 
     /**
@@ -709,6 +756,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         synchronized (waypoints) {
             waypoints.addLast(point);
         }
+        waypointsChanged();
     }
 
     /**
@@ -778,6 +826,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                     synchronized (waypoints) {
                         waypoints.remove(remove);
                     }
+                    waypointsChanged();
 
                     dialog.dismiss();
                 }
@@ -812,6 +861,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 synchronized (waypoints) {
                     waypoints.add(j + 1, point);
                 }
+                waypointsChanged();
             } else {
                 addWaypoint(point);
             }
@@ -836,6 +886,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         synchronized (waypoints) {
             r = waypoints.pollFirst();
         }
+        waypointsChanged();
 
         return r;
     }
@@ -853,6 +904,25 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public void clearWaypoints() {
         synchronized (waypoints) {
             waypoints.clear();
+        }
+        waypointsChanged();
+    }
+
+    /*
+     * Called when the waypoints have been edited.
+     */
+    private void waypointsChanged() {
+        // Enable/Disable the clear waypoints button
+        final View view;
+
+        if (fragment != null && fragment.getView() != null
+                && (view = fragment.getView().findViewById(R.id.clear_waypoints_button)) != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    view.setEnabled(!waypoints.isEmpty());
+                }
+            });
         }
     }
 }

@@ -138,6 +138,8 @@ public class RobotController implements NodeMain, Savable {
         this.LOCATION_PROVIDER = new LocationProvider();
         this.addNavSatFixListener(this.LOCATION_PROVIDER);
 
+        pausedPlanId = NO_PLAN;
+
         startPos = null;
         currentPos = null;
         rotation = null;
@@ -227,6 +229,13 @@ public class RobotController implements NodeMain, Savable {
      */
     public RobotPlan getMotionPlan() {
         return motionPlan;
+    }
+
+    /**
+     * @return Whether there is a paused motion plan
+     */
+    public boolean hasPausedPlan() {
+        return pausedPlanId != NO_PLAN;
     }
 
     /**
