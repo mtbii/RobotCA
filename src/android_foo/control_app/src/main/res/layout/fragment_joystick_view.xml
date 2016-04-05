@@ -6,16 +6,6 @@
             android:layout_height="match_parent"
             android:gravity="center_horizontal">
 
-    <!--<CheckBox-->
-            <!--android:id="@+id/tilt_checkbox"-->
-            <!--android:text="@string/use_tilt_sensor_string"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:onClick="buttonPressed"-->
-            <!--android:enabled="false"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentStart="true" />-->
     <com.robotca.ControlApp.Views.JoystickView
         android:id="@+id/joystick_view"
         android:layout_width="300dip"

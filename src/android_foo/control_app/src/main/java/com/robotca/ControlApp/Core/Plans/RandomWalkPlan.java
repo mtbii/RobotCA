@@ -2,11 +2,8 @@ package com.robotca.ControlApp.Core.Plans;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 
 import java.util.Random;
-import java.util.Timer;
 
 import sensor_msgs.LaserScan;
 

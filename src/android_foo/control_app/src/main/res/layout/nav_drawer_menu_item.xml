@@ -12,13 +12,14 @@
         android:alpha="54"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:src="@drawable/ic_android_black_24dp"></ImageView>
+        android:src="@drawable/ic_android_black_24dp"/>
     <TextView
         android:id="@+id/nav_drawer_item_text_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:fontFamily="Roboto-Medium"
         android:layout_marginLeft="72dp"
+        android:layout_marginStart="72dp"
         android:gravity="center_vertical"
         android:textSize="14sp"
         android:alpha="87"
