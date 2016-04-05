@@ -4,10 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<org.ros.android.view.visualization.VisualizationView-->
-        <!--android:id="@+id/laser_scan_fragment_viz_view"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content" />-->
     <com.robotca.ControlApp.Views.LaserScanView
         android:id="@+id/laser_scan_renderer_view"
         android:layout_width="match_parent"

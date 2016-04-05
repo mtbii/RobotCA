@@ -122,6 +122,7 @@
     <string name="location_string">(%1$14s, %2$14s)</string>
     <string name="map_clear_string">Clear Waypoints</string>
     <string name="map_lock_camera_string">Lock Camera Angle</string>
+    <string name="control_mode">Control Mode: </string>
 
     <!-- Custom icon content descriptions -->
     <string name="wifi_strength_content_description">Shows WIFI signal strength</string>
@@ -138,6 +139,15 @@
     <string name="simple_waypoint_control">Simple Waypoint Control</string>
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
+
+    <string-array name="motion_plans">
+        <item>Joystick</item>
+        <item>Tilt</item>
+        <item>Simple Waypoint</item>
+        <item>Waypoint</item>
+        <item>Random Walk</item>
+    </string-array>
+
 
     <!-- Default Preferences -->
     <string name="default_warning_mindist">3.0</string>

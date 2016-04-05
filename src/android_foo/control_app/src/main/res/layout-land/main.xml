@@ -35,14 +35,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 tools:layout="@layout/fragment_joystick_view" />
-            <!--<Button-->
-                <!--android:id="@+id/emergencyStop"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:layout_alignParentEnd="true"-->
-                <!--android:background="@android:color/holo_red_dark"-->
-                <!--android:text="@string/stop"/>-->
+
         </RelativeLayout>
         <!-- The navigation drawer -->
         <ListView android:id="@+id/left_drawer"
@@ -55,65 +48,5 @@
             android:dividerHeight="0dp"
             android:background="#eee"/>
     </android.support.v4.widget.DrawerLayout>
-
-    <!--android:baselineAligned="false"-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_weight="1"-->
-        <!--android:weightSum="2"-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent">-->
-
-    <!--<org.ros.android.view.RosImageView-->
-        <!--android:id="@+id/camera_view"-->
-        <!--android:layout_weight="1"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--/>-->
-
-        <!--<org.ros.android.view.visualization.VisualizationView-->
-            <!--android:id="@+id/viz_view"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="fill_parent" />-->
-
-    <!--</LinearLayout>-->
-
-    <!--<fragment android:name="com.robotca.ControlApp.Fragments.CameraViewFragment"-->
-        <!--android:id="@+id/camera_view_fragment"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--tools:layout="@layout/fragment_camera_view" />-->
-
-    <!--<fragment android:name="com.robotca.ControlApp.Fragments.LaserScanFragment"-->
-        <!--android:id="@+id/laser_scan_fragment"-->
-        <!--android:layout_below="@id/laser_scan_fragment"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--tools:layout="@layout/fragment_camera_view" />-->
-
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:layout_weight="3"-->
-        <!--android:gravity="center_horizontal">-->
-
-        <!--<com.robotca.ControlApp.Views.JoystickView-->
-            <!--android:id="@+id/joystick_view"-->
-            <!--android:layout_width="200dip"-->
-            <!--android:layout_height="200dip"-->
-            <!--android:layout_alignParentBottom="true"/>-->
-    <!--</RelativeLayout>-->
-
-    <!--<fragment android:name="com.robotca.ControlApp.Fragments.JoystickFragment"-->
-        <!--android:id="@+id/joystick_fragment"-->
-        <!--android:layout_width="200dip"-->
-        <!--android:layout_height="200dip"-->
-        <!--tools:layout="@layout/fragment_joystick_view"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true" />-->
 
 </RelativeLayout>

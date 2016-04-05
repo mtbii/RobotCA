@@ -6,7 +6,7 @@
         android:scrollbars="vertical"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/robot_name_edit_text"
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
         android:id="@+id/advanced_options_checkbox_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/show_advanced_options"></CheckBox>
+        android:text="@string/show_advanced_options"/>
     <LinearLayout
         android:id="@+id/advanved_options_view"
         android:visibility="gone"

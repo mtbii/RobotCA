@@ -1,5 +1,7 @@
 package com.robotca.ControlApp;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -17,15 +19,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
@@ -61,7 +64,8 @@ import java.util.List;
  * Main Activity for the App. The RobotController manages the connection with the Robot while this
  * class handles the UI.
  */
-public class ControlApp extends RosActivity implements ListView.OnItemClickListener, IWaypointProvider {
+public class ControlApp extends RosActivity implements ListView.OnItemClickListener,
+        IWaypointProvider, AdapterView.OnItemSelectedListener {
 
     /** Notification ticker for the App */
     public static final String NOTIFICATION_TICKER = "ROS Control";
@@ -98,7 +102,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     int fragmentsCreatedCounter = 0;
 
     // For enabling/disabling the action menu
-    private boolean actionMenuEnabled = true;
+//    private boolean actionMenuEnabled = true;
+    // The ActionBar spinner menu
+    private Spinner actionMenuSpinner;
 
     // The index of the currently visible drawer
     private int drawerIndex = 1;
@@ -161,8 +167,26 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
+            ActionBar actionBar = getActionBar();
+
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+
+            // Set custom Action Bar view
+            LayoutInflater inflater = (LayoutInflater) this .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            @SuppressLint("InflateParams") View v = inflater.inflate(R.layout.actionbar_dropdown_menu, null);
+
+            actionMenuSpinner = (Spinner) v.findViewById(R.id.spinner_control_mode);
+
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.motion_plans, android.R.layout.simple_spinner_item);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            actionMenuSpinner.setAdapter(adapter);
+            actionMenuSpinner.setOnItemSelectedListener(this);
+
+            actionBar.setCustomView(v);
+            actionBar.setDisplayShowCustomEnabled(true);
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -234,6 +258,12 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
 
             // Load the controller
             controller.load(savedInstanceState);
+        }
+
+        // Set the correct spinner item
+        if (actionMenuSpinner != null)
+        {
+            actionMenuSpinner.setSelection(getControlMode().ordinal());
         }
     }
 
@@ -388,24 +418,14 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         return controller.stop(cancelMotionPlan);
     }
 
-    /**
-     * Call to stop the Robot.
-     *
-     * @return True if a resumable RobotPlan was stopped
-     */
-    public boolean stopRobot() {
-        return stopRobot(true);
-    }
-
-    /**
-     * Enables/disables the action bar menu.
-     * @param enabled Whether to enable or disable the menu
-     */
-    public void setActionMenuEnabled(boolean enabled)
-    {
-        actionMenuEnabled = enabled;
-        invalidateOptionsMenu();
-    }
+//    /**
+//     * Call to stop the Robot.
+//     *
+//     * @return True if a resumable RobotPlan was stopped
+//     */
+//    public boolean stopRobot() {
+//        return stopRobot(true);
+//    }
 
     /**
      * Locks/unlocks the screen orientation.
@@ -649,30 +669,30 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        for (int i = 0; i < menu.size(); i++) {
-            menu.getItem(i).setChecked(false);
-
-            if (i == 1)
-                menu.getItem(1).setEnabled(actionMenuEnabled && joystickFragment.hasAccelerometer());
-            else
-                menu.getItem(i).setEnabled(actionMenuEnabled);
-        }
-
-        menu.getItem(getControlMode().ordinal()).setChecked(true);
-
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_control_app, menu);
-        menu.getItem(0).setChecked(true);
-        return true;
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//
+//        for (int i = 0; i < menu.size(); i++) {
+//            menu.getItem(i).setChecked(false);
+//
+//            if (i == 1)
+//                menu.getItem(1).setEnabled(actionMenuEnabled && joystickFragment.hasAccelerometer());
+//            else
+//                menu.getItem(i).setEnabled(actionMenuEnabled);
+//        }
+//
+//        menu.getItem(getControlMode().ordinal()).setChecked(true);
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_control_app, menu);
+//        menu.getItem(0).setChecked(true);
+//        return true;
+//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -924,5 +944,41 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
                 }
             });
         }
+    }
+
+
+    /**
+     * Enables/disables the action bar menu.
+     * @param enabled Whether to enable or disable the menu
+     */
+    public void setActionMenuEnabled(boolean enabled)
+    {
+//        actionMenuEnabled = enabled;
+//        invalidateOptionsMenu();
+        if (actionMenuSpinner != null)
+            actionMenuSpinner.setEnabled(enabled);
+    }
+
+    /**
+     * Callback for when a Spinner item is selected from the ActionBar.
+     *
+     * @param parent   The AdapterView where the selection happened
+     * @param view     The view within the AdapterView that was clicked
+     * @param position The position of the view in the adapter
+     * @param id       The row id of the item that is selected
+     */
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        setControlMode(ControlMode.values()[position]);
+    }
+
+    /**
+     * Callback for when a Spinner item is selected from the ActionBar.
+     *
+     * @param parent The AdapterView that now contains no selected item.
+     */
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
