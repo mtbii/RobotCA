@@ -1,14 +1,48 @@
 <!DOCTYPE html>
 <html>
-<body>
+<link>
 
 <h1 style="background-color:#000044;color:white">&nbsp;Setup</h1>
 
-<p>Text</p>
+<p>There are two ways to set up the app to be able to connect to a robot. You can use a simulated robot, or a real robot.</p>
 
 <hr>
 
-<h3><font color="#000044">Subtitle</font></h3>
-<p>Text</p>
+<h2><font color="#000044">Using a Simulated Robot</font></h2>
+<p>It is likely easier to access a simulated robot rather than a real one, so follow these steps to set up a simulation</p>
+
+<h4><font color="#000044">Step 1: Installing Ubuntu 14.04.3</font></h4>
+<p>Download a 32 or 64 bit Ubuntu 14.04.3 iso, either will work, and install it on a physical computer or a virtual machine. The robot will move much much smoother if Ubuntu 14.04.3 is installed to a physical computer.</p>
+<p>Note: If installing Ubuntu on a virtual machine, make sure that you use a Bridged Network Adapter and <b>NOT</b> an NAT adapter.</p>
+
+<h4><font color="#000044">Step 2: Installing ROS Indigo</font> </h4>
+<p>Once you have Ubuntu installed, follow these instructions to install ROS Indigo on your machine.</p>
+<a href="http://wiki.ros.org/indigo/Installation/Ubuntu"> http://wiki.ros.org/indigo/Installation/Ubuntu</a>
+
+<h4><font color="#000044">Step 3: Installing the Husky Robot Simulator</font></h4>
+<p>To install the simulator open a terminal and run the command <b>sudo apt-get install ros-indigo-husky-simulator</b></p>
+
+<h4><font color="#000044">Step 4: Setting Up Your Web-cam as the Robot's Camera (Optional) </font> </h4>
+<p>To set up your web-cam can be a hassle, and the app will work fine without it set up, you just will see whitespace where the camera view would be.
+To set it up follow the instruction links from the link below to our GitHub page to set up a workspace and to install the ROS web-cam software.</p>
+<a href="https://github.com/SCCapstone/RobotCA/wiki/Tutorial-For-Simulating-the-Husky-Robot"> https://github.com/SCCapstone/RobotCA/wiki/Tutorial-For-Simulating-the-Husky-Robot</a>
+
+
+<h4><font color="#000044">Step 5: Launching the Simulator</font> </h4>
+<p>To begin open a terminal and run the command <b>ifconfig</b>, then run the command <b>export ROS_IP="the IP address of wlan0".</b>
+Once you have done that, start ROS in the same terminal using the command <b>roscore&</b>. If you chose to set up the camera you can start it using <b>roslaunch ./camera_node.launch&</b>. Finally start the husky simulator using the command <b>roslaunch husky_gazebo husky_playpen.launch&</b>.</p>
+<p>Note: Sometimes, on the very first launch of the husky simulator ever it may not work. That's okay, just re-run the command to start it and it should work.</p>
+
+<h4><font color="#000044">Step 6: Connecting to the Simulated Robot</font> </h4>
+<p>To connect to the simulator, make sure that your computer running the simulator and your Android device are on the same wifi network first. Then, open the app and click the add a robot button. When the prompt pops up, replace only the word "localhost" with the same IP address that you set
+ your ROS_IP environment variable to earlier. Hit connect and you should connect to the simulated robot and be able to use the app. </p>
+
+<h2><font color="#000044">Using a Real Robot</font></h2>
+<p>As far as connecting to a robot goes, it will be easier to connect to a real robot, but accessing one will be much harder</p>
+
+<h4><font color="#000044">Step 1: Connecting to the Robot</font> </h4>
+<p>To connect to the robot, make sure your Android device is on the robot's wifi network. Then open the app and add a robot. Replace only the word "localhost" with the IP address of the robot and hit connect. You should connect to the robot and be able to use the app. </p>
+
+
 
 <br>
