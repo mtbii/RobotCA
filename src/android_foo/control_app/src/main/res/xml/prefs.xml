@@ -9,7 +9,7 @@
 
     <!-- Separate screen for topics -->
     <PreferenceScreen
-        android:icon="@drawable/ic_action_labels"
+        android:icon="@drawable/ic_action_topics"
         android:title="@string/topic_pref_title"
         android:summary="@string/topic_pref_summary">
 
@@ -18,7 +18,7 @@
             <!--android:enabled="false"-->
             <!--android:selectable="false"/>-->
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_joystick_topic_edittext_key"
             android:defaultValue="@string/joy_topic"
             android:title="@string/joy_pref_title"
@@ -26,7 +26,7 @@
             android:summary="@string/joy_pref_summary"
             />
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_laserscan_topic_edittext_key"
             android:defaultValue="@string/laser_scan_topic"
             android:title="@string/laser_pref_title"
@@ -34,7 +34,7 @@
             android:summary="@string/laser_pref_summary"
             />
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_camera_topic_edittext_key"
             android:defaultValue="@string/camera_topic"
             android:title="@string/camera_pref_title"
@@ -42,7 +42,7 @@
             android:summary="@string/camera_pref_summary"
             />
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_navsat_topic_edittext_key"
             android:defaultValue="@string/navsat_topic"
             android:title="@string/navsat_pref_title"
@@ -50,7 +50,7 @@
             android:summary="@string/navsat_pref_summary"
             />
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_odometry_topic_edittext_key"
             android:defaultValue="@string/odometry_topic"
             android:title="@string/odometry_pref_title"
@@ -58,7 +58,7 @@
             android:summary="@string/odometry_pref_summary"
             />
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
             android:key="@string/prefs_pose_topic_edittext_key"
             android:defaultValue="@string/pose_topic"
             android:title="@string/pose_pref_title"
@@ -72,23 +72,22 @@
         <!--android:enabled="false"-->
         <!--android:selectable="false"/>-->
 
-    <!-- For enabling/disabling the warning system -->
-    <SwitchPreference
-        android:key="@string/prefs_warning_checkbox_key"
-        android:checked="true"
-        android:defaultValue="true"
-        android:title="@string/warning_enable_pref_title"
-        android:summaryOff="@string/warning_enable_pref_summary_off"
-        android:summaryOn="@string/warning_enable_pref_summary_on"
-        />
-
-    <!-- Separate screen for warning system TODO find better icon -->
+    <!-- Separate screen for warning system -->
     <PreferenceScreen
-        android:dependency="@string/prefs_warning_checkbox_key"
         android:key="@string/prefs_warning_system_key"
-        android:icon="@drawable/ic_action_cloud"
+        android:icon="@drawable/ic_warning_system"
         android:title="@string/warning_pref_title"
         android:summary="@string/warning_pref_summary">
+
+        <!-- For enabling/disabling the warning system -->
+        <SwitchPreference
+            android:key="@string/prefs_warning_checkbox_key"
+            android:checked="true"
+            android:defaultValue="true"
+            android:title="@string/warning_enable_pref_title"
+            android:summaryOff="@string/warning_enable_pref_summary_off"
+            android:summaryOn="@string/warning_enable_pref_summary_on"
+            />
 
         <!--<Preference-->
             <!--android:title="Options"-->
@@ -96,6 +95,7 @@
             <!--android:selectable="false"/>-->
 
         <SwitchPreference
+            android:dependency="@string/prefs_warning_checkbox_key"
             android:key="@string/prefs_warning_safemode_key"
             android:title="@string/warning_safemode_pref_title"
             android:summaryOff="@string/warning_safemode_pref_summary_off"
@@ -104,6 +104,7 @@
             android:checked="true" />
 
         <SwitchPreference
+            android:dependency="@string/prefs_warning_checkbox_key"
             android:key="@string/prefs_warning_beep_key"
             android:title="@string/warning_beep_pref_title"
             android:summaryOff="@string/warning_beep_pref_summary_off"
@@ -116,7 +117,8 @@
             <!--android:enabled="false"-->
             <!--android:selectable="false"/>-->
 
-        <EditTextPreference
+        <com.robotca.ControlApp.Views.BetterEditTextPreference
+            android:dependency="@string/prefs_warning_checkbox_key"
             android:key="@string/prefs_warning_mindist_key"
             android:inputType="numberDecimal"
             android:defaultValue="@string/default_warning_mindist"
@@ -131,7 +133,7 @@
         <!--android:enabled="false"-->
         <!--android:selectable="false"/>-->
 
-    <EditTextPreference
+    <com.robotca.ControlApp.Views.BetterEditTextPreference
         android:key="edittext_laser_scan_detail"
         android:inputType="number"
         android:defaultValue="1"
@@ -139,7 +141,7 @@
         android:singleLine="true"
         android:summary="@string/laser_scan_detail_pref_summary"/>
 
-    <EditTextPreference
+    <com.robotca.ControlApp.Views.BetterEditTextPreference
         android:key="edittext_random_walk_range_proximity"
         android:inputType="numberDecimal"
         android:defaultValue="2.0"

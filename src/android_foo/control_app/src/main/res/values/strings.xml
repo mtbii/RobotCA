@@ -47,28 +47,31 @@
     <string name="warning_enable_pref_summary_on">Disable the Warning System for detecting imminent collisions</string>
     <string name="warning_pref_summary">Edit Warning System settings</string>
     <string name="joy_pref_summary">
-        Topic that the joystick widget publishes to.\nExpected message type: std_msgs/Twist
+        Topic that the joystick widget publishes to.\nExpected message type: std_msgs/Twist\nValue: %s
     </string>
     <string name="laser_pref_summary">
-        Topic that the laser scan widget subscribes to.\nExpected message type: sensor_msgs/LaserScan
+        Topic that the laser scan widget subscribes to.\nExpected message type: sensor_msgs/LaserScan\nValue: %s
     </string>
     <string name="camera_pref_summary">
-        Topic that the camera widget subscribes to.\nExpected message type: sensor_msgs/CompressedImage
+        Topic that the camera widget subscribes to.\nExpected message type: sensor_msgs/CompressedImage\nValue: %s
     </string>
     <string name="odometry_pref_summary">
-        Topic that the application gets odometry data from.\nExpected message type: nav_msgs/Odometry
+        Topic that the application gets odometry data from.\nExpected message type: nav_msgs/Odometry\nValue: %s
     </string>
     <string name="navsat_pref_summary">
-        Topic that the application gets GPS data from.\nExpected message type: navsat/fix
+        Topic that the application gets GPS data from.\nExpected message type: navsat/fix\nValue: %s
     </string>
     <string name="pose_pref_summary">Topic where the application gets pose information.
         \nExpected message type: geometry_msgs/Pose
+        \nValue: %s
     </string>
     <string name="laser_scan_detail_pref_summary">Sets the detail level of the laser scan visualization.
-        A higher number will draw more laser points
+        A higher number will draw more laser points\nValue: %s
     </string>
-    <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where the random walk algorithm will stop and turn.</string>
-    <string name="warning_mindist_pref_summary">The minimum distance considered safe when moving at full speed</string>
+    <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where
+        the random walk algorithm will stop and turn\nValue: %s</string>
+    <string name="warning_mindist_pref_summary">The minimum distance considered safe when moving at full speed
+        \nValue: %s</string>
     <string name="warning_safemode_pref_summary_off">Enable to prevent the Robot from driving into walls</string>
     <string name="warning_safemode_pref_summary_on">Disable to allow the Robot to crash into walls</string>
     <string name="warning_beep_pref_summary_off">Enable warning beeps</string>

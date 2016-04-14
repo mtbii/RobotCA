@@ -147,6 +147,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
 
+        PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
+
         if (ROBOT_INFO != null) {
             editor.putString(getString(R.string.prefs_joystick_topic_edittext_key), ROBOT_INFO.getJoystickTopic());
             editor.putString(getString(R.string.prefs_laserscan_topic_edittext_key), ROBOT_INFO.getLaserTopic());
@@ -162,7 +164,7 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         // Set the main content view
         setContentView(R.layout.main);
 
-        mFeatureTitles = getResources().getStringArray(R.array.feature_titles); //Where you set drawer item titles
+        mFeatureTitles = getResources().getStringArray(R.array.feature_titles); // Where you set drawer item titles
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

@@ -40,7 +40,8 @@ public class WarningSystem implements MessageListener<LaserScan> {
         this.enabled = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_system_key), true);
         this.safemode = prefs.getBoolean(controlApp.getString(R.string.prefs_warning_safemode_key), true);
 
-        String val = prefs.getString(controlApp.getString(R.string.prefs_warning_mindist_key), controlApp.getString(R.string.default_warning_mindist));
+        String val = prefs.getString(controlApp.getString(R.string.prefs_warning_mindist_key),
+                controlApp.getString(R.string.default_warning_mindist));
         this.minRange = Math.max(0.2f, Float.parseFloat(val));
     }
 
