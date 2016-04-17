@@ -1,6 +1,7 @@
 package com.robotca.ControlApp.Core;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -14,9 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
@@ -27,6 +33,8 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Contains the list of Robot definitions users can create and then connect to.
@@ -92,6 +100,8 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
         public TextView mMasterUriTextView;
         private ImageButton mEditButton;
         private ImageButton mDeleteButton;
+        //private ImageSwitcher mImageSwitcher;
+        private ImageView mImageView;
 
         public ViewHolder(View v) {
             super(v);
@@ -105,6 +115,76 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
 
             mDeleteButton = (ImageButton) v.findViewById(R.id.robot_delete_button);
             mDeleteButton.setOnClickListener(this);
+
+            mImageView = (ImageView) v.findViewById(R.id.robot_wifi_image);
+            mImageView.setImageResource(R.drawable.wifi_0);
+
+//            mImageSwitcher = (ImageSwitcher) v.findViewById(R.id.robot_wifi_switcher);
+//
+//            Animation in = AnimationUtils.loadAnimation(activity, R.anim.slide_in_top);
+//            Animation out = AnimationUtils.loadAnimation(activity, R.anim.slide_out_bottom);
+//
+//            mImageSwitcher.setInAnimation(in);
+//            mImageSwitcher.setOutAnimation(out);
+
+            Timer t = new Timer();
+//
+//            t.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            mImageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+//                                @Override
+//                                public View makeView() {
+//                                    ImageView imView = new ImageView(RobotInfoAdapter.activity);
+//                                    imView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                                    imView.setLayoutParams(new ImageSwitcher.LayoutParams((int)(0.7*mEditButton.getHeight()), (int)(0.7*mEditButton.getHeight())));  //(ImageSwitcher.LayoutParams.WRAP_CONTENT, ImageSwitcher.LayoutParams.WRAP_CONTENT));
+//                                    return imView;
+//                                }
+//                            });
+//
+//                            mImageSwitcher.setImageResource(R.drawable.wifi_0);
+//                        }
+//                    });
+//                }
+//            }, 1000);
+
+            t.scheduleAtFixedRate(new TimerTask() {
+
+                @Override
+                public void run() {
+                    try {
+                        int position = getAdapterPosition();
+                        Bundle bundle;
+                        final RobotInfo info = mDataset.get(position);
+                        //mImageView.setLayoutParams(new ActionBar.LayoutParams(mEditButton.getHeight(), mEditButton.getHeight()));
+
+                        if (isPortOpen(info.getUri().getHost(), info.getUri().getPort(), 10000)) {
+                            activity.runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    mImageView.setImageResource(R.drawable.wifi_4);
+                                }
+                            });
+                        } else {
+                            activity.runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    mImageView.setImageResource(R.drawable.wifi_0);
+                                }
+                            });
+                        }
+
+                        Thread.sleep(10000);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }, 1000, 15000);
         }
 
         /**
