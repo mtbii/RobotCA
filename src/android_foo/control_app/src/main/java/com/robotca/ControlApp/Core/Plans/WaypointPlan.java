@@ -17,13 +17,13 @@ import sensor_msgs.LaserScan;
  */
 public class WaypointPlan extends RobotPlan {
 
-    private final static double GAMMA = 50;
-    private final static double ALPHA = 5;
-    private final static double BETA = 5;
-    private final static double EPSILON = 0.1;
-    private final static double D_SAFE = .75;
-    private final static double KAPPA = 0.45;
-    private final static double FORWARD_SPEED_MPS = .15;
+    private final static double GAMMA = 2;
+    private final static double ALPHA = 6;
+    private final static double BETA = 2;
+    private final static double EPSILON = 0.01;
+    private final static double D_SAFE = .25;
+    private final static double KAPPA = 0.4;
+    private final static double FORWARD_SPEED_MPS = .75;
     private static final double MINIMUM_DISTANCE = 1.0;
 
     private ControlApp controlApp;
@@ -91,6 +91,58 @@ public class WaypointPlan extends RobotPlan {
         }
     }
 
+    private Vector3 calculateForces(LaserScan laserScan) {
+        Vector3 netForce = new Vector3(0, 0, 0);
+
+        Vector3 attractiveForce = goalPosition.subtract(currentPosition);
+        attractiveForce = attractiveForce.scale(GAMMA * attractiveForce.getMagnitude()); // f_a = gamma * ||x_g - x_r||^2 = |x_g - x_r|| * gamma * |||x_g - x_r||
+        netForce = netForce.add(attractiveForce);
+
+        Log.d("ControlApp", String.format("Attr. Force: (%f, %f)", attractiveForce.getX(), attractiveForce.getY()));
+
+        for (int i = 0; i < laserScan.getRanges().length; i++) {
+            //Husky laser ranges go from max to min
+            double angleOffset = laserScan.getAngleMax() - laserScan.getAngleIncrement() * i;
+            double angle = angleOffset + currentHeading; //correct for robot heading
+            double distance = laserScan.getRanges()[i];
+            double scalar = 0;
+
+            //scale for distance
+            if (D_SAFE + EPSILON < distance && distance < BETA) {
+                double diff = distance - D_SAFE;
+                scalar = ALPHA / (diff * diff);
+            } else if (distance < D_SAFE + EPSILON) {
+                scalar = ALPHA / (EPSILON * EPSILON);
+            }
+
+            //force points opposite to repel
+            Vector3 force = new Vector3(Math.cos(angle), Math.sin(angle), 0);
+            force = force.scale(-scalar);
+            netForce = netForce.add(force);
+        }
+
+//        if (Math.abs(currentPosition.getX() - goalPosition.getX()) < 1 && Math.abs(currentPosition.getY() - goalPosition.getY()) < 1) {
+//            randForce = new Vector3(Math.random(), Math.random(), 0);
+//            netForce = new Vector3(0, 0, 0);
+//            randScale = 1.0;
+//            stuckCount = 0;
+//            atGoal = true;
+//        } else if (Math.abs(lastPosition.getX() - currentPosition.getX()) < 0.0001 && Math.abs(lastPosition.getY() - currentPosition.getY()) < 0.0001) {
+//            if (stuckCount > 30) {
+//                randForce = randForce.scale(randScale);
+//                netForce = netForce.add(randForce);
+//                randScale *= 2;
+//            } else
+//                stuckCount++;
+//        } else {
+//            randForce = new Vector3(Math.random(), Math.random(), 0);
+//            randScale = 1.0;
+//            stuckCount = 0;
+//        }
+
+        return netForce;
+    }
+
     private void applyForce(RobotController controller, Vector3 netForce) throws InterruptedException {
         double forceAngle = 0;
         if (netForce.getY() != 0 || netForce.getX() != 0)
@@ -104,6 +156,7 @@ public class WaypointPlan extends RobotPlan {
             currentHeading += 2 * Math.PI;
         }
 
+        Log.d("ControlApp", String.format("Net Force: (%f, %f)", netForce.getX(), netForce.getY()));
         Log.d("ControlApp", String.format("Force Angle: %f", Math.toDegrees(forceAngle)));
         Log.d("ControlApp", String.format("Heading:     %f", Math.toDegrees(currentHeading)));
 
@@ -155,9 +208,9 @@ public class WaypointPlan extends RobotPlan {
 //            lastAngularVelocity = angularVelocity;
 //        }
 
-        Log.d("ControlApp", String.format("Net Force: (%f, %f)", netForce.getX(), netForce.getY()));
-        Log.d("ControlApp", String.format("Velocity: (%f, %f)", linearVelocity, angularVelocity));
-        Log.d("ControlApp", String.format("Position: (%f, %f); Goal: (%f, %f)", currentPosition.getX(), currentPosition.getY(), goalPosition.getX(), goalPosition.getY()));
+        //Log.d("ControlApp", String.format("Net Force: (%f, %f)", netForce.getX(), netForce.getY()));
+//        Log.d("ControlApp", String.format("Velocity: (%f, %f)", linearVelocity, angularVelocity));
+//        Log.d("ControlApp", String.format("Position: (%f, %f); Goal: (%f, %f)", currentPosition.getX(), currentPosition.getY(), goalPosition.getX(), goalPosition.getY()));
         controller.publishVelocity(this.linearVelocity, 0, angularVelocity);
 
         //Wait a little while before stopping the rotation
@@ -165,56 +218,5 @@ public class WaypointPlan extends RobotPlan {
 //        if (linVel < 0) {
 //            waitFor((long)(500.0 / KAPPA));
 //        }
-    }
-
-    private Vector3 calculateForces(LaserScan laserScan) {
-        Vector3 netForce = new Vector3(0, 0, 0);
-
-        Vector3 attractiveForce = goalPosition.subtract(currentPosition);
-        attractiveForce = attractiveForce.scale(GAMMA * attractiveForce.getMagnitude()); // f_a = gamma * ||x_g - x_r||^2 = |x_g - x_r|| * gamma * |||x_g - x_r||
-        netForce = netForce.add(attractiveForce);
-
-        Log.d("ControlApp", String.format("Attractive Force: (%f, %f)", attractiveForce.getX(), attractiveForce.getY()));
-
-        for (int i = 0; i < laserScan.getRanges().length; i++) {
-            double angleOffset = laserScan.getAngleMin() + laserScan.getAngleIncrement() * i;
-            double angle = angleOffset + currentHeading; //correct for robot heading
-            double distance = laserScan.getRanges()[i];
-            double scalar = 0;
-
-            //scale for distance
-            if (D_SAFE + EPSILON < distance && distance < BETA) {
-                double diff = distance - D_SAFE;
-                scalar = ALPHA / (diff * diff);
-            } else if (distance < D_SAFE + EPSILON) {
-                scalar = ALPHA / (EPSILON * EPSILON);
-            }
-
-            //force points opposite to repel
-            Vector3 force = new Vector3(Math.cos(angle), Math.sin(angle), 0);
-            force = force.scale(-scalar);
-            netForce = netForce.add(force);
-        }
-
-//        if (Math.abs(currentPosition.getX() - goalPosition.getX()) < 1 && Math.abs(currentPosition.getY() - goalPosition.getY()) < 1) {
-//            randForce = new Vector3(Math.random(), Math.random(), 0);
-//            netForce = new Vector3(0, 0, 0);
-//            randScale = 1.0;
-//            stuckCount = 0;
-//            atGoal = true;
-//        } else if (Math.abs(lastPosition.getX() - currentPosition.getX()) < 0.0001 && Math.abs(lastPosition.getY() - currentPosition.getY()) < 0.0001) {
-//            if (stuckCount > 30) {
-//                randForce = randForce.scale(randScale);
-//                netForce = netForce.add(randForce);
-//                randScale *= 2;
-//            } else
-//                stuckCount++;
-//        } else {
-//            randForce = new Vector3(Math.random(), Math.random(), 0);
-//            randScale = 1.0;
-//            stuckCount = 0;
-//        }
-
-        return netForce;
     }
 }

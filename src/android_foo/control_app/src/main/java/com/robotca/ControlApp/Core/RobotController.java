@@ -291,10 +291,15 @@ public class RobotController implements NodeMain, Savable {
 
             float scale = 1.0f;
 
-            // Safe Mode
-            if (context.getWarningSystem().isSafemodeEnabled() && linearVelocityX >= 0.0)
-            {
-                scale = (float) Math.pow(1.0f - context.getHUDFragment().getWarnAmount(), 2.0);
+            try {
+                // Safe Mode
+                if (context.getWarningSystem().isSafemodeEnabled() && linearVelocityX >= 0.0) {
+                    scale = (float) Math.pow(1.0f - context.getHUDFragment().getWarnAmount(), 2.0);
+                }
+            }
+            catch(Exception e){
+                scale = 0;
+                Log.e("Emergency Stop", e.getMessage());
             }
 
             currentVelocityCommand.getLinear().setX(linearVelocityX * scale);
