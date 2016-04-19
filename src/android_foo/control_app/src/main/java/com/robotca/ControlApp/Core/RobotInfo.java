@@ -178,7 +178,7 @@ public class RobotInfo implements Comparable<RobotInfo> {
      * Determines the correct value for robotCount.
      * @param list The list of loaded RobotInfos
      */
-    static void resolveRobotCount(List<RobotInfo> list)
+    public static void resolveRobotCount(List<RobotInfo> list)
     {
 //        Log.d(TAG, "resolveRobotCount(" + list + ")");
 

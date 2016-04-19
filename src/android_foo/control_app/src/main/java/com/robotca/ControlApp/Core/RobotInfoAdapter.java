@@ -254,12 +254,10 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
             socket.close();
             return true;
         }
-
-        catch(ConnectException ce){
+        catch(ConnectException ce) {
             ce.printStackTrace();
             return false;
         }
-
         catch (Exception ex) {
             ex.printStackTrace();
             return false;

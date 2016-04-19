@@ -241,7 +241,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
             case 0:
                 fragmentsCreatedCounter = 0;
 
-                if(fragment != null) {
+                if (fragment != null) {
                     fragmentManager.beginTransaction().remove(fragment).commit();
                     mRecyclerView.setVisibility(View.VISIBLE);
                 }
@@ -256,7 +256,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
-                if(fragment != null) {
+                if (fragment != null) {
                     fragmentManager.beginTransaction()
                             .replace(R.id.content_frame2, fragment)
                             .commit();
@@ -270,7 +270,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 mRecyclerView.setVisibility(View.GONE);
 
                 // Insert the fragment by replacing any existing fragment
-                if(fragment != null) {
+                if (fragment != null) {
                     fragmentManager.beginTransaction()
                             .replace(R.id.content_frame2, fragment)
                             .commit();
@@ -315,13 +315,12 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     @Override
     public void onBackPressed() {
 
-        if(fragmentsCreatedCounter >= 1) {
+        if (fragmentsCreatedCounter >= 1) {
 
             selectItem(0);
             fragmentsCreatedCounter=0;
 
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
 
@@ -331,7 +330,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     protected void onDestroy() {
         super.onDestroy();
 
-        if(showcaseView != null){
+        if (showcaseView != null){
             showcaseView.hide();
         }
     }
@@ -427,10 +426,13 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
                 // If add robot is pressed from a screen other than robot chooser, switch
                 // back to chooser
-                if(fragment != null) {
+                if (fragment != null) {
                     fragmentManager.beginTransaction().remove(fragment).commit();
                     mRecyclerView.setVisibility(View.VISIBLE);
                 }
+
+                RobotInfo.resolveRobotCount(RobotStorage.getRobots());
+
                 AddEditRobotDialogFragment addRobotDialogFragment = new AddEditRobotDialogFragment();
                 addRobotDialogFragment.setArguments(null);
                 addRobotDialogFragment.show(getSupportFragmentManager(), "addrobotdialog");
