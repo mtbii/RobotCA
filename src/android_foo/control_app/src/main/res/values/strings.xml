@@ -126,6 +126,11 @@
     <string name="map_clear_string">Clear Waypoints</string>
     <string name="map_lock_camera_string">Lock Camera Angle</string>
     <string name="control_mode">Control Mode: </string>
+    <string name="robot_name">Robot Name:</string>
+    <string name="master_uri">Master URI:</string>
+    <string name="joystick_topic_prompt">Joystick Topic:</string>
+    <string name="laserscan_topic_prompt">Laser Scan Topic: </string>
+    <string name="camera_topic_prompt">Camera Topic:</string>
 
     <!-- Custom icon content descriptions -->
     <string name="wifi_strength_content_description">Shows WIFI signal strength</string>
