@@ -128,6 +128,9 @@
     <string name="control_mode">Control Mode: </string>
     <string name="robot_name">Robot Name:</string>
     <string name="master_uri">Master URI:</string>
+    <string name="joystick_topic_prompt">Joystick Topic:</string>
+    <string name="camera_topic_prompt">Camera Topic:</string>
+    <string name="laserscan_topic_prompt">Laser Scan Topic:</string>
 
     <!-- Custom icon content descriptions -->
     <string name="wifi_strength_content_description">Shows WIFI signal strength</string>
