@@ -36,7 +36,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ffab6797-4de1-464b-bfbc-bed3b19021bd" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -153,8 +156,8 @@
       <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.7586207">
-              <caret line="132" column="37" selection-start-line="132" selection-start-column="37" selection-end-line="132" selection-end-column="37" />
+            <state vertical-scroll-proportion="-11.103448">
+              <caret line="129" column="41" selection-start-line="129" selection-start-column="41" selection-end-line="129" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -170,37 +173,35 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dialog_add_robot.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dialog_add_robot.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml">
           <provider editor-type-id="android-designer">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.6428572">
-              <caret line="80" column="26" selection-start-line="80" selection-start-column="26" selection-end-line="80" selection-end-column="26" />
+            <state vertical-scroll-proportion="-6.774194">
+              <caret line="56" column="34" selection-start-line="56" selection-start-column="34" selection-end-line="56" selection-end-column="34" />
               <folding>
                 <element signature="e#510#530#0" expanded="true" />
                 <element signature="e#1382#1407#0" expanded="true" />
                 <element signature="e#1498#1518#0" expanded="true" />
                 <element signature="e#2306#2332#0" expanded="true" />
                 <element signature="e#2821#2852#0" expanded="true" />
-                <element signature="e#3975#3999#0" expanded="true" />
-                <element signature="e#4282#4314#0" expanded="true" />
-                <element signature="e#5096#5122#0" expanded="true" />
-                <element signature="e#5468#5497#0" expanded="true" />
-                <element signature="e#6237#6264#0" expanded="true" />
+                <element signature="e#3618#3642#0" expanded="true" />
+                <element signature="e#4047#4073#0" expanded="true" />
+                <element signature="e#4479#4506#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fragment_camera_view.xml" pinned="false" current-in-tab="false">
+      <file leaf-file-name="fragment_camera_view.xml" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml">
           <provider editor-type-id="android-designer">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.451613">
+            <state vertical-scroll-proportion="0.08035714">
               <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
               <folding />
             </state>
@@ -2661,9 +2662,9 @@
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfo.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/RobotChooser.java" />
         <option value="$PROJECT_DIR$/control_app/src/main/java/com/robotca/ControlApp/Core/RobotInfoAdapter.java" />
-        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml" />
+        <option value="$PROJECT_DIR$/control_app/src/main/res/layout/fragment_camera_view.xml" />
       </list>
     </option>
   </component>
@@ -3409,13 +3410,7 @@
       <option name="project" value="LOCAL" />
       <updated>1461073758337</updated>
     </task>
-    <task id="LOCAL-00022" summary="Fixed the ambiguous edit texts in the add robot dialog.">
-      <created>1461076208338</created>
-      <option name="number" value="00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1461076208338</updated>
-    </task>
-    <option name="localTasksCounter" value="23" />
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -3495,8 +3490,7 @@
     <MESSAGE value="Can start RobotPlan again after stopping them with the emergency stop button.&#10;Added some documentation." />
     <MESSAGE value="Made Preference values appear on the preference EditTexts." />
     <MESSAGE value="Fixed the minor Robot naming issue." />
-    <MESSAGE value="Fixed the ambiguous edit texts in the add robot dialog." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed the ambiguous edit texts in the add robot dialog." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the minor Robot naming issue." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -3902,6 +3896,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.103448">
+          <caret line="129" column="41" selection-start-line="129" selection-start-column="41" selection-end-line="129" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.774194">
+          <caret line="56" column="34" selection-start-line="56" selection-start-column="34" selection-end-line="56" selection-end-column="34" />
+          <folding>
+            <element signature="e#510#530#0" expanded="true" />
+            <element signature="e#1382#1407#0" expanded="true" />
+            <element signature="e#1498#1518#0" expanded="true" />
+            <element signature="e#2306#2332#0" expanded="true" />
+            <element signature="e#2821#2852#0" expanded="true" />
+            <element signature="e#3618#3642#0" expanded="true" />
+            <element signature="e#4047#4073#0" expanded="true" />
+            <element signature="e#4479#4506#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/fragment_overview.xml">
       <provider editor-type-id="android-designer">
         <state />
@@ -3918,39 +3940,9 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.451613">
+        <state vertical-scroll-proportion="0.08035714">
           <caret line="3" column="4" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.7586207">
-          <caret line="132" column="37" selection-start-line="132" selection-start-column="37" selection-end-line="132" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/control_app/src/main/res/layout/dialog_add_robot.xml">
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.6428572">
-          <caret line="80" column="26" selection-start-line="80" selection-start-column="26" selection-end-line="80" selection-end-column="26" />
-          <folding>
-            <element signature="e#510#530#0" expanded="true" />
-            <element signature="e#1382#1407#0" expanded="true" />
-            <element signature="e#1498#1518#0" expanded="true" />
-            <element signature="e#2306#2332#0" expanded="true" />
-            <element signature="e#2821#2852#0" expanded="true" />
-            <element signature="e#3975#3999#0" expanded="true" />
-            <element signature="e#4282#4314#0" expanded="true" />
-            <element signature="e#5096#5122#0" expanded="true" />
-            <element signature="e#5468#5497#0" expanded="true" />
-            <element signature="e#6237#6264#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>

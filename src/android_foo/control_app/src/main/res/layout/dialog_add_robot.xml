@@ -68,88 +68,43 @@
         android:layout_height="wrap_content"
         android:text="@string/show_advanced_options"
         android:layout_below="@id/master_uri_edit_view"/>
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/advanved_options_view"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@id/advanced_options_checkbox_view">
-
-        <TextView
-            android:id="@+id/joystick_topic_textview"
-            android:text="@string/joystick_topic_prompt"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
         <EditText
             android:id="@+id/joystick_topic_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:hint="@string/joy_pref_title"
-            android:layout_alignParentTop="true"
-            android:layout_alignLeft="@+id/laser_scan_edit_view"
-            android:layout_alignStart="@+id/laser_scan_edit_view" />
-
-        <TextView
-            android:id="@+id/laserscan_topic_textview"
-            android:text="@string/laserscan_topic_prompt"
             android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp"
-            android:layout_below="@id/joystick_topic_textview"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
+            android:singleLine="true"
+            android:hint="@string/joy_pref_title" />
         <EditText
             android:id="@+id/laser_scan_edit_view"
             android:inputType="textUri"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="28dp"
-            android:singleLine="true"
-            android:hint="@string/laser_pref_title"
-            android:layout_below="@+id/joystick_topic_textview"
-            android:layout_toRightOf="@+id/laserscan_topic_textview"
-            android:layout_toEndOf="@+id/laserscan_topic_textview"
-            android:layout_marginStart="28dp" />
-
-        <TextView
-            android:id="@+id/camera_topic_textview"
-            android:text="@string/camera_topic_prompt"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_below="@id/laserscan_topic_textview"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
+            android:singleLine="true"
+            android:hint="@string/laser_pref_title"/>
         <EditText
             android:id="@+id/camera_topic_edit_view"
             android:inputType="textUri"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:singleLine="true"
-            android:hint="@string/camera_pref_title"
-            android:layout_alignParentBottom="true"
-            android:layout_alignLeft="@+id/laser_scan_edit_view"
-            android:layout_alignStart="@+id/laser_scan_edit_view" />
-    </RelativeLayout>
+            android:hint="@string/camera_pref_title"/>
+    </LinearLayout>
 </RelativeLayout>
 </ScrollView>
