@@ -247,17 +247,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      * otherwise.
      */
     private boolean holonomic;
-//    /**
-//     * Velocity commands are published when this is true. Not published otherwise.
-//     * This is to prevent spamming velocity commands.
-//     */
-//    private volatile boolean publishVelocity;
-//    /**
-//     * Used to publish velocity commands at a specific rate.
-//     */
-//    private Timer publisherTimer;
-//    private geometry_msgs.Twist currentVelocityCommand;
-//    private String topicName;
 
     /**
      * Used for tilt sensor control.
@@ -342,8 +331,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 
                 tiltX *= joystickRadius / MAX_TILT_ANGLE;
                 tiltY *= joystickRadius / MAX_TILT_ANGLE;
-
-//                Log.d(TAG, "Tilt (" + tiltX + ", " + tiltY + ")");
 
                 if (Math.abs(tiltX) < MIN_TILT_AMOUNT * joystickRadius) tiltX = 0.0f;
                 if (Math.abs(tiltY) < MIN_TILT_AMOUNT * joystickRadius) tiltY = 0.0f;
@@ -805,8 +792,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
         for (ImageView tack : orientationWidget) {
             tack.setVisibility(VISIBLE);
         }
-
-//        publishVelocity = true;
     }
 
     /**
@@ -993,20 +978,9 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      */
     private void publishVelocity(double linearVelocityX, double linearVelocityY,
                                  double angularVelocityZ) {
-//        if (currentVelocityCommand != null) {
-//            currentVelocityCommand.getLinear().setX(linearVelocityX);
-//            currentVelocityCommand.getLinear().setY(-linearVelocityY);
-//            currentVelocityCommand.getLinear().setZ(0);
-//            currentVelocityCommand.getAngular().setX(0);
-//            currentVelocityCommand.getAngular().setY(0);
-//            currentVelocityCommand.getAngular().setZ(-angularVelocityZ);
-//        } else {
-//            Log.w(TAG, "currentVelocityCommand is null");
-//        }
 
         ((ControlApp) getContext()).getRobotController().
                 forceVelocity(linearVelocityX, linearVelocityY, angularVelocityZ);
-//        Log.d(TAG, "publishing velocity");
     }
 
     /**
@@ -1142,15 +1116,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
                 * (y - contactUpLocation.y - joystickRadius)) < THUMB_DIVET_RADIUS;
     }
 
-//    public void setTopicName(String topicName) {
-//        this.topicName = topicName;
-//    }
 
-//    @Override
-//    public GraphName getDefaultNodeName() {
-//        return GraphName.of("android_15/virtual_joystick_view");
-//    }
-//
 //    @Override
 //    public void onStart(ConnectedNode connectedNode)
 //    {
@@ -1181,10 +1147,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
 //
 //        return false;
 //    }
-//
-//    @Override
-//    public void onShutdown(Node node) {
-//    }
+
 //
 //    @Override
 //    public void onShutdownComplete(Node node) {
@@ -1199,7 +1162,6 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     public void setControlMode(ControlMode controlMode) {
 
         this.controlMode = controlMode;
-//        publishVelocity = controlMode.ordinal() < ControlMode.Waypoint.ordinal();
     }
 //
 //    public ControlMode getControlMode(){
