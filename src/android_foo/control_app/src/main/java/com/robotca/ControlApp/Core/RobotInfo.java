@@ -39,9 +39,9 @@ public class RobotInfo implements Comparable<RobotInfo> {
         joystickTopic = "/joy_teleop/cmd_vel";
         cameraTopic = "/image_raw/compressed";
         laserTopic = "/scan";
-        navsatTopic = "";
-        odometryTopic = "";
-        poseTopic = "";
+        navsatTopic = "/navsat_topic";
+        odometryTopic = "/odometry_topic";
+        poseTopic = "/pose_topic";
     }
 
 //    public RobotInfo(String mName, String mMasterUri) {
