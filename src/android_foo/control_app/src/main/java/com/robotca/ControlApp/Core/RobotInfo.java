@@ -22,6 +22,9 @@ public class RobotInfo implements Comparable<RobotInfo> {
     private String joystickTopic;
     private String cameraTopic;
     private String laserTopic;
+    private String navsatTopic;
+    private String odometryTopic;
+    private String poseTopic;
 
     @SuppressWarnings("unused")
     private static final String TAG = "RobotInfo";
@@ -36,6 +39,9 @@ public class RobotInfo implements Comparable<RobotInfo> {
         joystickTopic = "/joy_teleop/cmd_vel";
         cameraTopic = "/image_raw/compressed";
         laserTopic = "/scan";
+        navsatTopic = "";
+        odometryTopic = "";
+        poseTopic = "";
     }
 
 //    public RobotInfo(String mName, String mMasterUri) {
@@ -53,13 +59,16 @@ public class RobotInfo implements Comparable<RobotInfo> {
      * @param cameraTopic CameraTopic name for this RobotInfo
      */
     public RobotInfo(UUID id, String name, String masterUriString, String joystickTopic,
-                     String laserTopic, String cameraTopic) {
+                     String laserTopic, String cameraTopic,String navsatTopic, String odometryTopic, String poseTopic) {
         this.id = id;
         this.name = name;
         this.masterUriString = masterUriString;
         this.joystickTopic = joystickTopic;
-        this.cameraTopic = cameraTopic;
         this.laserTopic = laserTopic;
+        this.cameraTopic = cameraTopic;
+        this.navsatTopic = navsatTopic;
+        this.odometryTopic = odometryTopic;
+        this.poseTopic = poseTopic;
     }
 
     /**
@@ -72,6 +81,51 @@ public class RobotInfo implements Comparable<RobotInfo> {
      * @param id The new UUID
      */
     public void setId(UUID id){ this.id = id; }
+
+    /**
+     * @return The PoseTopic name of this RobotInfo
+     */
+    public String getPoseTopic() {
+        return poseTopic;
+    }
+
+    /**
+     * Sets the PoseTopic for this RobotInfo.
+     * @param poseTopic The new PoseTopic
+     */
+    public void setPoseTopic(String poseTopic) {
+        this.poseTopic = poseTopic;
+    }
+    
+     /**
+     * @return The OdometryTopic name of this RobotInfo
+     */
+    public String getOdometryTopic() {
+        return odometryTopic;
+    }
+
+    /**
+     * Sets the OdometryTopic for this RobotInfo.
+     * @param odometryTopic The new JoystickTopic
+     */
+    public void setOdometryTopic(String odometryTopic) {
+        this.odometryTopic = odometryTopic;
+    }
+
+     /**
+     * @return The NavSatTopic name of this RobotInfo
+     */
+    public String getNavSatTopic() {
+        return navsatTopic;
+    }
+
+    /**
+     * Sets the NavSatTopic for this RobotInfo.
+     * @param navsatTopic The new JoystickTopic
+     */
+    public void setNavSatTopic(String navsatTopic) {
+        this.navsatTopic = navsatTopic;
+    }
 
     /**
      * @return The JoystickTopic name of this RobotInfo
