@@ -40,6 +40,13 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     public static final String LASER_SCAN_TOPIC_KEY = "LASER_SCAN_TOPIC_KEY";
     /** Bundle key for camera topic */
     public static final String CAMERA_TOPIC_KEY = "CAMERA_TOPIC_KEY";
+    /** Bundle key for navsat topic */
+    public static final String NAVSAT_TOPIC_KEY = "NAVSAT_TOPIC_KEY";
+    /** Bundle key for odometry topic */
+    public static final String ODOMETRY_TOPIC_KEY = "ODOMETRY_TOPIC_KEY";
+    /** Bundle key for pose topic */
+    public static final String POSE_TOPIC_KEY = "POSE_TOPIC_KEY";
+    
 
     // Temporary RobotInfo
     private RobotInfo mInfo = new RobotInfo();
@@ -53,6 +60,9 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     private EditText mJoystickTopicEditTextView;
     private EditText mLaserScanTopicEditTextView;
     private EditText mCameraTopicEditTextView;
+    private EditText mNavSatTopicEditTextView;
+    private EditText mOdometryTopicEditTextView;
+    private EditText mPoseTopicEditTextView;
 
 
     private int mPosition = -1;
@@ -69,6 +79,9 @@ public class AddEditRobotDialogFragment extends DialogFragment {
             mInfo.setJoystickTopic(args.getString(JOYSTICK_TOPIC_KEY, mInfo.getJoystickTopic()));
             mInfo.setLaserTopic(args.getString(LASER_SCAN_TOPIC_KEY, mInfo.getLaserTopic()));
             mInfo.setCameraTopic(args.getString(CAMERA_TOPIC_KEY, mInfo.getCameraTopic()));
+            mInfo.setNavSatTopic(args.getString(NAVSAT_TOPIC_KEY, mInfo.getNavSatTopic()));
+            mInfo.setOdometryTopic(args.getString(ODOMETRY_TOPIC_KEY, mInfo.getNavSatTopic()));
+            mInfo.setPoseTopic(args.getString(POSE_TOPIC_KEY, mInfo.getPoseTopic()));
         }
     }
 
@@ -101,6 +114,10 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mJoystickTopicEditTextView = (EditText) v.findViewById(R.id.joystick_topic_edit_text);
         mLaserScanTopicEditTextView = (EditText) v.findViewById(R.id.laser_scan_edit_view);
         mCameraTopicEditTextView = (EditText) v.findViewById(R.id.camera_topic_edit_view);
+        mNavSatTopicEditTextView = (EditText) v.findViewById(R.id.navsat_topic_edit_view);
+        mOdometryTopicEditTextView = (EditText) v.findViewById(R.id.odometry_topic_edit_view);
+        mPoseTopicEditTextView = (EditText) v.findViewById(R.id.pose_topic_edit_view);
+        
 
         mNameEditTextView.setText(mInfo.getName());
         mMasterUriEditTextView.setText(mInfo.getMasterUri());
@@ -119,6 +136,9 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mJoystickTopicEditTextView.setText(mInfo.getJoystickTopic());
         mLaserScanTopicEditTextView.setText(mInfo.getLaserTopic());
         mCameraTopicEditTextView.setText(mInfo.getCameraTopic());
+        mNavSatTopicEditTextView.setText(mInfo.getNavSatTopic());
+        mOdometryTopicEditTextView.setText(mInfo.getOdometryTopic);
+        mPoseTopicEditTextView.setText(mInfo.getPoseTopic);
 
         builder.setTitle(R.string.add_edit_robot)
                 .setView(v)
@@ -131,13 +151,16 @@ public class AddEditRobotDialogFragment extends DialogFragment {
                         String joystickTopic = mJoystickTopicEditTextView.getText().toString().trim();
                         String laserScanTopic = mLaserScanTopicEditTextView.getText().toString().trim();
                         String cameraTopic = mCameraTopicEditTextView.getText().toString().trim();
+                        String navsatTopic = mNavSatTopicEditTextView.getText().toString().trim();
+                        String odometryTopic = mOdometryTopicEditTextView.getText().toString().trim();
+                        String poseTopic = mPoseTopicEditTextView.getText().toString().trim();
 
                         if (masterUri.equals("")) {
                             Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
-                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")) {
+                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("") || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") ){
                             Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
                         } else if (!name.equals("")) {
-                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name, masterUri, joystickTopic, laserScanTopic, cameraTopic), mPosition);
+                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name, masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic,odometryTopic, poseTopic), mPosition);
                             dialog.dismiss();
                         } else {
                             Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();
