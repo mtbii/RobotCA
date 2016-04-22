@@ -20,7 +20,7 @@ public class RobotInfoTest {
 
         for (String name: new String[] {"Robot2", "Robot3", "Robot-2", "Robot3d", "R0b0t11", "Robot7"})
         {
-            testString.add(new RobotInfo(null, name, null, null, null, null));
+            testString.add(new RobotInfo(null, name, null, null, null, null, null, null, null));
         }
 
         RobotInfo.resolveRobotCount(testString);
