@@ -80,7 +80,7 @@ public class AddEditRobotDialogFragment extends DialogFragment {
             mInfo.setLaserTopic(args.getString(LASER_SCAN_TOPIC_KEY, mInfo.getLaserTopic()));
             mInfo.setCameraTopic(args.getString(CAMERA_TOPIC_KEY, mInfo.getCameraTopic()));
             mInfo.setNavSatTopic(args.getString(NAVSAT_TOPIC_KEY, mInfo.getNavSatTopic()));
-            mInfo.setOdometryTopic(args.getString(ODOMETRY_TOPIC_KEY, mInfo.getNavSatTopic()));
+            mInfo.setOdometryTopic(args.getString(ODOMETRY_TOPIC_KEY, mInfo.getOdometryTopic()));
             mInfo.setPoseTopic(args.getString(POSE_TOPIC_KEY, mInfo.getPoseTopic()));
         }
     }
