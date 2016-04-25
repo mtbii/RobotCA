@@ -142,6 +142,8 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        Log.d(TAG, "onCreate()");
+
 
         // Set default preference values
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);

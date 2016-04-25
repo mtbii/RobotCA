@@ -137,8 +137,8 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mLaserScanTopicEditTextView.setText(mInfo.getLaserTopic());
         mCameraTopicEditTextView.setText(mInfo.getCameraTopic());
         mNavSatTopicEditTextView.setText(mInfo.getNavSatTopic());
-        mOdometryTopicEditTextView.setText(mInfo.getOdometryTopic);
-        mPoseTopicEditTextView.setText(mInfo.getPoseTopic);
+        mOdometryTopicEditTextView.setText(mInfo.getOdometryTopic());
+        mPoseTopicEditTextView.setText(mInfo.getPoseTopic());
 
         builder.setTitle(R.string.add_edit_robot)
                 .setView(v)
@@ -157,10 +157,12 @@ public class AddEditRobotDialogFragment extends DialogFragment {
 
                         if (masterUri.equals("")) {
                             Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
-                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("") || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") ){
+                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")
+                                || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") ){
                             Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
                         } else if (!name.equals("")) {
-                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name, masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic,odometryTopic, poseTopic), mPosition);
+                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name,
+                                    masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic, odometryTopic, poseTopic), mPosition);
                             dialog.dismiss();
                         } else {
                             Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();

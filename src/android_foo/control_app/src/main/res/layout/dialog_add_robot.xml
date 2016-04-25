@@ -107,9 +107,9 @@
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/joystick_topic_prompt"
-            android:layout_alignLeft="@+id/camera_topic_prompt"
-            android:layout_alignStart="@+id/camera_topic_prompt"
+            android:layout_below="@id/joystick_topic_prompt"
+            android:layout_alignLeft="@id/joystick_topic_prompt"
+            android:layout_alignStart="@id/joystick_topic_prompt"
             android:layout_marginTop="24dp"/>
 
         <EditText
@@ -119,9 +119,9 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="@string/laser_pref_title"
-            android:layout_below="@+id/joystick_topic_edit_text"
-            android:layout_toRightOf="@+id/laserscan_topic_prompt"
-            android:layout_toEndOf="@+id/laserscan_topic_prompt" />
+            android:layout_below="@id/joystick_topic_edit_text"
+            android:layout_toRightOf="@id/laserscan_topic_prompt"
+            android:layout_toEndOf="@id/laserscan_topic_prompt" />
 
         <TextView
             android:id="@+id/camera_topic_prompt"
@@ -130,9 +130,9 @@
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/laserscan_topic_prompt"
-            android:layout_alignRight="@+id/joystick_topic_prompt"
-            android:layout_alignEnd="@+id/joystick_topic_prompt"
+            android:layout_below="@id/laserscan_topic_prompt"
+            android:layout_alignRight="@id/joystick_topic_prompt"
+            android:layout_alignEnd="@id/joystick_topic_prompt"
             android:layout_marginTop="24dp"/>
 
         <EditText
@@ -142,11 +142,87 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="@string/camera_pref_title"
-            android:layout_alignLeft="@+id/laser_scan_edit_view"
-            android:layout_alignStart="@+id/laser_scan_edit_view"
+            android:layout_alignLeft="@id/laser_scan_edit_view"
+            android:layout_alignStart="@id/laser_scan_edit_view"
             android:layout_toEndOf="@id/camera_topic_prompt"
             android:layout_toRightOf="@id/camera_topic_prompt"
             android:layout_below="@id/laser_scan_edit_view"/>
+
+        <TextView
+            android:id="@+id/navsat_topic_prompt"
+            android:text="@string/navsat_topic_prompt"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/camera_topic_prompt"
+            android:layout_alignRight="@id/joystick_topic_prompt"
+            android:layout_alignEnd="@id/joystick_topic_prompt"
+            android:layout_marginTop="24dp"/>
+
+        <EditText
+            android:id="@+id/navsat_topic_edit_view"
+            android:inputType="textUri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:hint="@string/navsat_pref_title"
+            android:layout_alignLeft="@id/camera_topic_edit_view"
+            android:layout_alignStart="@id/camera_topic_edit_view"
+            android:layout_toEndOf="@id/navsat_topic_prompt"
+            android:layout_toRightOf="@id/navsat_topic_prompt"
+            android:layout_below="@id/camera_topic_edit_view"/>
+
+        <TextView
+            android:id="@+id/odometry_topic_prompt"
+            android:text="@string/odometry_topic_prompt"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/navsat_topic_prompt"
+            android:layout_alignRight="@id/navsat_topic_prompt"
+            android:layout_alignEnd="@id/navsat_topic_prompt"
+            android:layout_marginTop="24dp"/>
+
+        <EditText
+            android:id="@+id/odometry_topic_edit_view"
+            android:inputType="textUri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:hint="@string/odometry_pref_title"
+            android:layout_alignLeft="@id/navsat_topic_edit_view"
+            android:layout_alignStart="@id/navsat_topic_edit_view"
+            android:layout_toEndOf="@id/odometry_topic_prompt"
+            android:layout_toRightOf="@id/odometry_topic_prompt"
+            android:layout_below="@id/navsat_topic_edit_view"/>
+
+        <TextView
+            android:id="@+id/pose_topic_prompt"
+            android:text="@string/pose_topic_prompt"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/odometry_topic_prompt"
+            android:layout_alignRight="@id/joystick_topic_prompt"
+            android:layout_alignEnd="@id/joystick_topic_prompt"
+            android:layout_marginTop="24dp"/>
+
+        <EditText
+            android:id="@+id/pose_topic_edit_view"
+            android:inputType="textUri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:hint="@string/pose_pref_title"
+            android:layout_alignLeft="@id/odometry_topic_edit_view"
+            android:layout_alignStart="@id/odometry_topic_edit_view"
+            android:layout_toEndOf="@id/pose_topic_prompt"
+            android:layout_toRightOf="@id/pose_topic_prompt"
+            android:layout_below="@id/odometry_topic_edit_view"/>
+
     </RelativeLayout>
 </RelativeLayout>
 </ScrollView>
