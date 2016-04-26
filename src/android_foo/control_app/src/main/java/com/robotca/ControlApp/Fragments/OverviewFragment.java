@@ -6,11 +6,15 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.robotca.ControlApp.ControlApp;
+import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.R;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.view.RosImageView;
+import org.ros.message.MessageListener;
 
 import sensor_msgs.CompressedImage;
 
@@ -22,8 +26,9 @@ import sensor_msgs.CompressedImage;
 public class OverviewFragment extends RosFragment {
 
     private View view;
+    private TextView noCameraTextView;
     private RosImageView<sensor_msgs.CompressedImage> cameraView;
-
+    private RobotController controller;
 
     @SuppressWarnings("unused")
     private static final String TAG = "OverviewFragment";
@@ -37,6 +42,7 @@ public class OverviewFragment extends RosFragment {
         if (view == null)
         {
             view = inflater.inflate(R.layout.fragment_overview, container, false);
+            noCameraTextView = (TextView)view.findViewById(R.id.noCameraTextView);
 
             LaserScanFragment laserScanFragment = new LaserScanFragment();
             getFragmentManager().beginTransaction().replace(
@@ -47,6 +53,30 @@ public class OverviewFragment extends RosFragment {
             cameraView.setTopicName(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("edittext_camera_topic", getString(R.string.camera_topic)));
             cameraView.setMessageType(CompressedImage._TYPE);
             cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+
+
+            try {
+                controller = ((ControlApp) getActivity()).getRobotController();
+            }
+            catch(Exception e){
+            }
+
+            if(controller != null){
+                controller.setCameraMessageReceived(new MessageListener<CompressedImage>() {
+                    @Override
+                    public void onNewMessage(CompressedImage compressedImage) {
+                        if(compressedImage != null) {
+                            controller.setCameraMessageReceived(null);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    noCameraTextView.setVisibility(View.GONE);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         }
 
         if (isInitialized()) {

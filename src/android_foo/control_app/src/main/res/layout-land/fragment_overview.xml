@@ -2,19 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:orientation="vertical">
 
-        <org.ros.android.view.RosImageView
-            android:id="@+id/camera_view"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+<RelativeLayout
+    android:layout_weight="1"
+    android:layout_width="fill_parent"
+    android:layout_height="0dp">
 
-        <FrameLayout
-            android:id="@+id/laser_scan_placeholder"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+    <org.ros.android.view.RosImageView
+        android:id="@+id/camera_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
+    <TextView
+        android:id="@+id/noCameraTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:elevation="3dp"
+        android:gravity="center"
+        android:text="@string/noCamera"
+        android:textSize="36sp" />
+
+</RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/laser_scan_placeholder"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -28,6 +28,7 @@ import geometry_msgs.Pose;
 import geometry_msgs.Quaternion;
 import geometry_msgs.Twist;
 import nav_msgs.Odometry;
+import sensor_msgs.CompressedImage;
 import sensor_msgs.LaserScan;
 import sensor_msgs.NavSatFix;
 
@@ -84,6 +85,14 @@ public class RobotController implements NodeMain, Savable {
     private Pose pose;
     // Lock for synchronizing accessing and receiving the current Pose
     private final Object poseMutex = new Object();
+
+    // Subscriber to Pose data
+    private Subscriber<CompressedImage> imageSubscriber;
+    // The most recent Pose
+    private CompressedImage image;
+    // Lock for synchronizing accessing and receiving the current Pose
+    private final Object imageMutex = new Object();
+    private MessageListener<CompressedImage> imageMessageReceived;
 
     // The currently running RobotPlan
     private RobotPlan motionPlan;
@@ -382,6 +391,10 @@ public class RobotController implements NodeMain, Savable {
                 .getString(context.getString(R.string.prefs_pose_topic_edittext_key),
                         context.getString(R.string.pose_topic));
 
+        String imageTopic = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.prefs_camera_topic_edittext_key),
+                        context.getString(R.string.camera_topic));
+
         // Refresh the Move Publisher
         if (movePublisher == null
                 || !moveTopic.equals(movePublisher.getTopicName().toString())) {
@@ -473,6 +486,25 @@ public class RobotController implements NodeMain, Savable {
                 @Override
                 public void onNewMessage(Pose pose) {
                     setPose(pose);
+                }
+            });
+        }
+
+        if(imageSubscriber == null || !imageTopic.equals(imageSubscriber.getTopicName().toString())){
+            if(imageSubscriber != null)
+                imageSubscriber.shutdown();
+
+            imageSubscriber = connectedNode.newSubscriber(imageTopic, CompressedImage._TYPE);
+
+            imageSubscriber.addMessageListener(new MessageListener<CompressedImage>() {
+                @Override
+                public void onNewMessage(CompressedImage image) {
+                    setImage(image);
+                    synchronized (imageMutex) {
+                        if (imageMessageReceived != null) {
+                            imageMessageReceived.onNewMessage(image);
+                        }
+                    }
                 }
             });
         }
@@ -714,5 +746,22 @@ public class RobotController implements NodeMain, Savable {
      */
     public static double getTurnRate() {
         return turnRate;
+    }
+
+
+    public void setCameraMessageReceived(MessageListener<CompressedImage> cameraMessageReceived) {
+        this.imageMessageReceived = cameraMessageReceived;
+    }
+
+    public void setImage(CompressedImage image) {
+        synchronized (imageMutex) {
+            this.image = image;
+        }
+    }
+
+    public CompressedImage getImage(){
+        synchronized (imageMutex) {
+            return this.image;
+        }
     }
 }

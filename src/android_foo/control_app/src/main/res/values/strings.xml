@@ -162,5 +162,6 @@
 
     <!-- Default Preferences -->
     <string name="default_warning_mindist">3.0</string>
+    <string name="noCamera">No Camera</string>
 
 </resources>

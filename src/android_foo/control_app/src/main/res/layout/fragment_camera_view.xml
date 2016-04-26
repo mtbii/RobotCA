@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <org.ros.android.view.RosImageView
         android:id="@+id/camera_fragment_camera_view"
         android:layout_width="fill_parent"
-        android:layout_height="300dip" />
+        android:layout_height="fill_parent" />
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/noCameraTextView"
+        android:text="@string/noCamera"
+        android:elevation="3dp"
+        android:textSize="36sp"
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</RelativeLayout>

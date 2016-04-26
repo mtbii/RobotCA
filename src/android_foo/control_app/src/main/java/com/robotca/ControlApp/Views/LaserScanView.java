@@ -23,6 +23,7 @@ public class LaserScanView extends GLSurfaceView {
     // The Renderer for this View
     private LaserScanRenderer laserScanRenderer;
 
+
     /**
      * Required Constructor.
      * @param context The parent context
