@@ -58,7 +58,7 @@ public class OverviewFragment extends RosFragment {
             try {
                 controller = ((ControlApp) getActivity()).getRobotController();
             }
-            catch(Exception e){
+            catch(Exception ignore){
             }
 
             if(controller != null){

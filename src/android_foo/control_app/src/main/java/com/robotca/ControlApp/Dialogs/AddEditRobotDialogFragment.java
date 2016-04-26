@@ -54,6 +54,7 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     // Use this instance of the interface to deliver action events
     private DialogListener mListener;
 
+    // EditTexts for editing the RobotInfo
     private EditText mNameEditTextView;
     private EditText mMasterUriEditTextView;
     private View mAdvancedOptionsView;
@@ -64,7 +65,7 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     private EditText mOdometryTopicEditTextView;
     private EditText mPoseTopicEditTextView;
 
-
+    // Position of the RobotInfo in the list of RobotInfos
     private int mPosition = -1;
 
     @Override
@@ -125,11 +126,11 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mAdvancedOptionsCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) {
-                    mAdvancedOptionsView.setVisibility(View.VISIBLE);
-                } else {
-                    mAdvancedOptionsView.setVisibility(View.GONE);
-                }
+            if (((CheckBox) v).isChecked()) {
+                mAdvancedOptionsView.setVisibility(View.VISIBLE);
+            } else {
+                mAdvancedOptionsView.setVisibility(View.GONE);
+            }
             }
         });
 
@@ -141,41 +142,48 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mPoseTopicEditTextView.setText(mInfo.getPoseTopic());
 
         builder.setTitle(R.string.add_edit_robot)
-                .setView(v)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+            .setView(v)
+            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                        String name = mNameEditTextView.getText().toString().trim();
-                        String masterUri = mMasterUriEditTextView.getText().toString().trim();
-                        String joystickTopic = mJoystickTopicEditTextView.getText().toString().trim();
-                        String laserScanTopic = mLaserScanTopicEditTextView.getText().toString().trim();
-                        String cameraTopic = mCameraTopicEditTextView.getText().toString().trim();
-                        String navsatTopic = mNavSatTopicEditTextView.getText().toString().trim();
-                        String odometryTopic = mOdometryTopicEditTextView.getText().toString().trim();
-                        String poseTopic = mPoseTopicEditTextView.getText().toString().trim();
+                String name = mNameEditTextView.getText().toString().trim();
+                String masterUri = mMasterUriEditTextView.getText().toString().trim();
+                String joystickTopic = mJoystickTopicEditTextView.getText().toString().trim();
+                String laserScanTopic = mLaserScanTopicEditTextView.getText().toString().trim();
+                String cameraTopic = mCameraTopicEditTextView.getText().toString().trim();
+                String navsatTopic = mNavSatTopicEditTextView.getText().toString().trim();
+                String odometryTopic = mOdometryTopicEditTextView.getText().toString().trim();
+                String poseTopic = mPoseTopicEditTextView.getText().toString().trim();
 
-                        if (masterUri.equals("")) {
-                            Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
-                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")
-                                || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") ){
-                            Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
-                        } else if (!name.equals("")) {
-                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name,
-                                    masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic, odometryTopic, poseTopic), mPosition);
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mListener.onAddEditDialogNegativeClick(AddEditRobotDialogFragment.this);
-                        dialog.cancel();
-                    }
-                });
+                if (masterUri.equals(""))
+                {
+                    Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
+                }
+                else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")
+                        || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") )
+                {
+                    Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
+                }
+                else if (!name.equals(""))
+                {
+                    mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name,
+                            masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic,
+                            odometryTopic, poseTopic), mPosition);
+                    dialog.dismiss();
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();
+                }
+                }
+            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mListener.onAddEditDialogNegativeClick(AddEditRobotDialogFragment.this);
+                    dialog.cancel();
+                }
+            });
 
         return builder.create();
     }

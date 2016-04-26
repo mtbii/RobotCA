@@ -180,7 +180,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                         }
 
                         Thread.sleep(10000);
-                    } catch (Exception e) {
+                    } catch (Exception ignore) {
 
                     }
                 }
@@ -213,6 +213,10 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                     bundle.putString(AddEditRobotDialogFragment.JOYSTICK_TOPIC_KEY, info.getJoystickTopic());
                     bundle.putString(AddEditRobotDialogFragment.LASER_SCAN_TOPIC_KEY, info.getLaserTopic());
                     bundle.putString(AddEditRobotDialogFragment.CAMERA_TOPIC_KEY, info.getCameraTopic());
+                    bundle.putString(AddEditRobotDialogFragment.ODOMETRY_TOPIC_KEY, info.getOdometryTopic());
+                    bundle.putString(AddEditRobotDialogFragment.NAVSAT_TOPIC_KEY, info.getNavSatTopic());
+                    bundle.putString(AddEditRobotDialogFragment.POSE_TOPIC_KEY, info.getPoseTopic());
+
                     editRobotDialogFragment.setArguments(bundle);
 
                     editRobotDialogFragment.show(activity.getSupportFragmentManager(), "editrobotialog");
@@ -255,11 +259,11 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
             return true;
         }
         catch(ConnectException ce) {
-            ce.printStackTrace();
+//            ce.printStackTrace();
             return false;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
             return false;
         }
     }

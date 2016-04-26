@@ -413,6 +413,9 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                 // Draw the scan area
                 Utils.drawPoints(gl, vertexFrontBuffer, 0.0f, true);
 
+//                // Draw the scanMap
+//                ControlApp.getLaserScanMap().draw(gl, 8.0f, 0xFF22FF44);
+
                 // Drop the first point which is required for the triangle fan but is
                 // not a range reading.
                 FloatBuffer pointVertices = vertexFrontBuffer.duplicate();
@@ -555,8 +558,8 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
         PointF res = new PointF();
 
         // Draw the waypoints
-        gl.glEnable(GL10.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL10.GL_GEQUAL);
+//        gl.glEnable(GL10.GL_DEPTH_TEST);
+//        gl.glDepthFunc(GL10.GL_GEQUAL);
 
         // Lock on waypoints to prevent modifications while reading
         synchronized (controlApp.getWaypoints()) {
@@ -585,7 +588,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 
-        gl.glDisable(GL10.GL_DEPTH_TEST);
+//        gl.glDisable(GL10.GL_DEPTH_TEST);
 
         // Draw the Waypoints
         b.rewind();
@@ -604,7 +607,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
      * Draws a point specified in world space.
      * Pass a non-null PointF to result to grab the converted point instead of drawing it.
      */
-    private static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
+    public static void drawPoint(GL10 gl, double x, double y, float size, int color, PointF result) {
         double rx = RobotController.getX();
         double ry = RobotController.getY();
 
@@ -626,7 +629,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     /*
      * Converts a screen point to world space.
      */
-    private Vector3 screenToWorld(double sx, double sy) {
+    public static Vector3 screenToWorld(double sx, double sy) {
         double rx = RobotController.getX();
         double ry = RobotController.getY();
 

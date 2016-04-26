@@ -154,12 +154,12 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         mapView.getOverlays().add(myGroundOverlay);
         mapView.postInvalidate();
 
-        // keep storage of markers and current location
-        waypoints.add(myLocationOverlay.getMyLocation());
-        waypoints.add(geoPoint);
-
-        Toast.makeText(mapView.getContext(), "Marked on (" + geoPoint.getLatitude() + "," +
-                geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
+//        // keep storage of markers and current location
+//        waypoints.add(myLocationOverlay.getMyLocation());
+//        waypoints.add(geoPoint);
+//
+//        Toast.makeText(mapView.getContext(), "Marked on (" + geoPoint.getLatitude() + "," +
+//                geoPoint.getLongitude() + ")", Toast.LENGTH_LONG).show();
 
         return true;
     }

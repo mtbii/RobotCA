@@ -181,8 +181,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/navsat_topic_prompt"
-            android:layout_alignRight="@id/navsat_topic_prompt"
-            android:layout_alignEnd="@id/navsat_topic_prompt"
             android:layout_marginTop="24dp"/>
 
         <EditText

@@ -158,6 +158,7 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
      */
     @SuppressWarnings("deprecation") // the new version of getColor() is not compatible with the minimum API level
     public void toggleEmergencyStopUI(boolean stop) {
+
         if (stop) {
             emergencyStopButton.setText(R.string.stop);
             emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_red));
@@ -165,6 +166,9 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
             emergencyStopButton.setText(R.string.start);
             emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_green));
         }
+
+        if (getControlApp().getControlMode().USER_CONTROLLED)
+            emergencyStopButton.setBackgroundColor(getResources().getColor(R.color.emergency_stop_gray));
     }
 
     /**
@@ -223,11 +227,13 @@ public class HUDFragment extends SimpleFragment implements MessageListener<Odome
             @Override
             public void onClick(View v) {
 
-                // Try to resume a paused plan first
-                if (getControlApp().getRobotController().resumePlan()) {
-                    toggleEmergencyStopUI(true);
-                } else if (getControlApp().stopRobot(true)) {
-                    toggleEmergencyStopUI(false);
+                if (!getControlApp().getControlMode().USER_CONTROLLED) {
+                    // Try to resume a paused plan first
+                    if (getControlApp().getRobotController().resumePlan()) {
+                        toggleEmergencyStopUI(true);
+                    } else if (getControlApp().stopRobot(true)) {
+                        toggleEmergencyStopUI(false);
+                    }
                 }
 
             }

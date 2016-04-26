@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:background="@android:color/holo_red_dark"
+        android:background="@color/emergency_stop_gray"
         android:text="@string/stop"
         tools:ignore="RelativeOverlap"/>
 

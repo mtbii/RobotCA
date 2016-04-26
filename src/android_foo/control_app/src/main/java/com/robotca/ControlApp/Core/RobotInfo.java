@@ -13,12 +13,18 @@ import java.util.UUID;
  */
 public class RobotInfo implements Comparable<RobotInfo> {
 
+    // Number of RobotInfos in storage
     private static int robotCount = 1;
 
+    // UUID for this RobotInfo
     private UUID id = UUID.randomUUID();
+
+    // Name of this RobotInfo
     private String name;
+    // Master URI of this RobotInfo
     private String masterUriString;
 
+    // Topic names
     private String joystickTopic;
     private String cameraTopic;
     private String laserTopic;
@@ -39,9 +45,9 @@ public class RobotInfo implements Comparable<RobotInfo> {
         joystickTopic = "/joy_teleop/cmd_vel";
         cameraTopic = "/image_raw/compressed";
         laserTopic = "/scan";
-        navsatTopic = "/navsat_topic";
-        odometryTopic = "/odometry_topic";
-        poseTopic = "/pose_topic";
+        navsatTopic = "/navsat/fix";
+        odometryTopic = "/odometry/filtered";
+        poseTopic = "/pose/";
     }
 
 //    public RobotInfo(String mName, String mMasterUri) {
@@ -217,11 +223,11 @@ public class RobotInfo implements Comparable<RobotInfo> {
     @Override
     public int compareTo(@NonNull RobotInfo another) {
 
-        if(this.getId() == null){
+        if (this.getId() == null) {
             return -1;
         }
 
-        if(another.getId() == null){
+        if (another.getId() == null) {
             return 1;
         }
 

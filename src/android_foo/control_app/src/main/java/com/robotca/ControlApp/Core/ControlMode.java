@@ -14,11 +14,23 @@ import com.robotca.ControlApp.Core.Plans.WaypointPlan;
  * Created by Michael Brunson on 2/12/16.
  */
 public enum ControlMode {
-    Joystick, // Joystick control
-    Tilt, // Tilt sensor control
-    SimpleWaypoint, // SimpleWaypoint control
-    Waypoint, // Potential field waypoint control
-    RandomWalk; // Random walk
+    Joystick (true), // Joystick control
+    Tilt (true), // Tilt sensor control
+    SimpleWaypoint (false), // SimpleWaypoint control
+    Waypoint (false), // Potential field waypoint control
+    RandomWalk (false); // Random walk
+
+    // Whether the user directly controls the Robot in this mode
+    public final boolean USER_CONTROLLED;
+
+    /**
+     * Creates a ControlMode.
+     * @param userControlled Whether the user controls the Robot directly in this mode.
+     */
+    ControlMode(boolean userControlled)
+    {
+        USER_CONTROLLED = userControlled;
+    }
 
     /**
      * Creates a RobotPlan for the specified ControlMode if one exists.

@@ -7,13 +7,17 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.DrawerItem;
@@ -117,6 +122,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     // Specifies how close waypoints need to be to be considered touching
     private static final double MINIMUM_WAYPOINT_DISTANCE = 1.0;
 
+//    // Laser scan map // static so that it doesn't need to be saved/loaded every time the screen rotates
+//    private static LaserScanMap laserScanMap;
+
     // Bundle keys
     private static final String WAYPOINT_BUNDLE_ID = "com.robotca.ControlApp.waypoints";
     private static final String SELECTED_VIEW_NUMBER_BUNDLE_ID = "com.robotca.ControlApp.drawerIndex";
@@ -132,6 +140,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         super(NOTIFICATION_TICKER, NOTIFICATION_TITLE, ROBOT_INFO.getUri());
 
         waypoints = new LinkedList<>();
+
+//        // Create the laserScanMap
+//        laserScanMap = new LaserScanMap();
     }
 
     /**
@@ -141,9 +152,6 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        Log.d(TAG, "onCreate()");
-
 
         // Set default preference values
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -362,6 +370,9 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
             // Create and add a WarningSystem
             controller.addLaserScanListener(warningSystem = new WarningSystem(this));
 
+//            // Add the LaserScanMap
+//            controller.addLaserScanListener(laserScanMap);
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -424,6 +435,15 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         joystickFragment.stop();
         return controller.stop(cancelMotionPlan);
     }
+
+//    /**
+//     * @return The current laser scan map
+//     */
+//    public static LaserScanMap getLaserScanMap()
+//    {
+//        return laserScanMap;
+//    }
+
 
 //    /**
 //     * Call to stop the Robot.
@@ -760,6 +780,11 @@ public class ControlApp extends RosActivity implements ListView.OnItemClickListe
         }
 
         invalidateOptionsMenu();
+
+        if (controlMode == ControlMode.SimpleWaypoint || controlMode == ControlMode.Waypoint) {
+            Toast.makeText(this, "Tap twice to place or delete a waypoint. " +
+                    "Tap and hold a waypoint to move it.", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

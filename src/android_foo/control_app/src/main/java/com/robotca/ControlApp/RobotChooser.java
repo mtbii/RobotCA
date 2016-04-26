@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +50,8 @@ import android.support.v4.app.FragmentManager;
  * <p/>
  * Created by Michael Brunson on 1/23/16.
  */
-public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener, ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
+public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener,
+        ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
 
     public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
 //    private View mEmptyView;
@@ -72,7 +74,10 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     FragmentManager fragmentManager;
     int fragmentsCreatedCounter = 0;
 
+    // Log tag String
+    private static final String TAG = "RobotChooser";
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -199,34 +204,34 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         Runnable task = new Runnable() {
             public void run() {
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-                        try {
-                            if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
-                                //Show initial tutorial message
-                                showcaseView = new ShowcaseView.Builder(RobotChooser.this)
-                                        .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.action_add_robot))
-                                        .setStyle(R.style.CustomShowcaseTheme2)
-                                        .hideOnTouchOutside()
-                                        .blockAllTouches()
-                                        //.singleShot(0) Can use this instead of manually saving in preferences
-                                        .setContentTitle("Add a Robot")
-                                        .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
-                                        .build();
+                try {
+                    if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
+                        //Show initial tutorial message
+                        showcaseView = new ShowcaseView.Builder(RobotChooser.this)
+                            .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.action_add_robot))
+                            .setStyle(R.style.CustomShowcaseTheme2)
+                            .hideOnTouchOutside()
+                            .blockAllTouches()
+                            //.singleShot(0) Can use this instead of manually saving in preferences
+                            .setContentTitle("Add a Robot")
+                            .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
+                            .build();
 
-                                //Get ready to show tutorial message when user adds a robot
-                                setupNextTutorialMessage();
+                        //Get ready to show tutorial message when user adds a robot
+                        setupNextTutorialMessage();
 
 
-                            }
+                    }
 //                            else {
 //                                addedRobot = true;
 //                            }
-                        } catch (Exception ignore) {}
-                    }
-                });
+                } catch (Exception ignore) {}
+                }
+            });
             }
         };
 
@@ -493,6 +498,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
      * @param newRobotInfo The updated RobotInfo
      */
     public void updateRobot(int position, RobotInfo newRobotInfo) {
+
+        Log.d(TAG, "updateRobot at position " + position + ": " + newRobotInfo);
+
         RobotStorage.update(this, newRobotInfo);
         mAdapter.notifyItemChanged(position);
     }

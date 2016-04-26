@@ -3,6 +3,7 @@ package com.robotca.ControlApp.Core;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -23,6 +24,9 @@ public class RobotStorage {
 
     private static List<RobotInfo> g_cRobotInfos = Lists.newArrayList();
     private static Gson m_oGson = new Gson();
+
+    // Log tag String
+    private static final String TAG = "RobotStorage";
 
     /**
      * Loads from the specified Activity's preferences.
@@ -82,9 +86,13 @@ public class RobotStorage {
     public static synchronized boolean update(Activity activity, RobotInfo robot) {
         boolean updated = false;
 
-        for(int i = 0; i < g_cRobotInfos.size(); i++) {
+        for (int i = 0; i < g_cRobotInfos.size(); i++) {
 
-            if(g_cRobotInfos.get(i).compareTo(robot) == 0) {
+            if (g_cRobotInfos.get(i).compareTo(robot) == 0) {
+
+                Log.d(TAG, "Updating robotinfo at position " + i + ": " + robot);
+                Log.d(TAG, robot.getOdometryTopic());
+
                 g_cRobotInfos.set(i, robot);
                 save(activity);
                 updated = true;
