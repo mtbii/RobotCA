@@ -10,6 +10,9 @@ import com.robotca.ControlApp.Fragments.HUDFragment;
 
 import org.ros.rosjava_geometry.Vector3;
 
+import java.util.Random;
+import java.util.Timer;
+
 import sensor_msgs.LaserScan;
 
 /**
@@ -19,17 +22,27 @@ public class WaypointPlan extends RobotPlan {
 
     private final static double GAMMA = 2;
     private final static double ALPHA = 6;
-    private final static double BETA = 2;
+    private final static double BETA = 1.25;
     private final static double EPSILON = 0.01;
-    private final static double D_SAFE = .25;
+    private final static double D_SAFE = 0.25;
     private final static double KAPPA = 0.4;
-    private final static double FORWARD_SPEED_MPS = .75;
+    private final static double FORWARD_SPEED_MPS = 0.75;
     private static final double MINIMUM_DISTANCE = 1.0;
 
     private ControlApp controlApp;
 
     private Vector3 lastPosition;
     private double lastHeading;
+
+    private Random random = new Random();
+    private boolean isStuck = false;
+    private long stuckTime = -1;
+    private long randScale;
+
+    private Vector3 randForce;
+    private Vector3 finalRandForce;
+    private Vector3 stuckPosition;
+
 
     private Vector3 currentPosition;
     private double currentHeading;
@@ -39,10 +52,6 @@ public class WaypointPlan extends RobotPlan {
     private double lastAngularVelocity;
     private double linearVelocity;
     private boolean atGoal;
-    private Vector3 randForce;
-
-    private double randScale;
-    private int stuckCount;
 
     public WaypointPlan(ControlApp controlApp) {
         this.controlApp = controlApp;
@@ -86,7 +95,6 @@ public class WaypointPlan extends RobotPlan {
 
             lastPosition = currentPosition;
             lastHeading = currentHeading;
-
             waitFor(100L);
         }
     }
@@ -107,38 +115,44 @@ public class WaypointPlan extends RobotPlan {
             double distance = laserScan.getRanges()[i];
             double scalar = 0;
 
-            //scale for distance
-            if (D_SAFE + EPSILON < distance && distance < BETA) {
-                double diff = distance - D_SAFE;
-                scalar = ALPHA / (diff * diff);
-            } else if (distance < D_SAFE + EPSILON) {
-                scalar = ALPHA / (EPSILON * EPSILON);
-            }
+            if (distance >= 5*EPSILON && distance != Double.NaN) {
+                //scale for distance
+                if (D_SAFE + EPSILON < distance && distance < BETA) {
+                    double diff = distance - D_SAFE;
+                    scalar = ALPHA / (diff * diff);
+                } else if (distance < D_SAFE + EPSILON) {
+                    scalar = ALPHA / (EPSILON * EPSILON);
+                }
 
-            //force points opposite to repel
-            Vector3 force = new Vector3(Math.cos(angle), Math.sin(angle), 0);
-            force = force.scale(-scalar);
-            netForce = netForce.add(force);
+                //force points opposite to repel
+                Vector3 force = new Vector3(Math.cos(angle), Math.sin(angle), 0);
+                force = force.scale(-scalar);
+                netForce = netForce.add(force);
+            }
         }
 
-//        if (Math.abs(currentPosition.getX() - goalPosition.getX()) < 1 && Math.abs(currentPosition.getY() - goalPosition.getY()) < 1) {
-//            randForce = new Vector3(Math.random(), Math.random(), 0);
-//            netForce = new Vector3(0, 0, 0);
-//            randScale = 1.0;
-//            stuckCount = 0;
-//            atGoal = true;
-//        } else if (Math.abs(lastPosition.getX() - currentPosition.getX()) < 0.0001 && Math.abs(lastPosition.getY() - currentPosition.getY()) < 0.0001) {
-//            if (stuckCount > 30) {
-//                randForce = randForce.scale(randScale);
-//                netForce = netForce.add(randForce);
-//                randScale *= 2;
-//            } else
-//                stuckCount++;
-//        } else {
-//            randForce = new Vector3(Math.random(), Math.random(), 0);
-//            randScale = 1.0;
-//            stuckCount = 0;
-//        }
+        try {
+            if (stuckPosition == null) {
+                if (currentPosition.subtract(lastPosition).getMagnitude() < FORWARD_SPEED_MPS / 2.0) {
+                    stuckTime = System.currentTimeMillis();
+                    stuckPosition = currentPosition;
+
+                    double randAngle = random.nextDouble() * 2.0 * Math.PI;
+                    randForce = new Vector3(Math.cos(randAngle), Math.sin(randAngle), 0);
+                }
+            } else {
+                if (currentPosition.subtract(stuckPosition).getMagnitude() < FORWARD_SPEED_MPS / 2.0) {
+                    long deltaTime = System.currentTimeMillis() - stuckTime;
+                    randScale = deltaTime / 1000L;
+                    Log.d("ControlApp", String.format("Rand Scale: %d", randScale));
+
+                    finalRandForce = randForce.scale(randScale);
+                    netForce = netForce.add(finalRandForce);
+                } else {
+                    stuckPosition = null;
+                }
+            }
+        }catch(Exception e){}
 
         return netForce;
     }
@@ -175,13 +189,6 @@ public class WaypointPlan extends RobotPlan {
 
         angularVelocity = -KAPPA * angle;
 
-        // if(angVel > ROTATE_SPEED_RADPS){
-        //   angVel = ROTATE_SPEED_RADPS;
-        // }
-        // else if(angVel < -ROTATE_SPEED_RADPS){
-        //   angVel = -ROTATE_SPEED_RADPS;
-        // }
-
         //compute linear vel
         double linVel = (netForce.getMagnitude() * Math.cos(angle1));
         if (linVel < 0) {
@@ -192,31 +199,6 @@ public class WaypointPlan extends RobotPlan {
         if (linearVelocity > FORWARD_SPEED_MPS)
             linearVelocity = FORWARD_SPEED_MPS;
 
-//        if(Math.abs(Math.abs(lastAngularVelocity) - Math.abs(angularVelocity)) < .01 * KAPPA && !atGoal){
-//            angularVelocity = 0;
-//            linearVelocity = FORWARD_SPEED_MPS;
-//        }
-//        else{
-//            lastAngularVelocity = angularVelocity;
-//        }
-
-//        if(Math.abs(Math.abs(lastAngularVelocity) - Math.abs(angularVelocity)) < .01 * KAPPA && !atGoal){
-//            angularVelocity = 0;
-//            linearVelocity = FORWARD_SPEED_MPS;
-//        }
-//        else{
-//            lastAngularVelocity = angularVelocity;
-//        }
-
-        //Log.d("ControlApp", String.format("Net Force: (%f, %f)", netForce.getX(), netForce.getY()));
-//        Log.d("ControlApp", String.format("Velocity: (%f, %f)", linearVelocity, angularVelocity));
-//        Log.d("ControlApp", String.format("Position: (%f, %f); Goal: (%f, %f)", currentPosition.getX(), currentPosition.getY(), goalPosition.getX(), goalPosition.getY()));
         controller.publishVelocity(this.linearVelocity, 0, angularVelocity);
-
-        //Wait a little while before stopping the rotation
-        //This prevents unstable behavior when needing to rotate 180 degrees
-//        if (linVel < 0) {
-//            waitFor((long)(500.0 / KAPPA));
-//        }
     }
 }
