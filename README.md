@@ -10,9 +10,9 @@ Dependencies:
 + ROSJava
 + Android 4.0+ (API level 13+)
 
-![Master Chooser](https://cloud.githubusercontent.com/assets/8508489/10292051/02ef9f1e-6b7b-11e5-9465-31867cea73b7.png) 
+![Master Chooser](https://cloud.githubusercontent.com/assets/8508489/14839465/021d5f80-0bf9-11e6-9580-10fa54de7cfc.png) 
 
-![Main Layout](https://cloud.githubusercontent.com/assets/8508489/10292032/f023a060-6b7a-11e5-80a8-4e697900f907.png)  
+![Main Layout](https://cloud.githubusercontent.com/assets/8508489/14839460/0201419c-0bf9-11e6-82c9-8e51ce85d48c.png)  
 
 Client Information:  
 Dr. Ioannis Rekleitis  
