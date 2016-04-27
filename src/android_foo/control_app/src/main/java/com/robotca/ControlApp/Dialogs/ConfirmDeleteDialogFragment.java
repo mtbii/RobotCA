@@ -7,16 +7,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import com.robotca.ControlApp.R;
 
 /**
+ * Dialog for requesting confirmation before deleting a RobotInfo.
+ *
  * Created by Michael Brunson on 1/23/16.
  */
 public class ConfirmDeleteDialogFragment extends DialogFragment {
+
+    /** Bundle key for the name of the Robot being deleted */
     public static final String NAME_KEY = "DELETE_ITEM_NAME_KEY";
+    /** Bundle key for the position of the RobotItem being deleted */
     public static final String POSITION_KEY = "DELETE_ITEM_POSITION_KEY";
 
     private DialogListener mListener;
@@ -44,19 +47,20 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Creates the Dialog.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_add_robot, null);
 
         builder.setTitle(R.string.delete)
                 .setMessage("Delete: " + "'" + mItemName + "'" + "?")
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Notify the listener
                         mListener.onConfirmDeleteDialogPositiveClick(mPosition, mItemName);
                         dialog.dismiss();
                     }
@@ -64,6 +68,7 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Notify the listener
                         mListener.onConfirmDeleteDialogNegativeClick();
                         dialog.cancel();
                     }
@@ -72,6 +77,9 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    /**
+     * Interface for Objects that need to be notified of the result of the user's action on the Dialog.
+     */
     public interface DialogListener {
         void onConfirmDeleteDialogPositiveClick(int position, String name);
         void onConfirmDeleteDialogNegativeClick();

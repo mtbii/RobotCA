@@ -5,7 +5,6 @@ package com.robotca.ControlApp.Fragments;
  *
  * Created by kennethspear on 3/28/16.
  */
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

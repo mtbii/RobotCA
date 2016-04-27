@@ -1,38 +1,39 @@
 package com.robotca.ControlApp.Fragments;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
-import java.util.ArrayList;
 import com.robotca.ControlApp.R;
 
+import java.util.ArrayList;
+
+/**
+ * Fragment for showing help information.
+ */
 public class HelpFragment extends Fragment
 {
+    // View made static to fix a bug, but there might be a better way
     private static View view;
-    private TabHost mTabHost;
-    private ViewPager mViewPager;
-    private TabsAdapter mTabsAdapter;
 
-    public HelpFragment() {
-    }
+    /**
+     * Default Constructor.
+     */
+    public HelpFragment() {}
 
     @Override
     public void onCreate(Bundle instance)
     {
         super.onCreate(instance);
-
     }
 
     @Override
@@ -42,11 +43,11 @@ public class HelpFragment extends Fragment
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_help, container, false);
 
-            mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
+            TabHost mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
             mTabHost.setup();
 
-            mViewPager = (ViewPager) view.findViewById(R.id.pager);
-            mTabsAdapter = new TabsAdapter(getActivity(), mTabHost, mViewPager);
+            ViewPager mViewPager = (ViewPager) view.findViewById(R.id.pager);
+            TabsAdapter mTabsAdapter = new TabsAdapter(getActivity(), mTabHost, mViewPager);
 
             // Here we load the content for each tab.
             mTabsAdapter.addTab(mTabHost.newTabSpec("one").setIndicator("Setup"), PageOneFragment.class, null);
@@ -58,27 +59,35 @@ public class HelpFragment extends Fragment
         return view;
     }
 
-    public static class TabsAdapter extends FragmentPagerAdapter implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener
+    /**
+     * Custom adapter for the three help tabs.
+     */
+    public static class TabsAdapter extends FragmentPagerAdapter
+            implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener
     {
         private final Context mContext;
         private final TabHost mTabHost;
         private final ViewPager mViewPager;
-        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+        private final ArrayList<TabInfo> mTabs = new ArrayList<>();
 
+        /**
+         * Container for some information about one tab.
+         */
         static final class TabInfo
         {
-            private final String tag;
             private final Class<?> clss;
             private final Bundle args;
 
-            TabInfo(String _tag, Class<?> _class, Bundle _args)
+            TabInfo(Class<?> _class, Bundle _args)
             {
-                tag = _tag;
                 clss = _class;
                 args = _args;
             }
         }
 
+        /**
+         * Factory class for creating a content view for a tab.
+         */
         static class DummyTabFactory implements TabHost.TabContentFactory
         {
             private final Context mContext;
@@ -97,6 +106,12 @@ public class HelpFragment extends Fragment
             }
         }
 
+        /**
+         * Creates a TabsAdapter.
+         * @param activity The parent Activity
+         * @param tabHost The TabHost
+         * @param pager The ViewPager
+         */
         public TabsAdapter(FragmentActivity activity, TabHost tabHost, ViewPager pager)
         {
             super(activity.getSupportFragmentManager());
@@ -105,26 +120,41 @@ public class HelpFragment extends Fragment
             mViewPager = pager;
             mTabHost.setOnTabChangedListener(this);
             mViewPager.setAdapter(this);
+            //noinspection deprecation // Needed for min API level
             mViewPager.setOnPageChangeListener(this);
         }
 
+        /**
+         * Adds a tab to this TabsAdapter.
+         * @param tabSpec The TabSpec for the tab
+         * @param clss The class of the Fragment to be contained in the tab
+         * @param args Arguments for the tab
+         */
         public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args)
         {
             tabSpec.setContent(new DummyTabFactory(mContext));
-            String tag = tabSpec.getTag();
+            tabSpec.getTag();
 
-            TabInfo info = new TabInfo(tag, clss, args);
+            TabInfo info = new TabInfo(clss, args);
             mTabs.add(info);
             mTabHost.addTab(tabSpec);
             notifyDataSetChanged();
         }
 
+        /**
+         * @return The number of tabs in this TabsAdapter
+         */
         @Override
         public int getCount()
         {
             return mTabs.size();
         }
 
+        /**
+         * Returns the Fragment for the tab at the specified position.
+         * @param position The position in this TabsAdapter
+         * @return The newly created Fragment for the tab at the position
+         */
         @Override
         public Fragment getItem(int position)
         {
@@ -136,16 +166,27 @@ public class HelpFragment extends Fragment
 
         }
 
+        /**
+         * Callback for when a tab is opened.
+         * @param tabId The id of the tab
+         */
+        @Override
         public void onTabChanged(String tabId)
         {
             int position = mTabHost.getCurrentTab();
             mViewPager.setCurrentItem(position);
         }
 
+        @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
         {
         }
 
+        /**
+         * Callback for when a tab is selected.
+         * @param position The position of the selected tab
+         */
+        @Override
         public void onPageSelected(int position)
         {
             // Unfortunately when TabHost changes the current tab, it kindly
@@ -161,7 +202,6 @@ public class HelpFragment extends Fragment
         }
 
         public void onPageScrollStateChanged(int state)
-        {
-        }
+        {}
     }
 }

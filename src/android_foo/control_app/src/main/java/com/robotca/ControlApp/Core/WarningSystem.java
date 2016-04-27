@@ -24,6 +24,9 @@ public class WarningSystem implements MessageListener<LaserScan> {
 
     private static final float ANGLE_DELTA = (float) Math.toRadians(40.0);
 
+    /** The minimum distance at which to register laser scan points as dangerous */
+    public static final float MIN_DISTANCE = 0.25f;
+
     // Log tag String
     @SuppressWarnings("unused")
     private static final String TAG = "WarningSystem";
@@ -87,7 +90,8 @@ public class WarningSystem implements MessageListener<LaserScan> {
         float angleIncrement = laserScan.getAngleIncrement();
 
         for (int i = 0; i < laserScan.getRanges().length; i++) {
-            if (ranges[i] < shortestDistance && angle > -ANGLE_DELTA && angle < ANGLE_DELTA) {
+            if (ranges[i] > MIN_DISTANCE && ranges[i] < shortestDistance
+                    && angle > -ANGLE_DELTA && angle < ANGLE_DELTA) {
                 shortestDistance = ranges[i];
             }
 

@@ -26,6 +26,9 @@ import nav_msgs.Odometry;
 
 /**
  * Simple fragment showing info about the Robot's current state.
+ * Shows the robot's speed and direction, gps location, and signal strength.
+ * Additionally, if the WarningSystem is enabled, the HUDFragment will flash red when the Robot is too
+ * close to an obstacle.
  *
  * @author Nathaniel Stone
  */

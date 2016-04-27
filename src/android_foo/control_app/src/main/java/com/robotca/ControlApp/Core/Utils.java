@@ -1,11 +1,9 @@
 package com.robotca.ControlApp.Core;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 
 import com.google.common.base.Preconditions;
-import com.robotca.ControlApp.R;
 
 import org.ros.android.view.visualization.Vertices;
 import org.ros.rosjava_geometry.Quaternion;

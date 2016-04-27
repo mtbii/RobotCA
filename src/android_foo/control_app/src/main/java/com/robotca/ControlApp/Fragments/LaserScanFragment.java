@@ -78,6 +78,8 @@ public class LaserScanFragment extends SimpleFragment implements Savable {
                     }
                 });
 
+        (view.findViewById(R.id.clear_waypoints_button)).setEnabled(!getControlApp().getWaypoints().isEmpty());
+
         CheckBox checkBox = ((CheckBox) view.findViewById(R.id.lock_camera_checkbox));
 
         checkBox.setOnCheckedChangeListener(

@@ -75,13 +75,14 @@ public class JoystickFragment extends Fragment {
      * Tests whether the Joystick supports accelerometer control.
      * @return True if the Joystick supports accelerometer control, false otherwise
      */
+    @SuppressWarnings("unused") // Maybe later...
     public boolean hasAccelerometer() {
         return virtualJoystick.hasAccelerometer();
     }
 
     /**
-     * Invalidate the Fragment, updating the visibility of the Joystick based on the ControlMode
-     * and initializing the Joystick subscribers if not already done.
+     * Invalidate the Fragment, updating the visibility of the Joystick based on the ControlMode.
+     *
      */
     public void invalidate() {
 
@@ -103,10 +104,16 @@ public class JoystickFragment extends Fragment {
         virtualJoystick.controlSchemeChanged();
     }
 
+    /**
+     * Stops the JoystickFragment.
+     */
     public void stop() {
         virtualJoystick.stop();
     }
 
+    /**
+     * Shows the JoystickFragment.
+     */
     public void show(){
         getFragmentManager()
                 .beginTransaction()
@@ -114,6 +121,9 @@ public class JoystickFragment extends Fragment {
                 .commit();
     }
 
+    /**
+     * Hides the JoystickFragment.
+     */
     public void hide(){
         getFragmentManager()
                 .beginTransaction()

@@ -4,7 +4,7 @@
     <!-- App name -->
     <string name="app_name">ROS Control</string>
 
-    <!-- Topic names -->
+    <!-- Topic values -->
     <string name="joy_topic">/joy_teleop/cmd_vel</string>
     <string name="camera_topic">/image_raw/compressed</string>
     <string name="laser_scan_topic">/scan</string>
@@ -70,8 +70,7 @@
     </string>
     <string name="random_walk_range_minimum_pref_summary">This is the minimum sensed range where
         the random walk algorithm will stop and turn\nValue: %s</string>
-    <string name="warning_mindist_pref_summary">The minimum distance considered safe when moving at full speed
-        \nValue: %s</string>
+    <string name="warning_mindist_pref_summary">The minimum distance considered safe when moving at full speed\nValue: %s</string>
     <string name="warning_safemode_pref_summary_off">Enable to prevent the Robot from driving into walls</string>
     <string name="warning_safemode_pref_summary_on">Disable to allow the Robot to crash into walls</string>
     <string name="warning_beep_pref_summary_off">Enable warning beeps</string>
@@ -151,6 +150,7 @@
     <string name="waypoint_control">Waypoint Control</string>
     <string name="random_walk">Random Walk</string>
 
+    <!-- Array of Motion plan names -->
     <string-array name="motion_plans">
         <item>Joystick</item>
         <item>Tilt</item>
@@ -160,7 +160,7 @@
     </string-array>
 
 
-    <!-- Default Preferences -->
+    <!-- Default Preference values -->
     <string name="default_warning_mindist">3.0</string>
     <string name="noCamera">No Camera</string>
 

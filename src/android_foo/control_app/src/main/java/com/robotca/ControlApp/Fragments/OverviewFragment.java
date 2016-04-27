@@ -62,11 +62,11 @@ public class OverviewFragment extends RosFragment {
             }
 
             if(controller != null){
-                controller.setCameraMessageReceived(new MessageListener<CompressedImage>() {
+                controller.setCameraMessageReceivedListener(new MessageListener<CompressedImage>() {
                     @Override
                     public void onNewMessage(CompressedImage compressedImage) {
-                        if(compressedImage != null) {
-                            controller.setCameraMessageReceived(null);
+                        if (compressedImage != null) {
+                            controller.setCameraMessageReceivedListener(null);
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {

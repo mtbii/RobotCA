@@ -10,8 +10,13 @@ import org.ros.node.NodeMainExecutor;
  * Created by Michael Brunson on 11/8/15.
  */
 public abstract class RosFragment extends SimpleFragment {
+
+    /** NodeMainExecutor for launching new nodes */
     protected NodeMainExecutor nodeMainExecutor;
+    /** NodeConfiguration for the nodes */
     protected NodeConfiguration nodeConfiguration;
+
+    // Whether this RosFragment's NodeMainExecutor has been started
     private boolean initialized;
 
     @Override

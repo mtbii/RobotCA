@@ -749,7 +749,7 @@ public class RobotController implements NodeMain, Savable {
     }
 
 
-    public void setCameraMessageReceived(MessageListener<CompressedImage> cameraMessageReceived) {
+    public void setCameraMessageReceivedListener(MessageListener<CompressedImage> cameraMessageReceived) {
         this.imageMessageReceived = cameraMessageReceived;
     }
 

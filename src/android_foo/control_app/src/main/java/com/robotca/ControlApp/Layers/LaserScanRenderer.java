@@ -11,6 +11,7 @@ import android.view.ScaleGestureDetector;
 import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
+import com.robotca.ControlApp.Core.WarningSystem;
 
 import org.ros.android.view.visualization.Color;
 import org.ros.android.view.visualization.Vertices;
@@ -25,7 +26,9 @@ import javax.microedition.khronos.opengles.GL10;
 import sensor_msgs.LaserScan;
 
 /**
- * Renderer for rendering LaserScan data. Supports panning and zooming.
+ * Renderer for rendering LaserScan data. Supports panning, zooming, and rotating.
+ *
+ * Also draws the current Waypoint path and manages editing Waypoint paths through different gestures.
  *
  * Created by Nathaniel Stone on 3/29/16.
  */
@@ -118,6 +121,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
 //        makeCameraAngleFollowRobot(true);
 
+        // Gesture detector for scaling the view
         this.scaleGestureDetector = new ScaleGestureDetector(controlApp,
                 new ScaleGestureDetector.SimpleOnScaleGestureListener() {
                     @Override
@@ -150,6 +154,8 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
                     }
                 });
 
+        // Gesture detector for detecting double taps to place or remove Waypoints
+        // Also handles long presses for moving Waypoints around
         this.gestureDetector = new GestureDetector(controlApp, new GestureDetector.SimpleOnGestureListener()
         {
             @Override
@@ -245,6 +251,7 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
     /**
      * Callback for touch events to this Layer.
+     * Handles zooming, panning, and rotating the view, among other things.
      *
      * @param event The touch MotionEvent
      * @return True if the event was handled successfully and false otherwise
@@ -365,6 +372,11 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         this.width = width;
         this.height = height;
+
+        xStart = 0.0f;
+        yStart = 0.0f;
+        offX = 0.0f;
+        offY = 0.0f;
 
         gl.glViewport(0, 0, width, height);
     }
@@ -493,6 +505,11 @@ public class LaserScanRenderer implements GLSurfaceView.Renderer, MessageListene
 
         // Calculate the coordinates of the laser range values.
         for (int i = 0; i < ranges.length; ++i) {
+
+            // Ignore points that are too close
+            if (ranges[i] < WarningSystem.MIN_DISTANCE)
+                ranges[i] = MAX_RANGE;
+
             // Makes the preview look nicer by eliminating round off errors on the last angle
             if (i == ranges.length - 1)
                 angle = laserScan.getAngleMax();

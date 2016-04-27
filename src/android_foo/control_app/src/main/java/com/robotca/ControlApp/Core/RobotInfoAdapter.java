@@ -1,7 +1,6 @@
 package com.robotca.ControlApp.Core;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -15,18 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
 import com.robotca.ControlApp.ControlApp;
-import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.Dialogs.AddEditRobotDialogFragment;
+import com.robotca.ControlApp.Dialogs.ConfirmDeleteDialogFragment;
 import com.robotca.ControlApp.R;
 
 import java.net.ConnectException;
@@ -96,13 +91,22 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
      * Container for the Views inside this RobotInfoAdapter.
      */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        // TextView containing the name of the Robot
         public TextView mRobotNameTextView;
+        // TextView containing the master URI of the Robot
         public TextView mMasterUriTextView;
+
+
         private ImageButton mEditButton;
         private ImageButton mDeleteButton;
         //private ImageSwitcher mImageSwitcher;
         private ImageView mImageView;
 
+        /**
+         * Creates a ViewHolder for the specified View.
+         * @param v The View
+         */
         public ViewHolder(View v) {
             super(v);
             v.setClickable(true);
@@ -119,37 +123,7 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
             mImageView = (ImageView) v.findViewById(R.id.robot_wifi_image);
             mImageView.setImageResource(R.drawable.wifi_0);
 
-//            mImageSwitcher = (ImageSwitcher) v.findViewById(R.id.robot_wifi_switcher);
-//
-//            Animation in = AnimationUtils.loadAnimation(activity, R.anim.slide_in_top);
-//            Animation out = AnimationUtils.loadAnimation(activity, R.anim.slide_out_bottom);
-//
-//            mImageSwitcher.setInAnimation(in);
-//            mImageSwitcher.setOutAnimation(out);
-
             Timer t = new Timer();
-//
-//            t.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    activity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mImageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
-//                                @Override
-//                                public View makeView() {
-//                                    ImageView imView = new ImageView(RobotInfoAdapter.activity);
-//                                    imView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                                    imView.setLayoutParams(new ImageSwitcher.LayoutParams((int)(0.7*mEditButton.getHeight()), (int)(0.7*mEditButton.getHeight())));  //(ImageSwitcher.LayoutParams.WRAP_CONTENT, ImageSwitcher.LayoutParams.WRAP_CONTENT));
-//                                    return imView;
-//                                }
-//                            });
-//
-//                            mImageSwitcher.setImageResource(R.drawable.wifi_0);
-//                        }
-//                    });
-//                }
-//            }, 1000);
 
             t.scheduleAtFixedRate(new TimerTask() {
 
@@ -157,7 +131,6 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                 public void run() {
                     try {
                         int position = getAdapterPosition();
-                        Bundle bundle;
                         final RobotInfo info = mDataset.get(position);
                         //mImageView.setLayoutParams(new ActionBar.LayoutParams(mEditButton.getHeight(), mEditButton.getHeight()));
 

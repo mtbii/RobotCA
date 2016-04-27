@@ -46,6 +46,9 @@ public class SplashActivity extends Activity {
         }
     }
 
+    /**
+     * Callback for when the user has to grant overlay permissions. This only happens on high android version.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent data) {
 

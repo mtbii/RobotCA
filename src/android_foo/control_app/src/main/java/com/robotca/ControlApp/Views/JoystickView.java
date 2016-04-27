@@ -48,19 +48,19 @@ import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.R;
 
 import org.ros.message.MessageListener;
-import org.ros.node.topic.Publisher;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-//import org.ros.android.android_15.R;
 
 /**
  * VirtualJoystickView creates a virtual joystick view that publishes velocity
  * as (geometry_msgs.Twist) messages. The current version contains the following
  * features: snap to axes, turn in place, and resume previous velocity.
  *
+ * The JoystickView has been extended to allow control from a device's accelerometers.
+ *
  * @author munjaldesai@google.com (Munjal Desai)
+ *         Nathaniel Stone
  */
 public class JoystickView extends RelativeLayout implements AnimationListener,
         MessageListener<nav_msgs.Odometry>/*, NodeMain*/ {
@@ -426,6 +426,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
      *                along the Y axis instead of angular velocities along the Z axis,
      *                {@code false} otherwise
      */
+    @SuppressWarnings("unused") // Maybe in the future...
     public void setHolonomic(boolean enabled) {
         holonomic = enabled;
     }
@@ -539,6 +540,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_UP: {
                 // Check if the contact that initiated the interaction is up.
+                //noinspection deprecation
                 if ((action & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT == pointerId) {
                     onContactUp();
                 }
@@ -551,6 +553,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Allows the user the option to turn on the auto-snap feature.
      */
+    @SuppressWarnings("unused")
     public void enableSnapping() {
         magnetTheta = 10;
     }
@@ -558,6 +561,7 @@ public class JoystickView extends RelativeLayout implements AnimationListener,
     /**
      * Allows the user the option to turn off the auto-snap feature.
      */
+    @SuppressWarnings("unused")
     public void disableSnapping() {
         magnetTheta = 1;
     }

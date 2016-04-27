@@ -35,6 +35,10 @@ public class PreferencesFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.prefs);
     }
 
+    /**
+     * Called when the user has finished editing/viewing the current Preferences.
+     * Updates the topic names on the current RobotInfo to be in sync with the Preferences.
+     */
     @Override
     public void onPause() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -51,6 +55,16 @@ public class PreferencesFragment extends PreferenceFragment {
                 prefs.getString(getString(R.string.prefs_camera_topic_edittext_key),
                         getString(R.string.camera_topic)));
 
+        ControlApp.ROBOT_INFO.setOdometryTopic(prefs.getString(getString(R.string.prefs_odometry_topic_edittext_key),
+                getString(R.string.odometry_topic)));
+
+        ControlApp.ROBOT_INFO.setNavSatTopic(prefs.getString(getString(R.string.prefs_navsat_topic_edittext_key),
+                getString(R.string.navsat_topic)));
+
+        ControlApp.ROBOT_INFO.setPoseTopic(prefs.getString(getString(R.string.prefs_pose_topic_edittext_key),
+                getString(R.string.pose_topic)));
+
+        // Let the ControlApp know that the Preferences have been changed so it can save them
         if (getActivity() instanceof ControlApp)
             ((ControlApp)getActivity()).onPreferencesChanged(prefs);
         else

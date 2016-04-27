@@ -6,20 +6,21 @@ import com.robotca.ControlApp.ControlApp;
 import com.robotca.ControlApp.Core.ControlMode;
 import com.robotca.ControlApp.Core.RobotController;
 import com.robotca.ControlApp.Core.Utils;
-import com.robotca.ControlApp.Fragments.HUDFragment;
 
 import org.ros.rosjava_geometry.Vector3;
 
 import java.util.Random;
-import java.util.Timer;
 
 import sensor_msgs.LaserScan;
 
 /**
+ * Motion plan for following Waypoints using a potential field for obstacle avoidance.
+ *
  * Created by Mike on 2/13/2016.
  */
 public class WaypointPlan extends RobotPlan {
 
+    // Parameters for the potential field calculation
     private final static double GAMMA = 2;
     private final static double ALPHA = 6;
     private final static double BETA = 1.25;
@@ -29,29 +30,29 @@ public class WaypointPlan extends RobotPlan {
     private final static double FORWARD_SPEED_MPS = 0.75;
     private static final double MINIMUM_DISTANCE = 1.0;
 
+    // Reference to the ControlApp
     private ControlApp controlApp;
 
     private Vector3 lastPosition;
-    private double lastHeading;
 
     private Random random = new Random();
-    private boolean isStuck = false;
     private long stuckTime = -1;
+    @SuppressWarnings("FieldCanBeLocal")
     private long randScale;
 
     private Vector3 randForce;
+    @SuppressWarnings("FieldCanBeLocal")
     private Vector3 finalRandForce;
     private Vector3 stuckPosition;
-
 
     private Vector3 currentPosition;
     private double currentHeading;
     private Vector3 goalPosition;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private double angularVelocity;
-    private double lastAngularVelocity;
+    @SuppressWarnings("FieldCanBeLocal")
     private double linearVelocity;
-    private boolean atGoal;
 
     public WaypointPlan(ControlApp controlApp) {
         this.controlApp = controlApp;
@@ -65,6 +66,11 @@ public class WaypointPlan extends RobotPlan {
         return ControlMode.Waypoint;
     }
 
+    /**
+     * Starts the WaypointPlan.
+     * @param controller The RobotController for controlling the Robot
+     * @throws Exception If an error occurs
+     */
     @Override
     protected void start(RobotController controller) throws Exception {
 
@@ -94,11 +100,14 @@ public class WaypointPlan extends RobotPlan {
             }
 
             lastPosition = currentPosition;
-            lastHeading = currentHeading;
             waitFor(100L);
         }
     }
 
+    /*
+     * Calculates the potential field forces from the specified LaserScan. These forces are used to
+     * 'repel' the Robot from obstacles, thus guiding it around them.
+     */
     private Vector3 calculateForces(LaserScan laserScan) {
         Vector3 netForce = new Vector3(0, 0, 0);
 
@@ -152,11 +161,14 @@ public class WaypointPlan extends RobotPlan {
                     stuckPosition = null;
                 }
             }
-        }catch(Exception e){}
+        } catch(Exception ignore){}
 
         return netForce;
     }
 
+    /*
+     * Applies the specified force to the Robot, adjusting its motion accordingly.
+     */
     private void applyForce(RobotController controller, Vector3 netForce) throws InterruptedException {
         double forceAngle = 0;
         if (netForce.getY() != 0 || netForce.getX() != 0)
@@ -177,7 +189,7 @@ public class WaypointPlan extends RobotPlan {
         //compute angular vel
         double angle1 = forceAngle - currentHeading;
         double angle2 = 2 * Math.PI - Math.abs(angle1);
-        double angle = 0;
+        double angle;
 
         if (Math.abs(angle1) > Math.abs(angle2)) {
             angle = -angle2;

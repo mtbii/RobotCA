@@ -53,26 +53,26 @@ import android.support.v4.app.FragmentManager;
 public class RobotChooser extends AppCompatActivity implements AddEditRobotDialogFragment.DialogListener,
         ConfirmDeleteDialogFragment.DialogListener, ListView.OnItemClickListener {
 
+    /** Key for whether this is the first time the app has been launched */
     public static final String FIRST_TIME_LAUNCH_KEY = "FIRST_TIME_LAUNCH";
-//    private View mEmptyView;
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
 
     private ShowcaseView showcaseView;
-//    private boolean addedRobot;
     private Toolbar mToolbar;
 
+    // Navigation drawer items
     private String[] mFeatureTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-//    private int drawerIndex = 1;
-//    private String mTitle;
-//    private String mDrawerTitle;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
-    Fragment fragment = null;
-    FragmentManager fragmentManager;
-    int fragmentsCreatedCounter = 0;
+    // Variables for keeping track of Fragments
+    private Fragment fragment = null;
+    private FragmentManager fragmentManager;
+    private int fragmentsCreatedCounter = 0;
 
     // Log tag String
     private static final String TAG = "RobotChooser";
@@ -132,12 +132,14 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
             }
         });
 
+        // Icons for the navigation drawer
         int[] imgRes = new int[]{
                 R.drawable.ic_android_black_24dp,
                 R.drawable.ic_help_black_24dp,
                 R.drawable.ic_info_outline_black_24dp
         };
 
+        // Populate the navigation drawer
         List<DrawerItem> drawerItems = new ArrayList<>();
 
         for (int i = 0; i < mFeatureTitles.length; i++) {
@@ -151,85 +153,42 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         mDrawerList.setAdapter(drawerAdapter);
         mDrawerList.setOnItemClickListener(this);
 
+        // Adapter for creating the list of Robot options
         mAdapter = new RobotInfoAdapter(this, RobotStorage.getRobots());
-
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkRobotList();
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                super.onItemRangeChanged(positionStart, itemCount);
-                checkRobotList();
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
-                super.onItemRangeChanged(positionStart, itemCount, payload);
-                checkRobotList();
-            }
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                checkRobotList();
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                super.onItemRangeRemoved(positionStart, itemCount);
-                checkRobotList();
-            }
-
-            @Override
-            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-                super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-                checkRobotList();
-            }
-        });
 
         mRecyclerView.setAdapter(mAdapter);
 
         ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
 
+        // Check whether this is the first time the app has been launched on this device
         final boolean isFirstLaunch = PreferenceManager
                 .getDefaultSharedPreferences(this)
                 .getBoolean(FIRST_TIME_LAUNCH_KEY, true);
 
-        //Delay the initial tutorial a little bit
-        //This makes sure the view gets a good reference to the UI layout positions
+        // Delay the initial tutorial a little bit
+        // This makes sure the view gets a good reference to the UI layout positions
         Runnable task = new Runnable() {
             public void run() {
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    try {
+                        if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
+                            //Show initial tutorial message
+                            showcaseView = new ShowcaseView.Builder(RobotChooser.this)
+                                .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.action_add_robot))
+                                .setStyle(R.style.CustomShowcaseTheme2)
+                                .hideOnTouchOutside()
+                                .blockAllTouches()
+                                //.singleShot(0) Can use this instead of manually saving in preferences
+                                .setContentTitle("Add a Robot")
+                                .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
+                                .build();
 
-                try {
-                    if (RobotStorage.getRobots().size() == 0 && isFirstLaunch) {
-                        //Show initial tutorial message
-                        showcaseView = new ShowcaseView.Builder(RobotChooser.this)
-                            .setTarget(new ToolbarActionItemTarget(mToolbar, R.id.action_add_robot))
-                            .setStyle(R.style.CustomShowcaseTheme2)
-                            .hideOnTouchOutside()
-                            .blockAllTouches()
-                            //.singleShot(0) Can use this instead of manually saving in preferences
-                            .setContentTitle("Add a Robot")
-                            .setContentText("Let's get started! You can add a robot to connect to using this button. Try adding one now.")
-                            .build();
-
-                        //Get ready to show tutorial message when user adds a robot
-                        setupNextTutorialMessage();
-
-
-                    }
-//                            else {
-//                                addedRobot = true;
-//                            }
-                } catch (Exception ignore) {}
+                            //Get ready to show tutorial message when user adds a robot
+                            setupNextTutorialMessage();
+                        }
+                    } catch (Exception ignore) {}
                 }
             });
             }
@@ -238,6 +197,9 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         worker.schedule(task, 1, TimeUnit.SECONDS);
     }
 
+    /*
+     * Callback for when an item is selected from the NavigationDrawer.
+     */
     private void selectItem(int position){
         Bundle args = new Bundle();
         fragmentManager = getSupportFragmentManager();
@@ -254,7 +216,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 mDrawerLayout.closeDrawers();
                 return;
 
-            case 1:
+            case 1: // The Help Fragment
                 fragment = new HelpFragment();
                 fragment.setArguments(args);
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
@@ -268,7 +230,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                 }
                 break;
 
-            case 2:
+            case 2: // The About Fragment
                 fragment = new AboutFragmentRobotChooser();
                 fragment.setArguments(args);
                 fragmentsCreatedCounter = fragmentsCreatedCounter + 1;
@@ -285,8 +247,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
             default:
                 break;
         }
-
-//        drawerIndex = position;
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -320,6 +280,7 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     @Override
     public void onBackPressed() {
 
+        // Move to the previous fragment if it exists
         if (fragmentsCreatedCounter >= 1) {
 
             selectItem(0);
@@ -340,9 +301,12 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
         }
     }
 
+    /*
+     * Sets up the showcase view for the second tutorial message.
+     */
     private void setupNextTutorialMessage() {
-        //Have to get a reference to the new robot's list item view AFTER
-        //it shows up in the RecyclerView
+        // Have to get a reference to the new robot's list item view AFTER
+        // it shows up in the RecyclerView
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -368,7 +332,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
 
                 final View layoutView = v;
 
-
                 if (layoutView != null) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -381,8 +344,6 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
                                     .setContentTitle("Connect")
                                     .setContentText("To connect to this robot, tap it's name.")
                                     .build();
-
-//                            addedRobot = true;
 
                             PreferenceManager
                                     .getDefaultSharedPreferences(RobotChooser.this)
@@ -397,33 +358,17 @@ public class RobotChooser extends AppCompatActivity implements AddEditRobotDialo
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        checkRobotList();
-    }
-
-    /*
-     * Refreshes the list of RobotInfo choices.
-     */
-    private void checkRobotList() {
-//        if (RobotStorage.getRobots().isEmpty() && !addedRobot) {
-//            mRecyclerView.setVisibility(View.GONE);
-//            mEmptyView.setVisibility(View.VISIBLE);
-//        } else {
-//            mRecyclerView.setVisibility(View.VISIBLE);
-//            mEmptyView.setVisibility(View.GONE);
-//        }
-    }
-
-
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_robot_chooser, menu);
         return true;
     }
 
+    /**
+     * Callback for when the user wants to add a new RobotItem.
+     * @param item The selected MenuItem
+     * @return True if the item selection was handled and false otherwise
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
