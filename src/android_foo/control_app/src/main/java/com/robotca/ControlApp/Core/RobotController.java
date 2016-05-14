@@ -311,6 +311,18 @@ public class RobotController implements NodeMain, Savable {
                 Log.e("Emergency Stop", e.getMessage());
             }
 
+            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.prefs_invert_x_axis_key), false)){
+                linearVelocityX *= -1;
+            }
+
+            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.prefs_invert_y_axis_key), false)){
+                linearVelocityY *= -1;
+            }
+
+            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.prefs_invert_angular_velocity_key), false)){
+                angularVelocityZ *= -1;
+            }
+
             currentVelocityCommand.getLinear().setX(linearVelocityX * scale);
             currentVelocityCommand.getLinear().setY(-linearVelocityY * scale);
             currentVelocityCommand.getLinear().setZ(0.0);
@@ -583,6 +595,18 @@ public class RobotController implements NodeMain, Savable {
     protected void setLaserScan(LaserScan laserScan) {
         synchronized (laserScanMutex) {
             this.laserScan = laserScan;
+
+            boolean invertLaserScan = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.prefs_reverse_angle_reading_key), false);
+
+            if(invertLaserScan) {
+                float[] ranges = this.laserScan.getRanges();
+
+                for (int i = 0; i < this.laserScan.getRanges().length / 2; i++) {
+                    float range = ranges[i];
+                    ranges[i] = ranges[ranges.length - i - 1];
+                    ranges[ranges.length - i - 1] = range;
+                }
+            }
         }
 
         // Call the listener callbacks

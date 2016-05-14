@@ -8,14 +8,16 @@ import android.util.Log;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.robotca.ControlApp.R;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Manages the loading and saving of RobotInfos from an Activity's shared preferences.
- *
+ * <p/>
  * Created by Michael Brunson on 2/2/16.
  */
 public class RobotStorage {
@@ -24,42 +26,60 @@ public class RobotStorage {
 
     private static List<RobotInfo> g_cRobotInfos = Lists.newArrayList();
     private static Gson m_oGson = new Gson();
+    private static TreeMap<String, String> g_cPrefKeyMap = new TreeMap<>();
 
     // Log tag String
     private static final String TAG = "RobotStorage";
 
     /**
      * Loads from the specified Activity's preferences.
+     *
      * @param activity The Activity
      */
-    public static synchronized void load(Activity activity){
-            SharedPreferences pref = activity.getPreferences(Context.MODE_PRIVATE);
-            String defaultJson = m_oGson.toJson(new ArrayList<RobotInfo>());
+    public static synchronized void load(Activity activity) {
+        SharedPreferences pref = activity.getPreferences(Context.MODE_PRIVATE);
+        String defaultJson = m_oGson.toJson(new ArrayList<RobotInfo>());
 
-            String robotInfoJson = pref.getString(ROBOT_INFOS_KEY, defaultJson);
-            Type listOfRobotInfoType = new TypeToken<List<RobotInfo>>() {
-            }.getType();
+        String robotInfoJson = pref.getString(ROBOT_INFOS_KEY, defaultJson);
+        Type listOfRobotInfoType = new TypeToken<List<RobotInfo>>() {
+        }.getType();
 
         g_cRobotInfos = m_oGson.fromJson(robotInfoJson, listOfRobotInfoType);
 
         RobotInfo.resolveRobotCount(g_cRobotInfos);
+
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_joystick_topic_edittext_key), RobotInfo.JOYSTICK_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_camera_topic_edittext_key), RobotInfo.CAMERA_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_laserscan_topic_edittext_key), RobotInfo.LASER_SCAN_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_navsat_topic_edittext_key), RobotInfo.NAVSAT_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_odometry_topic_edittext_key), RobotInfo.ODOMETRY_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_pose_topic_edittext_key), RobotInfo.POSE_TOPIC_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_reverse_angle_reading_key), RobotInfo.REVERSE_LASER_SCAN_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_x_axis_key), RobotInfo.INVERT_X_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_y_axis_key), RobotInfo.INVERT_Y_KEY);
+        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_angular_velocity_key), RobotInfo.INVERT_ANGULAR_VELOCITY_KEY);
+    }
+
+    public static String getPreferenceKey(String bundleKey) {
+        return g_cPrefKeyMap.get(bundleKey);
     }
 
     /**
      * @return The list of loaded RobotInfos
      */
-    public static synchronized List<RobotInfo> getRobots(){
+    public static synchronized List<RobotInfo> getRobots() {
         return g_cRobotInfos;
     }
 
     /**
      * Removes a loaded RobotInfo.
+     *
      * @param activity The Activity from which to remove
-     * @param robot The RobotInfo to remove
+     * @param robot    The RobotInfo to remove
      * @return True if the specified RobotInfo was removed, false otherwise
      */
     @SuppressWarnings("unused")
-    public static synchronized boolean remove(Activity activity, RobotInfo robot){
+    public static synchronized boolean remove(Activity activity, RobotInfo robot) {
         boolean removed = g_cRobotInfos.remove(robot);
         save(activity);
         return removed;
@@ -67,11 +87,12 @@ public class RobotStorage {
 
     /**
      * Removes a loaded RobotInfo.
+     *
      * @param activity The Activity from which to remove
-     * @param index The index of the RobotInfo to remove
+     * @param index    The index of the RobotInfo to remove
      * @return True if the specified RobotInfo was removed, false otherwise
      */
-    public static synchronized RobotInfo remove(Activity activity, int index){
+    public static synchronized RobotInfo remove(Activity activity, int index) {
         RobotInfo removed = g_cRobotInfos.remove(index);
         save(activity);
         return removed;
@@ -79,8 +100,9 @@ public class RobotStorage {
 
     /**
      * Updates the specified RobotInfo in storage.
+     *
      * @param activity The Activity
-     * @param robot The updated RobotInfo
+     * @param robot    The updated RobotInfo
      * @return True if the specified RobotInfo was updated, false otherwise
      */
     public static synchronized boolean update(Activity activity, RobotInfo robot) {
@@ -104,11 +126,12 @@ public class RobotStorage {
 
     /**
      * Adds a RobotInfo to the RobotStorage.
+     *
      * @param activity The Activity containing the RobotStorage
-     * @param robot The new RobotInfo
+     * @param robot    The new RobotInfo
      * @return True if the RobotInfo was successfully added, false otherwise
      */
-    public static synchronized boolean add(Activity activity, RobotInfo robot){
+    public static synchronized boolean add(Activity activity, RobotInfo robot) {
         boolean added = g_cRobotInfos.add(robot);
         save(activity);
         return added;
@@ -116,9 +139,10 @@ public class RobotStorage {
 
     /**
      * Saves the RobotStorage.
+     *
      * @param activity The Activity in which to save the RobotStorage
      */
-    public static synchronized void save(Activity activity){
+    public static synchronized void save(Activity activity) {
         String robotInfosJson = m_oGson.toJson(g_cRobotInfos);
         SharedPreferences.Editor editor = activity.getPreferences(Context.MODE_PRIVATE).edit();
         editor.putString(ROBOT_INFOS_KEY, robotInfosJson);

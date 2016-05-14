@@ -19,11 +19,13 @@ import com.robotca.ControlApp.R;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.GroundOverlay;
-import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
-import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
+//import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
+//import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
+import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
@@ -68,9 +70,9 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
         LocationProvider locationProvider = ((ControlApp) getActivity()).getRobotController().LOCATION_PROVIDER;
 
         // Location overlay using the robot's GPS
-        myLocationOverlay = new MyLocationNewOverlay(getActivity(), locationProvider/*robotGPSNode*/, mapView);
+        myLocationOverlay = new MyLocationNewOverlay(locationProvider, mapView);
         // Location overlay using Android's GPS
-        secondMyLocationOverlay = new MyLocationNewOverlay(getActivity(), mapView);
+        secondMyLocationOverlay = new MyLocationNewOverlay(mapView);
         MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(mapView.getContext(), this);
 
         // Allow GPS updates

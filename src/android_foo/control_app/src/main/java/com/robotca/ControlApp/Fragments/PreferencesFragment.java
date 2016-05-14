@@ -43,26 +43,7 @@ public class PreferencesFragment extends PreferenceFragment {
     public void onPause() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        ControlApp.ROBOT_INFO.setJoystickTopic(
-                prefs.getString(getString(R.string.prefs_joystick_topic_edittext_key),
-                    getString(R.string.joy_topic)));
-
-        ControlApp.ROBOT_INFO.setLaserTopic(
-                prefs.getString(getString(R.string.prefs_laserscan_topic_edittext_key),
-                        getString(R.string.laser_scan_topic)));
-
-        ControlApp.ROBOT_INFO.setCameraTopic(
-                prefs.getString(getString(R.string.prefs_camera_topic_edittext_key),
-                        getString(R.string.camera_topic)));
-
-        ControlApp.ROBOT_INFO.setOdometryTopic(prefs.getString(getString(R.string.prefs_odometry_topic_edittext_key),
-                getString(R.string.odometry_topic)));
-
-        ControlApp.ROBOT_INFO.setNavSatTopic(prefs.getString(getString(R.string.prefs_navsat_topic_edittext_key),
-                getString(R.string.navsat_topic)));
-
-        ControlApp.ROBOT_INFO.setPoseTopic(prefs.getString(getString(R.string.prefs_pose_topic_edittext_key),
-                getString(R.string.pose_topic)));
+        ControlApp.ROBOT_INFO.load(prefs);
 
         // Let the ControlApp know that the Preferences have been changed so it can save them
         if (getActivity() instanceof ControlApp)

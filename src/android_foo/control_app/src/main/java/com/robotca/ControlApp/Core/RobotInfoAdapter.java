@@ -176,20 +176,8 @@ public class RobotInfoAdapter extends RecyclerView.Adapter<RobotInfoAdapter.View
                 case R.id.robot_edit_button:
                     AddEditRobotDialogFragment editRobotDialogFragment = new AddEditRobotDialogFragment();
                     bundle = new Bundle();
-
+                    info.save(bundle);
                     bundle.putInt(AddEditRobotDialogFragment.POSITION_KEY, position);
-
-                    bundle.putString(AddEditRobotDialogFragment.UUID_KEY, info.getId().toString());
-                    bundle.putString(AddEditRobotDialogFragment.ROBOT_NAME_KEY, info.getName());
-                    bundle.putString(AddEditRobotDialogFragment.MASTER_URI_KEY, info.getMasterUri());
-
-                    bundle.putString(AddEditRobotDialogFragment.JOYSTICK_TOPIC_KEY, info.getJoystickTopic());
-                    bundle.putString(AddEditRobotDialogFragment.LASER_SCAN_TOPIC_KEY, info.getLaserTopic());
-                    bundle.putString(AddEditRobotDialogFragment.CAMERA_TOPIC_KEY, info.getCameraTopic());
-                    bundle.putString(AddEditRobotDialogFragment.ODOMETRY_TOPIC_KEY, info.getOdometryTopic());
-                    bundle.putString(AddEditRobotDialogFragment.NAVSAT_TOPIC_KEY, info.getNavSatTopic());
-                    bundle.putString(AddEditRobotDialogFragment.POSE_TOPIC_KEY, info.getPoseTopic());
-
                     editRobotDialogFragment.setArguments(bundle);
 
                     editRobotDialogFragment.show(activity.getSupportFragmentManager(), "editrobotialog");

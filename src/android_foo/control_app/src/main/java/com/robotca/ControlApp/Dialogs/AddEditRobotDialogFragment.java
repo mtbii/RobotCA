@@ -21,32 +21,15 @@ import java.util.UUID;
 
 /**
  * Dialog for adding or editing a Robot.
- *
+ * <p/>
  * Created by Michael Brunson on 1/23/16.
  */
 public class AddEditRobotDialogFragment extends DialogFragment {
 
-    /** Bundle key for UUID */
-    public static final String UUID_KEY = "UUID_KEY";
-    /** Bundle key for robot name */
-    public static final String ROBOT_NAME_KEY = "ROBOT_NAME_KEY";
-    /** Bundle key for master URI */
-    public static final String MASTER_URI_KEY = "MASTER_URI_KEY";
-    /** Bundle key for position */
+    /**
+     * Bundle key for position
+     */
     public static final String POSITION_KEY = "POSITION_KEY";
-    /** Bundle key for joystick topic */
-    public static final String JOYSTICK_TOPIC_KEY = "JOYSTICK_TOPIC_KEY";
-    /** Bundle key for laser scan topic */
-    public static final String LASER_SCAN_TOPIC_KEY = "LASER_SCAN_TOPIC_KEY";
-    /** Bundle key for camera topic */
-    public static final String CAMERA_TOPIC_KEY = "CAMERA_TOPIC_KEY";
-    /** Bundle key for navsat topic */
-    public static final String NAVSAT_TOPIC_KEY = "NAVSAT_TOPIC_KEY";
-    /** Bundle key for odometry topic */
-    public static final String ODOMETRY_TOPIC_KEY = "ODOMETRY_TOPIC_KEY";
-    /** Bundle key for pose topic */
-    public static final String POSE_TOPIC_KEY = "POSE_TOPIC_KEY";
-    
 
     // Temporary RobotInfo
     private RobotInfo mInfo = new RobotInfo();
@@ -64,6 +47,11 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     private EditText mNavSatTopicEditTextView;
     private EditText mOdometryTopicEditTextView;
     private EditText mPoseTopicEditTextView;
+    private CheckBox mReverseLaserScanCheckBox;
+    private CheckBox mInvertXAxisCheckBox;
+    private CheckBox mInvertYAxisCheckBox;
+    private CheckBox mInvertAngularVelocityCheckBox;
+
 
     // Position of the RobotInfo in the list of RobotInfos
     private int mPosition = -1;
@@ -72,17 +60,9 @@ public class AddEditRobotDialogFragment extends DialogFragment {
     public void setArguments(Bundle args) {
         super.setArguments(args);
 
-        if(args != null) {
+        if (args != null) {
             mPosition = args.getInt(POSITION_KEY, -1);
-            mInfo.setId(UUID.fromString(args.getString(UUID_KEY, UUID.randomUUID().toString())));
-            mInfo.setName(args.getString(ROBOT_NAME_KEY, ""));
-            mInfo.setMasterUri(args.getString(MASTER_URI_KEY, ""));
-            mInfo.setJoystickTopic(args.getString(JOYSTICK_TOPIC_KEY, mInfo.getJoystickTopic()));
-            mInfo.setLaserTopic(args.getString(LASER_SCAN_TOPIC_KEY, mInfo.getLaserTopic()));
-            mInfo.setCameraTopic(args.getString(CAMERA_TOPIC_KEY, mInfo.getCameraTopic()));
-            mInfo.setNavSatTopic(args.getString(NAVSAT_TOPIC_KEY, mInfo.getNavSatTopic()));
-            mInfo.setOdometryTopic(args.getString(ODOMETRY_TOPIC_KEY, mInfo.getOdometryTopic()));
-            mInfo.setPoseTopic(args.getString(POSE_TOPIC_KEY, mInfo.getPoseTopic()));
+            mInfo.load(args);
         }
     }
 
@@ -111,14 +91,17 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mMasterUriEditTextView = (EditText) v.findViewById(R.id.master_uri_edit_view);
 
         CheckBox mAdvancedOptionsCheckbox = (CheckBox) v.findViewById(R.id.advanced_options_checkbox_view);
-        mAdvancedOptionsView = v.findViewById(R.id.advanved_options_view);
+        mAdvancedOptionsView = v.findViewById(R.id.advanced_options_view);
         mJoystickTopicEditTextView = (EditText) v.findViewById(R.id.joystick_topic_edit_text);
         mLaserScanTopicEditTextView = (EditText) v.findViewById(R.id.laser_scan_edit_view);
         mCameraTopicEditTextView = (EditText) v.findViewById(R.id.camera_topic_edit_view);
         mNavSatTopicEditTextView = (EditText) v.findViewById(R.id.navsat_topic_edit_view);
         mOdometryTopicEditTextView = (EditText) v.findViewById(R.id.odometry_topic_edit_view);
         mPoseTopicEditTextView = (EditText) v.findViewById(R.id.pose_topic_edit_view);
-        
+        mReverseLaserScanCheckBox = (CheckBox) v.findViewById(R.id.reverse_laser_scan_check_box);
+        mInvertXAxisCheckBox = (CheckBox) v.findViewById(R.id.invert_x_axis_check_box);
+        mInvertYAxisCheckBox = (CheckBox) v.findViewById(R.id.invert_y_axis_check_box);
+        mInvertAngularVelocityCheckBox = (CheckBox) v.findViewById(R.id.invert_angular_velocity_check_box);
 
         mNameEditTextView.setText(mInfo.getName());
         mMasterUriEditTextView.setText(mInfo.getMasterUri());
@@ -126,11 +109,11 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mAdvancedOptionsCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (((CheckBox) v).isChecked()) {
-                mAdvancedOptionsView.setVisibility(View.VISIBLE);
-            } else {
-                mAdvancedOptionsView.setVisibility(View.GONE);
-            }
+                if (((CheckBox) v).isChecked()) {
+                    mAdvancedOptionsView.setVisibility(View.VISIBLE);
+                } else {
+                    mAdvancedOptionsView.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -140,56 +123,58 @@ public class AddEditRobotDialogFragment extends DialogFragment {
         mNavSatTopicEditTextView.setText(mInfo.getNavSatTopic());
         mOdometryTopicEditTextView.setText(mInfo.getOdometryTopic());
         mPoseTopicEditTextView.setText(mInfo.getPoseTopic());
+        mReverseLaserScanCheckBox.setChecked(mInfo.isReverseLaserScan());
+        mInvertXAxisCheckBox.setChecked(mInfo.isInvertX());
+        mInvertYAxisCheckBox.setChecked(mInfo.isInvertY());
+        mInvertAngularVelocityCheckBox.setChecked(mInfo.isInvertAngularVelocity());
 
         builder.setTitle(R.string.add_edit_robot)
-            .setView(v)
-            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+                .setView(v)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                String name = mNameEditTextView.getText().toString().trim();
-                String masterUri = mMasterUriEditTextView.getText().toString().trim();
-                String joystickTopic = mJoystickTopicEditTextView.getText().toString().trim();
-                String laserScanTopic = mLaserScanTopicEditTextView.getText().toString().trim();
-                String cameraTopic = mCameraTopicEditTextView.getText().toString().trim();
-                String navsatTopic = mNavSatTopicEditTextView.getText().toString().trim();
-                String odometryTopic = mOdometryTopicEditTextView.getText().toString().trim();
-                String poseTopic = mPoseTopicEditTextView.getText().toString().trim();
+                        String name = mNameEditTextView.getText().toString().trim();
+                        String masterUri = mMasterUriEditTextView.getText().toString().trim();
+                        String joystickTopic = mJoystickTopicEditTextView.getText().toString().trim();
+                        String laserScanTopic = mLaserScanTopicEditTextView.getText().toString().trim();
+                        String cameraTopic = mCameraTopicEditTextView.getText().toString().trim();
+                        String navsatTopic = mNavSatTopicEditTextView.getText().toString().trim();
+                        String odometryTopic = mOdometryTopicEditTextView.getText().toString().trim();
+                        String poseTopic = mPoseTopicEditTextView.getText().toString().trim();
+                        boolean reverseLaserScan = mReverseLaserScanCheckBox.isChecked();
+                        boolean invertX = mInvertXAxisCheckBox.isChecked();
+                        boolean invertY = mInvertYAxisCheckBox.isChecked();
+                        boolean invertAngVel = mInvertAngularVelocityCheckBox.isChecked();
 
-                if (masterUri.equals(""))
-                {
-                    Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
-                }
-                else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")
-                        || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("") )
-                {
-                    Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
-                }
-                else if (!name.equals(""))
-                {
-                    mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name,
-                            masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic,
-                            odometryTopic, poseTopic), mPosition);
-                    dialog.dismiss();
-                }
-                else
-                {
-                    Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();
-                }
-                }
-            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mListener.onAddEditDialogNegativeClick(AddEditRobotDialogFragment.this);
-                    dialog.cancel();
-                }
-            });
+                        if (masterUri.equals("")) {
+                            Toast.makeText(getActivity(), "Master URI required", Toast.LENGTH_SHORT).show();
+                        } else if (joystickTopic.equals("") || laserScanTopic.equals("") || cameraTopic.equals("")
+                                || navsatTopic.equals("") || odometryTopic.equals("") || poseTopic.equals("")) {
+                            Toast.makeText(getActivity(), "All topic names are required", Toast.LENGTH_SHORT).show();
+                        } else if (!name.equals("")) {
+                            mListener.onAddEditDialogPositiveClick(new RobotInfo(mInfo.getId(), name,
+                                    masterUri, joystickTopic, laserScanTopic, cameraTopic, navsatTopic,
+                                    odometryTopic, poseTopic, reverseLaserScan, invertX, invertY, invertAngVel), mPosition);
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(getActivity(), "Robot name required", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mListener.onAddEditDialogNegativeClick(AddEditRobotDialogFragment.this);
+                dialog.cancel();
+            }
+        });
 
         return builder.create();
     }
 
     public interface DialogListener {
         void onAddEditDialogPositiveClick(RobotInfo info, int position);
+
         void onAddEditDialogNegativeClick(DialogFragment dialog);
     }
 

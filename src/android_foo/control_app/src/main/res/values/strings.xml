@@ -163,5 +163,25 @@
     <!-- Default Preference values -->
     <string name="default_warning_mindist">3.0</string>
     <string name="noCamera">No Camera</string>
+    <string name="prefs_advanced_control_settings_key">prefs_advanced_control_settings</string>
+    <string name="prefs_advanced_control_settings_summary">Edit advanced control settings</string>
+    <string name="advanced_controls__pref_title">Advanced Controls</string>
+    <string name="reverse_angle_reading_summary_off"><![CDATA[Invert Angle Reading (Min->Max Angle)]]></string>
+    <string name="reverse_angle_reading_summary_on"><![CDATA[Invert Angle Reading (Max->Min Angle)]]></string>
+    <string name="reverse_angle_reading_title">Invert Laser Scan</string>
+    <string name="prefs_reverse_angle_reading_key">prefs_reverse_angle_reading_key</string>
+    <string name="prefs_invert_x_axis_key">prefs_invert_x_axis_key</string>
+    <string name="prefs_invert_angular_velocity_key">prefs_invert_y_axis_key</string>
+    <string name="invert_angular_velocity_summary">Invert angular velocity driving direction</string>
+    <string name="invert_x_axis_summary">Invert X-Axis driving direction</string>
+    <string name="invert_x_axis_title">Invert X-Axis</string>
+    <string name="invert_angular_velocity_title">Invert Angular Velocity</string>
+    <string name="invert_y_axis_title">Invert Y-Axis</string>
+    <string name="invert_y_axis_summary">Invert Y-axis driving direction</string>
+    <string name="prefs_invert_y_axis_key">prefs_invert_y_axis_key</string>
+    <string name="reverse_laser_scan_prompt">Invert Laser Scan:</string>
+    <string name="invert_x_axis_prompt">Invert X-axis:</string>
+    <string name="invert_y_axis_prompt">Invert Y-axis:</string>
+    <string name="invert_angular_velocity_prompt">Invert Ang. Vel:</string>
 
 </resources>
