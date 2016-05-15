@@ -48,16 +48,16 @@ public class RobotStorage {
 
         RobotInfo.resolveRobotCount(g_cRobotInfos);
 
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_joystick_topic_edittext_key), RobotInfo.JOYSTICK_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_camera_topic_edittext_key), RobotInfo.CAMERA_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_laserscan_topic_edittext_key), RobotInfo.LASER_SCAN_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_navsat_topic_edittext_key), RobotInfo.NAVSAT_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_odometry_topic_edittext_key), RobotInfo.ODOMETRY_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_pose_topic_edittext_key), RobotInfo.POSE_TOPIC_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_reverse_angle_reading_key), RobotInfo.REVERSE_LASER_SCAN_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_x_axis_key), RobotInfo.INVERT_X_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_y_axis_key), RobotInfo.INVERT_Y_KEY);
-        g_cPrefKeyMap.put(activity.getString(R.string.prefs_invert_angular_velocity_key), RobotInfo.INVERT_ANGULAR_VELOCITY_KEY);
+        g_cPrefKeyMap.put(RobotInfo.JOYSTICK_TOPIC_KEY, activity.getString(R.string.prefs_joystick_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.CAMERA_TOPIC_KEY, activity.getString(R.string.prefs_camera_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.LASER_SCAN_TOPIC_KEY, activity.getString(R.string.prefs_laserscan_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.NAVSAT_TOPIC_KEY, activity.getString(R.string.prefs_navsat_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.ODOMETRY_TOPIC_KEY, activity.getString(R.string.prefs_odometry_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.POSE_TOPIC_KEY, activity.getString(R.string.prefs_pose_topic_edittext_key));
+        g_cPrefKeyMap.put(RobotInfo.REVERSE_LASER_SCAN_KEY, activity.getString(R.string.prefs_reverse_angle_reading_key));
+        g_cPrefKeyMap.put(RobotInfo.INVERT_X_KEY, activity.getString(R.string.prefs_invert_x_axis_key));
+        g_cPrefKeyMap.put(RobotInfo.INVERT_Y_KEY, activity.getString(R.string.prefs_invert_y_axis_key));
+        g_cPrefKeyMap.put(RobotInfo.INVERT_ANGULAR_VELOCITY_KEY, activity.getString(R.string.prefs_invert_angular_velocity_key));
     }
 
     public static String getPreferenceKey(String bundleKey) {

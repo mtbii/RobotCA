@@ -1,87 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/robot_name_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/robot_name"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/robot_name_edit_text"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_toEndOf="@id/robot_name_textview"
-        android:layout_toRightOf="@id/robot_name_textview"
-        android:hint="@string/robot_name_hint"
-        android:singleLine="true" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/robot_masteruri_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/robot_name_textview"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/master_uri"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/master_uri_edit_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/robot_name_edit_text"
-        android:layout_alignStart="@+id/robot_name_edit_text"
-        android:layout_below="@id/robot_name_textview"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_toEndOf="@id/robot_masteruri_textview"
-        android:layout_toRightOf="@id/robot_masteruri_textview"
-        android:hint="@string/chooser_uri_hint"
-        android:inputType="textUri"
-        android:singleLine="true" />
-
-    <CheckBox
-        android:id="@+id/advanced_options_checkbox_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/master_uri_edit_view"
-        android:text="@string/show_advanced_options" />
-
-    <ScrollView
-        android:id="@+id/advanced_options_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/advanced_options_checkbox_view"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/robot_name_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/robot_name"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/robot_name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_toEndOf="@id/robot_name_textview"
+            android:layout_toRightOf="@id/robot_name_textview"
+            android:hint="@string/robot_name_hint"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/robot_masteruri_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/robot_name_textview"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/master_uri"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/master_uri_edit_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/robot_name_edit_text"
+            android:layout_alignStart="@+id/robot_name_edit_text"
+            android:layout_below="@id/robot_name_textview"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_toEndOf="@id/robot_masteruri_textview"
+            android:layout_toRightOf="@id/robot_masteruri_textview"
+            android:hint="@string/chooser_uri_hint"
+            android:inputType="textUri"
+            android:singleLine="true" />
+
+        <CheckBox
+            android:id="@+id/advanced_options_checkbox_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/master_uri_edit_view"
+            android:text="@string/show_advanced_options" />
+
+        <LinearLayout
+            android:id="@+id/advanced_options_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/advanced_options_checkbox_view"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -308,5 +305,5 @@
                     android:singleLine="true" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
