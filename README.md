@@ -1,11 +1,12 @@
-# RobotCA  
+# RobotCA
+### No longer actively maintained. Feel free to fork or make a PR.
 
-####University of South Carolina  
-######CSCE 490 & 492 Capstone Design  
+#### University of South Carolina  
+###### CSCE 490 & 492 Capstone Design  
 
 Our project is to design an Android application to control a robot. Specifically, the goal is to create a native Android tablet application to interface with a Robot Operating System (ROS) robot, Clearpath Robotics' HUSKY model, for direct drive, diagnostic, and navigation information. The application will have to process data from various sensors on the robot and display the information in a user understandable fashion. For example, the robot will have a laser ranging system which will be collecting data on the environment. The application must parse this data and display the environment that the robot "sees".
 
-####[Download from the Google Play Store today!](https://play.google.com/store/apps/details?id=com.robotca.ControlApp)
+#### [Download from the Google Play Store today!](https://play.google.com/store/apps/details?id=com.robotca.ControlApp)
 
 Dependencies:  
 + ROS
